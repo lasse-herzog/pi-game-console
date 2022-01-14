@@ -1,4 +1,5 @@
 #Imports
+from os import P_OVERLAY
 import pygame, sys
 from pygame.locals import *
 import math, random
@@ -41,6 +42,22 @@ leftPaddle_canMoveDown = True
 rightPaddle_canMoveUp = True
 rightPaddle_canMoveDown = True
 
+
+#Puck
+puck_startX = int (WIDTH/2)
+puck_startY = int (HEIGHT/2)
+puck_posX = puck_startX
+puck_posY = puck_startY
+#Puck Movement
+pvX = 450
+pvY = 450
+
+
+#Score
+score_font = pygame.font.SysFont("Comic Sans Ms", 30, True)
+score_left = 0
+score_right = 0
+
 #Input Map (saves pushed buttons)
 inputMap = [False, False]
    
@@ -48,10 +65,7 @@ inputMap = [False, False]
 
 # -------- Main Program Loop -----------
 while not done:
-    #Clear Screen
-    screen.fill(BLACK)
-    #FPS
-    clock.tick(60)
+   
 
     for event in pygame.event.get():
         #Steuerung über Tastatur zum Testen
@@ -99,8 +113,49 @@ while not done:
         if inputMap[1]: leftPaddle_posY += v
     if leftPaddle_canMoveUp:
         if inputMap[0]: leftPaddle_posX += v
+    
+    
+    #Puck Move
+    puck_time = clock.tick(60) /1000
+    puck_posX += pvX * puck_time
+    puck_posY += pvY * puck_time
 
-        
+    #Puck Kollision
+    if puck_posY > HEIGHT or puck_posY < 0:
+        pvY = -pvY
+    if puck_posX > rightPaddle_posX or puck_posX < leftPaddle_posX:
+        if puck_posY > rightPaddle_posY and puck_posY < rightPaddle_posY + rightPaddle_HEIGHT:
+            cmfX = -cmfX
+        if puck_posY > leftPaddle_posY and puck_posY < leftPaddle_posY + leftPaddle_HEIGHT:
+            cmfX = -cmfX
+    
+    #Scores
+    if puck_posX > WIDTH:
+        score_left += 1
+        puck_posX = puck_startX
+        puck_posY = puck_startY
+    
+    if puck_posX < 0:
+        score_right += 1
+        puck_posX = puck_startX
+        puck_posY = puck_startY
+
+    #Clear Screen
+    screen.fill(BLACK)
+   
+
+    #Drawing
+    pygame.draw.rect(screen, WHITE, [leftPaddle_posX, leftPaddle_posY, 10, leftPaddle_HEIGHT])
+    pygame.draw.rect(screen, WHITE, [rightPaddle_posX, rightPaddle_posY, 10, rightPaddle_HEIGHT])
+    pygame.draw.rect(screen, RED, [puck_posX, puck_posY, 20, 20])
+    screen.blit(score_font.render(str(score_left), True, BLUE), (WIDTH / 4, 50))
+    screen.blit(score_font.render(str(score_right), True, BLUE), (WIDTH / 1.25, 50))
+
+    #update screen
+    pygame.display.flip()
+
+    #FPS
+    clock.tick(60)   
     #Eingabe mit Joystick
     """
     # Possible joystick actions: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
