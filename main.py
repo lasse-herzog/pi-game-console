@@ -27,6 +27,23 @@ opponent = pygame.Rect(10, screen_height/2 - 70, 10, 120)
 #Speed Variables
 ball_speedX = 5
 ball_speedY = 5
+player_speed = 8
+opponent_speed = 8
+
+#Game Logic Functions
+def ballMovement():
+    global ball_speedX, ball_speedY
+    ball.x += ball_speedX
+    ball.y += ball_speedY
+
+    #Collisions
+    if ball.top <= 0 or ball.bottom >= screen_height:
+        ball_speedY *= -1   #reverses the ball speed
+    if ball.left <= 0 or ball.right >= screen_width:
+        ball_speedX *= -1   
+    if ball.colliderect(player) or ball.colliderect(opponent):
+        ball_speedX = -1
+
 
 #Game Loop
 while True:
@@ -35,15 +52,20 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                player_speed += 7
+            if event.key == pygame.K_UP:
+                player_speed -= 7
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_DOWN:
+                player_speed -= 7
+            if event.key == pygame.K_UP:
+                player_speed += 7
     
-    ball.x += ball_speedX
-    ball.y += ball_speedY
-
-    #Game logic
-    if ball.top <= 0 or ball.bottom >= screen_height:
-        ball_speedY *= -1   #reverses the ball speed
-    if ball.left <= 0 or ball.right >= screen_width:
-        ball_speedX *= -1   
+    #Game Logic
+    ballMovement()
+    player.y += player_speed
 
     #Drawing
     screen.fill(BLACK)
