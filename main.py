@@ -107,12 +107,12 @@ while not done:
     if rightPaddle_canMoveUp:
         if inputMap[1]: rightPaddle_posY += v
     if rightPaddle_canMoveUp:
-        if inputMap[0]: rightPaddle_posX += v
+        if inputMap[0]: rightPaddle_posX -= v
     #move leftPaddle
     if leftPaddle_canMoveUp:
         if inputMap[1]: leftPaddle_posY += v
     if leftPaddle_canMoveUp:
-        if inputMap[0]: leftPaddle_posX += v
+        if inputMap[0]: leftPaddle_posX -= v
     
     
     #Puck Move
