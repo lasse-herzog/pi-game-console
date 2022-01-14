@@ -26,7 +26,24 @@ GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
 #Paddles
+leftPaddle_posX = 50
+leftPaddle_posY = 50
 
+rightPaddle_posX = 1220
+rightPaddle_posY = 50
+
+leftPaddle_HEIGHT = 150
+rightPaddle_HEIGHT = 150
+#Paddle movement
+v=10       #velocity
+leftPaddle_moveUp = True
+leftPaddle_moveDown = True
+rightPaddle_moveUp = True
+rightPaddle_moveDown = True
+
+
+        
+         
         
         
 
@@ -44,7 +61,7 @@ while not done:
             pygame.quit()
         
         
-
+    #Eingabe mit Joystick
     """
     # Possible joystick actions: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
     # JOYBUTTONUP, JOYHATMOTION
