@@ -20,10 +20,13 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('PiG-C Pong')
 
 #Rects
-ball = pygame.Rect(screen_width/2 - 15, screen_height/2 - 15, 15,15)
-player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 140)
-opponent = pygame.Rect(10, screen_height/2 - 70, 10, 140)
+ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
+player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 120)
+opponent = pygame.Rect(10, screen_height/2 - 70, 10, 120)
 
+#Speed Variables
+ball_speedX = 5
+ball_speedY = 5
 
 #Game Loop
 while True:
@@ -33,6 +36,15 @@ while True:
             pygame.quit()
             sys.exit()
     
+    ball.x += ball_speedX
+    ball.y += ball_speedY
+
+    #Game logic
+    if ball.top <= 0 or ball.bottom >= screen_height:
+        ball_speedY *= -1   #reverses the ball speed
+    if ball.left <= 0 or ball.right >= screen_width:
+        ball_speedX *= -1   
+
     #Drawing
     screen.fill(BLACK)
     pygame.draw.rect(screen, WHITE, player)
