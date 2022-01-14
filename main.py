@@ -41,6 +41,10 @@ leftPaddle_moveDown = True
 rightPaddle_moveUp = True
 rightPaddle_moveDown = True
 
+#Input Map (saves pushed buttons)
+inputMap = [False, False, False, False]
+
+
 
         
          
