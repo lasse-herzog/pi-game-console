@@ -87,7 +87,19 @@ while not done:
     if leftPaddle_posY > (0- leftPaddle_HEIGHT /2):
         leftPaddle_canMoveDown = False
     else:
-        leftPaddle_canMoveUp = True     
+        leftPaddle_canMoveUp = True 
+
+    #move rightPaddle
+    if rightPaddle_canMoveUp:
+        if inputMap[1]: rightPaddle_posY += v
+    if rightPaddle_canMoveUp:
+        if inputMap[0]: rightPaddle_posX += v
+    #move leftPaddle
+    if leftPaddle_canMoveUp:
+        if inputMap[1]: leftPaddle_posY += v
+    if leftPaddle_canMoveUp:
+        if inputMap[0]: leftPaddle_posX += v
+
         
     #Eingabe mit Joystick
     """
