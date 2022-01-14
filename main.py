@@ -25,8 +25,8 @@ player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 120)
 opponent = pygame.Rect(10, screen_height/2 - 70, 10, 120)
 
 #Speed Variables
-ball_speedX = 6
-ball_speedY = 6
+ball_speedX = 5
+ball_speedY = 5
 player_speed = 0
 
 
@@ -44,6 +44,12 @@ def ballMovement():
     if ball.colliderect(player) or ball.colliderect(opponent):
         ball_speedX = -1
 
+def playerMovement():
+    player.y += player_speed
+    if player.top <=0:
+        player.top = 0
+    if player.bottom >= screen_height:
+        player.bottom = screen_height
 
 #Game Loop
 while True:
@@ -65,11 +71,7 @@ while True:
     
     #Game Logic
     ballMovement()
-    player.y += player_speed
-    if player.top <=0:
-        player.top = 0
-    if player.bottom >= screen_height:
-        player.bottom = screen_height
+    playerMovement()
 
     #Drawing
     screen.fill(BLACK)
