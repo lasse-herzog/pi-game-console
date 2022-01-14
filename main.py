@@ -65,7 +65,7 @@ inputMap = [False, False]
 
 # -------- Main Program Loop -----------
 while not done:
-   
+    pressed_down = False
 
     for event in pygame.event.get():
         #Steuerung über Tastatur zum Testen
@@ -93,6 +93,7 @@ while not done:
         rightPaddle_canMoveDown = False
     else:
         rightPaddle_canMoveUp = True
+    """    
     #Game Logic leftPaddle
     if leftPaddle_posX < (0 - leftPaddle_HEIGHT / 2):
         leftPaddle_canMoveUp = False
@@ -102,18 +103,19 @@ while not done:
         leftPaddle_canMoveDown = False
     else:
         leftPaddle_canMoveUp = True 
-
+    """
     #move rightPaddle
     if rightPaddle_canMoveUp:
         if inputMap[1]: rightPaddle_posY += v
     if rightPaddle_canMoveUp:
         if inputMap[0]: rightPaddle_posX -= v
+    """
     #move leftPaddle
     if leftPaddle_canMoveUp:
         if inputMap[1]: leftPaddle_posY += v
     if leftPaddle_canMoveUp:
         if inputMap[0]: leftPaddle_posX -= v
-    
+    """
     
     #Puck Move
     puck_time = clock.tick(60) /1000
@@ -154,6 +156,7 @@ while not done:
     #update screen
     pygame.display.flip()
 
+    
     #FPS
     clock.tick(60)   
     #Eingabe mit Joystick
