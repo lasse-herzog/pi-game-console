@@ -36,20 +36,14 @@ leftPaddle_HEIGHT = 150
 rightPaddle_HEIGHT = 150
 #Paddle movement
 v=10       #velocity
-leftPaddle_moveUp = True
-leftPaddle_moveDown = True
-rightPaddle_moveUp = True
-rightPaddle_moveDown = True
+leftPaddle_canMoveUp = True
+leftPaddle_canMoveDown = True
+rightPaddle_canMoveUp = True
+rightPaddle_canMoveDown = True
 
 #Input Map (saves pushed buttons)
 inputMap = [False, False]
-
-
-
-
-        
-         
-        
+   
         
 
 # -------- Main Program Loop -----------
@@ -76,7 +70,24 @@ while not done:
             if event.key == pygame.K_UP:
                 inputMap[1] = False
 
-        
+    #Game logic rightPaddle
+    if rightPaddle_posX < (0 - rightPaddle_HEIGHT / 2):
+        rightPaddle_canMoveUp = False
+    else:
+        rightPaddle_canMoveUp = True
+    if rightPaddle_posY > (0- rightPaddle_HEIGHT /2):
+        rightPaddle_canMoveDown = False
+    else:
+        rightPaddle_canMoveUp = True
+    #Game Logic leftPaddle
+    if leftPaddle_posX < (0 - leftPaddle_HEIGHT / 2):
+        leftPaddle_canMoveUp = False
+    else:
+        leftPaddle_canMoveUp = True
+    if leftPaddle_posY > (0- leftPaddle_HEIGHT /2):
+        leftPaddle_canMoveDown = False
+    else:
+        leftPaddle_canMoveUp = True     
         
     #Eingabe mit Joystick
     """
