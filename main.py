@@ -42,7 +42,8 @@ rightPaddle_moveUp = True
 rightPaddle_moveDown = True
 
 #Input Map (saves pushed buttons)
-inputMap = [False, False, False, False]
+inputMap = [False, False]
+
 
 
 
@@ -59,10 +60,22 @@ while not done:
     clock.tick(60)
 
     for event in pygame.event.get():
-        #Events
+        #Steuerung über Tastatur zum Testen
         if event.type == pygame.QUIT:
             cancel = True
             pygame.quit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                inputMap[0] = True
+            if event.key == pygame.K_UP:
+                inputMap[1] == True
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                inputMap[0] = False
+            if event.key == pygame.K_UP:
+                inputMap[1] = False
+
         
         
     #Eingabe mit Joystick
