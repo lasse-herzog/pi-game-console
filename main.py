@@ -22,13 +22,13 @@ pygame.display.set_caption('PiG-C Pong')
 #Rects
 ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
 player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 120)
-opponent = pygame.Rect(10, screen_height/2 - 70, 10, 120)
+opponent = pygame.Rect(5, screen_height/2 - 70, 10, 120)
 
 #Speed Variables
 ball_speedX = 5
 ball_speedY = 5
 player_speed = 0
-
+opponent_speed = 7
 
 #Game Logic Functions
 def ballMovement():
@@ -51,6 +51,16 @@ def playerMovement():
     if player.bottom >= screen_height:
         player.bottom = screen_height
 
+def opponentMovement():
+    if opponent.top < ball.y:
+        opponent.top += opponent_speed
+    if opponent.top > ball.y:
+        opponent.top -= opponent_speed
+    if opponent.top <=0:
+        opponent.top = 0
+    if opponent.bottom >= screen_height:
+        opponent.bottom = screen_height
+
 #Game Loop
 while True:
     #Eventhandling
@@ -72,6 +82,7 @@ while True:
     #Game Logic
     ballMovement()
     playerMovement()
+    opponentMovement()
 
     #Drawing
     screen.fill(BLACK)
