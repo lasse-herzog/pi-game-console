@@ -7,9 +7,9 @@ pygame.init()
 clock = pygame.time.Clock()
 
 #Display setup
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode(screen_width, screen_height)
+screen_width = 900
+screen_height = 900
+screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('PiG-C Pong')
 
 #Game Loop
