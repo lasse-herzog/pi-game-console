@@ -25,10 +25,10 @@ player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 120)
 opponent = pygame.Rect(10, screen_height/2 - 70, 10, 120)
 
 #Speed Variables
-ball_speedX = 5
-ball_speedY = 5
-player_speed = 8
-opponent_speed = 8
+ball_speedX = 6
+ball_speedY = 6
+player_speed = 0
+
 
 #Game Logic Functions
 def ballMovement():
@@ -66,6 +66,10 @@ while True:
     #Game Logic
     ballMovement()
     player.y += player_speed
+    if player.top <=0:
+        player.top = 0
+    if player.bottom >= screen_height:
+        player.bottom = screen_height
 
     #Drawing
     screen.fill(BLACK)
