@@ -1,4 +1,5 @@
 from time import sleep
+from turtle import Turtle
 import pygame, sys
 import math
 import random
@@ -34,8 +35,8 @@ opponent_speed = 4
 #Game Logic Functions
 def ballMovement():
     global ball_speedX, ball_speedY
-    ball.x += ball_speedX
-    ball.y += ball_speedY
+    ball.x += ball_speedX 
+    ball.y += ball_speedY 
 
     #Collisions
     if ball.top <= 0 or ball.bottom >= screen_height:
@@ -63,8 +64,17 @@ def opponentMovement():
         opponent.bottom = screen_height
 
 def ball_reset():
+    global ball_speedY, ball_speedX
     ball.center = (screen_width/2, screen_height/2)
+    #sleep(2)
+    ball_speedY *= random.choice((1, -1))
+    ball_speedX *= random.choice((1, -1))
     
+
+#Text variables
+player_score = 0
+opponent_score = 0
+game_font = pygame.font.Font("Pixeled.ttf", 64)
 
 #Game Loop
 while True:
@@ -95,6 +105,13 @@ while True:
     pygame.draw.rect(screen, WHITE, opponent)
     pygame.draw.ellipse(screen, WHITE, ball)
     pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
+
+    #Text surface
+    player_text = game_font.render(f"{player_score}", True, WHITE)
+    opponent_text = game_font.render(f"{opponent_score}", True, WHITE)
+    screen.blit(player_text, (screen_width/2+35, 0))
+    screen.blit(opponent_text, (screen_width/2-85, 0))
+
 
     #Update Screen
     pygame.display.flip()
