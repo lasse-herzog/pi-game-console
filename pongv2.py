@@ -109,6 +109,20 @@ class GameManager:
         self.opponent_score = 0
         self.ball_group = ball_group
         self.paddle_group = paddle_group
+    
+    def run_game(self):
+        #Draw objects
+        self.paddle_group.draw(screen)
+        self.ball_group.draw(screen)
+
+        #Update Objects
+        self.paddle_group.update(self.ball_group)
+        self.ball_group.update()
+        self.reset_ball()
+        self.draw_score()
+
+    #more to come...
+
 #Initialize Game
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
