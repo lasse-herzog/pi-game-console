@@ -1,5 +1,3 @@
-from time import sleep
-from turtle import Turtle
 import pygame, sys
 import math
 import random
@@ -34,14 +32,18 @@ opponent_speed = 4
 
 #Game Logic Functions
 def ballMovement():
-    global ball_speedX, ball_speedY
+    global ball_speedX, ball_speedY, player_score, opponent_score
     ball.x += ball_speedX 
     ball.y += ball_speedY 
 
     #Collisions
     if ball.top <= 0 or ball.bottom >= screen_height:
         ball_speedY *= -1   #reverses the ball speed
-    if ball.left <= 0 or ball.right >= screen_width:
+    if ball.left <= 0: 
+        player_score +=1
+        ball_reset()
+    if ball.right >= screen_width:
+        opponent_score += 1
         ball_reset() 
     if ball.colliderect(player) or ball.colliderect(opponent):
         ball_speedX *= -1
