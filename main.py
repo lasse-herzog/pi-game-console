@@ -21,8 +21,8 @@ pygame.display.set_caption('PiG-C Pong')
 
 #Rects
 ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
-player = pygame.Rect(screen_width - 15, screen_height/2 - 70, 10, 120)
-opponent = pygame.Rect(5, screen_height/2 - 70, 10, 120)
+player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
+opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 
 #Speed Variables
 ball_speedX = 5
@@ -38,15 +38,33 @@ def ballMovement():
 
     #Collisions
     if ball.top <= 0 or ball.bottom >= screen_height:
+        pygame.mixer.Sound.play(pong_sound)
         ball_speedY *= -1   #reverses the ball speed
     if ball.left <= 0: 
+        pygame.mixer.Sound.play(score_sound)
         player_score +=1
         score_time = pygame.time.get_ticks()
     if ball.right >= screen_width:
+        pygame.mixer.Sound.play(score_sound)
         opponent_score += 1
         score_time = pygame.time.get_ticks()
-    if ball.colliderect(player) or ball.colliderect(opponent):
-        ball_speedX *= -1
+    
+    if ball.colliderect(player) and ball_speedX > 0:
+        pygame.mixer.Sound.play(pong_sound)
+        if abs(ball.right - player.left) < 10:
+            ball_speedX *= -1
+        elif abs(ball.bottom - player.top) < 10 and ball_speedY > 0:
+            ball_speedY *= -1
+        elif abs(ball.top - player.bottom) < 10 and ball_speedY < 0:
+            ball_speedY *= -1
+    if ball.colliderect(opponent) and ball_speedX < 0:
+        pygame.mixer.Sound.play(pong_sound)
+        if abs(ball.left - opponent.right) < 10:
+            ball_speedX *= -1
+        elif abs(ball.bottom - opponent.top) < 10 and ball_speedY > 0:
+            ball_speedY *= -1
+        elif abs(ball.top - opponent.bottom) < 10 and ball_speedY < 0:
+            ball_speedY *= -1
 
 def playerMovement():
     player.y += player_speed
@@ -72,12 +90,15 @@ def ball_reset():
     ball.center = (screen_width/2, screen_height/2)
     #Countdown
     if current_time - score_time < 700:
+       
         countdown_three = game_font.render("3", False, WHITE)
         screen.blit(countdown_three, (screen_width/2-10, screen_height/2 + 20))
     if 700 < current_time - score_time < 1400:
+       
         countdown_two = game_font.render("2", False, WHITE)
         screen.blit(countdown_two, (screen_width/2-10, screen_height/2 + 20))  
     if 1400 < current_time - score_time < 2100:
+        
         countdown_one = game_font.render("1", False, WHITE)
         screen.blit(countdown_one, (screen_width/2-10, screen_height/2 + 20))
     #Wait at start
@@ -96,6 +117,10 @@ game_font = pygame.font.Font("Pixeled.ttf", 64)
 
 #Timer
 score_time = True
+
+#Sounds
+pong_sound = pygame.mixer.Sound("pong.ogg")
+score_sound = pygame.mixer.Sound("score.ogg")
 
 #Game Loop
 while True:
