@@ -3,6 +3,7 @@ import math
 import random
 
 #Initialize Game
+pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 clock = pygame.time.Clock()
 
