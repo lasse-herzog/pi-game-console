@@ -2,32 +2,150 @@ import heapq
 import os
 import sys
 from dataclasses import dataclass
+from enum import Enum
 
 import pygame
+from PIL import Image
 from pygame.locals import *
+
+
+class Directions(Enum):
+    UP = (0, -1)
+    DOWN = (0, 1)
+    LEFT = (-1, 0)
+    RIGHT = (1, 0)
+
+
+@dataclass(unsafe_hash=True)
+class Node:
+    id: str
+    x: int
+    y: int
 
 
 class Graph:
     adjacency_list = {}
 
-    def add_bidirectional_edge(self, node, neighbour_node):
-        self.add_edge(node, neighbour_node)
-        self.add_edge(neighbour_node, node)
-
-    def add_edge(self, node, neighbour_node):
+    def add_edge(self, node, neighbour_node, direction):
         weight = abs(node.x - neighbour_node.x + node.y - node.y)
 
-        if node.name not in self.adjacency_list:
-            self.adjacency_list[node.name] = [(neighbour_node, weight)]
+        if node not in self.adjacency_list:
+            self.adjacency_list[node] = [(neighbour_node, weight, direction)]
         else:
-            self.adjacency_list[node.name].append((neighbour_node, weight))
+            self.adjacency_list[node].append((neighbour_node, weight, direction))
+
+    def add_horizontal_bidirectional_edge(self, left_node, right_node):
+        self.add_edge(left_node, right_node, Directions.RIGHT)
+        self.add_edge(right_node, left_node, Directions.LEFT)
+
+    def add_vertical_bidirectional_edge(self, top_node, bottom_node):
+        self.add_edge(top_node, bottom_node, Directions.DOWN)
+        self.add_edge(bottom_node, top_node, Directions.UP)
+
+    def fill_graph_from_collision_map(self, level):
+        img = Image.open(os.path.join("data", level))
+        node_id = 'a'
+
+        width_iterator = iter(range(img.width))
+
+        for x in width_iterator:
+            node_found = False
+            left_node = None
+            height_iterator = iter(range(img.height))
+
+            for y in height_iterator:
+                rgba = img.getpixel((x, y))
+
+                if rgba[0] == 255:
+                    node = Node(node_id, x, y)
+                    node_id = chr(ord(node_id) + 1)
+
+                    if left_node is not None:
+                        self.add_horizontal_bidirectional_edge(left_node, node)
+                    left_node = node
+                    next(height_iterator)
+
+                elif rgba[1] == 255:
+                    left_node = None
+            if node_found:
+                next(width_iterator)
+        height_iterator = iter(range(img.height))
+
+        for y in height_iterator:
+            node_found = False
+            top_node = None
+            width_iterator = iter(range(img.width))
+
+            for x in width_iterator:
+                rgba = img.getpixel((x, y))
+
+                if rgba[0] == 255:
+                    node = self.get_node_at_position(x, y)
+
+                    if top_node is not None:
+                        self.add_vertical_bidirectional_edge(top_node, node)
+                    top_node = node
+
+                    next(width_iterator)
+                elif rgba[1] == 255:
+                    top_node = None
+            if node_found:
+                next(height_iterator)
+
+    def find_shortest_path(self, start, end):
+        distances = {start: 0}
+        parent = {start: None}
+        priority_queue = [(0, start.id)]
+        visited = set()
+
+        while priority_queue:
+            current_distance, current_node = heapq.heappop(priority_queue)
+            if current_node in visited:
+                continue
+            if current_node == end.id:
+                break
+            visited.add(current_node)
+            for neighbour_node, weight in self.adjacency_list[current_node]:
+                if neighbour_node not in distances or distances[neighbour_node] > current_distance + weight:
+                    distances[neighbour_node] = current_distance + weight
+                    parent[neighbour_node] = current_node
+                    heapq.heappush(priority_queue, (distances[neighbour_node], neighbour_node.id))
+
+        return list(parent.keys())
+
+    def get_node_at_position(self, x, y):
+        for node in list(self.adjacency_list.keys()):
+            if (x, y) in [(node.x, node.y), (node.x + 1, node.y), (node.x, node.y + 1), (node.x + 1, node.y + 1)]:
+                return node
 
 
-@dataclass(unsafe_hash=True)
-class Node:
-    name: str
-    x: int
-    y: int
+class Entity(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.current_node = None
+        self.target_node = None
+        self.path = []
+        self.speed = (0, 0)
+
+    def update_target_node(self):
+        self.path = graph.find_shortest_path(self.current_node, self.target_node)
+        self.move_to_next_node()
+
+    def move_to_next_node(self):
+        dx = self.path[1].x - self.current_node.x
+        dy = self.path[1].y - self.current_node.y
+
+        x = 0 if dx == 0 else 1 if dx > 0 else -1
+        y = 0 if dy == 0 else 1 if dy > 0 else -1
+
+        self.speed = (x, y)
+
+    def update(self):
+        if self.rect.center == (self.path[1].x, self.path[1].y):
+            self.current_node = self.path[1]
+            self.update_target_node()
+
+        self.rect = self.rect.move(self.speed)
 
 
 class Pacman(pygame.sprite.Sprite):
@@ -55,41 +173,16 @@ class Pacman(pygame.sprite.Sprite):
             self.old_speed = self.speed
 
 
-class Ghost(pygame.sprite.Sprite):
+class Ghost(Entity):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.current_node = None
-        self.target_node = None
-        self.path = []
-        self.speed = (0, 0)
-
-    def update_target_node(self):
-        pacman_position = self.rect.center
-        self.path = find_shortest_path(graph.adjacency_list, self.current_node, self.target_node)
-        self.move_to_node()
-
-    def move_to_node(self):
-        dx = self.path[1].x - self.current_node.x
-        dy = self.path[1].y - self.current_node.y
-
-        x = 0 if dx == 0 else 1 if dx > 0 else -1
-        y = 0 if dy == 0 else 1 if dy > 0 else -1
-
-        self.speed = (x, y)
-
-    def update(self):
-        if self.rect.center == (self.path[1].x, self.path[1].y):
-            self.current_node = self.path[1]
-            self.update_target_node()
-
-        self.rect = self.rect.move(self.speed)
+        Entity.__init__(self)
 
 
 class Blinky(Ghost):
     def __init__(self):
         Ghost.__init__(self)
-        self.current_node = nodeA
-        self.target_node = nodeD
+        self.current_node = None
+        self.target_node = None
 
         self.image = load_image("blinky.png")
         self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
@@ -120,28 +213,6 @@ def input(events):
                 pacman.speed = (0, 1)
 
 
-def find_shortest_path(adj, start, end):
-    distances = {start: 0}
-    parent = {start: None}
-    priority_queue = [(0, start.name)]
-    visited = set()
-
-    while priority_queue:
-        current_distance, current_node = heapq.heappop(priority_queue)
-        if current_node in visited:
-            continue
-        if current_node == end.name:
-            break
-        visited.add(current_node)
-        for neighbour_node, weight in adj[current_node]:
-            if neighbour_node not in distances or distances[neighbour_node] > current_distance + weight:
-                distances[neighbour_node] = current_distance + weight
-                parent[neighbour_node] = current_node
-                heapq.heappush(priority_queue, (distances[neighbour_node], neighbour_node.name))
-
-    return list(parent.keys())
-
-
 if __name__ == '__main__':
     pygame.init()
 
@@ -157,17 +228,8 @@ if __name__ == '__main__':
 
     clock = pygame.time.Clock()
 
-    nodeA = Node("A", 80, 80)
-    nodeB = Node("B", 160, 80)
-    nodeC = Node("C", 80, 160)
-    nodeD = Node("D", 160, 160)
-
     graph = Graph()
-    graph.add_edge(nodeA, nodeB)
-    graph.add_edge(nodeA, nodeC)
-    graph.add_edge(nodeC, nodeA)
-    graph.add_edge(nodeB, nodeD)
-    graph.add_edge(nodeC, nodeD)
+    graph.fill_graph_from_collision_map("labyrinth_collision_map.png")
 
     blinky = Blinky()
     all_sprites = pygame.sprite.RenderPlain(pacman, blinky)
