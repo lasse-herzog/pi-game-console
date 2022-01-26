@@ -3,6 +3,7 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import Enum
+from functools import total_ordering
 
 import pygame
 from PIL import Image
@@ -16,18 +17,28 @@ class Directions(Enum):
     RIGHT = (1, 0)
 
 
+class GhostState(Enum):
+    SCATTER = 0
+    CHASE = 1
+    FLIGHT = 2
+
+
 @dataclass(unsafe_hash=True)
+@total_ordering
 class Node:
     id: str
     x: int
     y: int
+
+    def __lt__(self, other):
+        return self.id < other.id
 
 
 class Graph:
     adjacency_list = {}
 
     def add_edge(self, node, neighbour_node, direction):
-        weight = abs(node.x - neighbour_node.x + node.y - node.y)
+        weight = abs(node.x - neighbour_node.x + node.y - neighbour_node.y)
 
         if node not in self.adjacency_list:
             self.adjacency_list[node] = [(neighbour_node, weight, direction)]
@@ -42,76 +53,89 @@ class Graph:
         self.add_edge(top_node, bottom_node, Directions.DOWN)
         self.add_edge(bottom_node, top_node, Directions.UP)
 
+    def check_for_neighbour(self, node, direction):
+        for neighbour in self.adjacency_list[node]:
+            if neighbour[2] == direction:
+                return neighbour[0]
+
     def fill_graph_from_collision_map(self, level):
         img = Image.open(os.path.join("data", level))
         node_id = 'a'
-
-        width_iterator = iter(range(img.width))
-
-        for x in width_iterator:
-            node_found = False
-            left_node = None
-            height_iterator = iter(range(img.height))
-
-            for y in height_iterator:
-                rgba = img.getpixel((x, y))
-
-                if rgba[0] == 255:
-                    node = Node(node_id, x, y)
-                    node_id = chr(ord(node_id) + 1)
-
-                    if left_node is not None:
-                        self.add_horizontal_bidirectional_edge(left_node, node)
-                    left_node = node
-                    next(height_iterator)
-
-                elif rgba[1] == 255:
-                    left_node = None
-            if node_found:
-                next(width_iterator)
         height_iterator = iter(range(img.height))
 
         for y in height_iterator:
             node_found = False
-            top_node = None
+            left_node = None
             width_iterator = iter(range(img.width))
 
             for x in width_iterator:
                 rgba = img.getpixel((x, y))
 
                 if rgba[0] == 255:
+                    if node_found is not True:
+                        node_found = True
+                    node = Node(node_id, x, y)
+                    node_id = chr(ord(node_id) + 1)
+
+                    if left_node is not None:
+                        self.add_horizontal_bidirectional_edge(left_node, node)
+                    left_node = node
+                    next(width_iterator)
+                elif rgba[1] == 255:
+                    left_node = None
+
+            if node_found:
+                next(height_iterator)
+
+        width_iterator = iter(range(img.width))
+        for x in width_iterator:
+            node_found = False
+            top_node = None
+            height_iterator = iter(range(img.height))
+
+            for y in height_iterator:
+                rgba = img.getpixel((x, y))
+
+                if rgba[0] == 255:
+                    if node_found is not True:
+                        node_found = True
                     node = self.get_node_at_position(x, y)
 
                     if top_node is not None:
                         self.add_vertical_bidirectional_edge(top_node, node)
                     top_node = node
-
-                    next(width_iterator)
+                    next(height_iterator)
                 elif rgba[1] == 255:
                     top_node = None
+
             if node_found:
-                next(height_iterator)
+                next(width_iterator)
 
     def find_shortest_path(self, start, end):
         distances = {start: 0}
         parent = {start: None}
-        priority_queue = [(0, start.id)]
+        priority_queue = [(0, start)]
         visited = set()
 
         while priority_queue:
             current_distance, current_node = heapq.heappop(priority_queue)
             if current_node in visited:
                 continue
-            if current_node == end.id:
+            if current_node == end:
                 break
             visited.add(current_node)
-            for neighbour_node, weight in self.adjacency_list[current_node]:
+            for neighbour_node, weight, _ in self.adjacency_list[current_node]:
                 if neighbour_node not in distances or distances[neighbour_node] > current_distance + weight:
                     distances[neighbour_node] = current_distance + weight
                     parent[neighbour_node] = current_node
-                    heapq.heappush(priority_queue, (distances[neighbour_node], neighbour_node.id))
+                    heapq.heappush(priority_queue, (distances[neighbour_node], neighbour_node))
 
-        return list(parent.keys())
+        node = end
+        shortest_path = [node]
+        while node is not start:
+            node = parent[node]
+            shortest_path.insert(0, node)
+        return shortest_path
 
     def get_node_at_position(self, x, y):
         for node in list(self.adjacency_list.keys()):
@@ -123,15 +147,27 @@ class Entity(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.current_node = None
-        self.target_node = None
+        self.__target_node = None
         self.path = []
         self.speed = (0, 0)
+
+    @property
+    def target_node(self):
+        return self.__target_node
+
+    @target_node.setter
+    def target_node(self, value):
+        if self.__target_node != value:
+            self.__target_node = value
+            self.update_target_node()
 
     def update_target_node(self):
         self.path = graph.find_shortest_path(self.current_node, self.target_node)
         self.move_to_next_node()
 
     def move_to_next_node(self):
+        if len(self.path) == 1:
+            return
         dx = self.path[1].x - self.current_node.x
         dy = self.path[1].y - self.current_node.y
 
@@ -141,61 +177,63 @@ class Entity(pygame.sprite.Sprite):
         self.speed = (x, y)
 
     def update(self):
-        if self.rect.center == (self.path[1].x, self.path[1].y):
+        if len(self.path) > 1 and self.rect.center == (self.path[1].x, self.path[1].y):
             self.current_node = self.path[1]
-            self.update_target_node()
-
+            del self.path[0]
+            self.move_to_next_node()
+        if len(self.path) == 1:
+            self.speed = (0, 0)
         self.rect = self.rect.move(self.speed)
 
 
-class Pacman(pygame.sprite.Sprite):
+class Pacman(Entity):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        Entity.__init__(self)
+        self.current_node = graph.get_node_at_position(111, 139)
+        self.target_node = self.current_node
 
         self.image = load_image("pacman_01.png")
-        self.rect = self.image.get_rect(center=(113, 188))
-        self.mask = pygame.mask.Mask((16, 16), True)
+        self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
 
         self.speed = (0, 0)
-        self.old_speed = (0, 0)
-
-    def update(self):
-        self._move()
-
-    def _move(self):
-        if will_collide_with_wall(self, self.speed):
-            if will_collide_with_wall(self, self.old_speed):
-                return
-            else:
-                self.rect = self.rect.move(self.old_speed)
-        else:
-            self.rect = self.rect.move(self.speed)
-            self.old_speed = self.speed
 
 
 class Ghost(Entity):
     def __init__(self):
         Entity.__init__(self)
 
+        self.corner = None
+        self.state = None
+
+    def update(self):
+        if self.state is GhostState.SCATTER:
+            self.target_node = self.corner
+            if self.current_node == self.corner:
+                self.state = GhostState.CHASE
+
+        elif self.state is GhostState.CHASE:
+            self.target_node = pacman.current_node
+
+        elif self.state is GhostState.FLIGHT:
+            pass
+
+        Entity.update(self)
+
 
 class Blinky(Ghost):
     def __init__(self):
         Ghost.__init__(self)
-        self.current_node = None
+        self.current_node = graph.get_node_at_position(111, 91)
         self.target_node = None
+        self.corner = graph.get_node_at_position(11, 11)
+        self.state = GhostState.SCATTER
 
         self.image = load_image("blinky.png")
         self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
 
-        self.update_target_node()
-
 
 def load_image(i):
     return pygame.image.load(os.path.join("data", i))
-
-
-def will_collide_with_wall(self, speed):
-    return labyrinth_collision_mask.overlap(self.mask, self.rect.move(speed).topleft)
 
 
 def input(events):
@@ -204,13 +242,25 @@ def input(events):
             sys.exit(0)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT or event.key == ord('a'):
-                pacman.speed = (-1, 0)
+                neighbour = graph.check_for_neighbour(pacman.target_node, Directions.LEFT)
+                if neighbour is not None:
+                    pacman.target_node = neighbour
+                    pacman.update_target_node()
             if event.key == pygame.K_RIGHT or event.key == ord('d'):
-                pacman.speed = (1, 0)
+                neighbour = graph.check_for_neighbour(pacman.target_node, Directions.RIGHT)
+                if neighbour is not None:
+                    pacman.target_node = neighbour
+                    pacman.update_target_node()
             if event.key == pygame.K_UP or event.key == ord('w'):
-                pacman.speed = (0, -1)
+                neighbour = graph.check_for_neighbour(pacman.target_node, Directions.UP)
+                if neighbour is not None:
+                    pacman.target_node = neighbour
+                    pacman.update_target_node()
             if event.key == pygame.K_DOWN or event.key == ord('s'):
-                pacman.speed = (0, 1)
+                neighbour = graph.check_for_neighbour(pacman.target_node, Directions.DOWN)
+                if neighbour is not None:
+                    pacman.target_node = neighbour
+                    pacman.update_target_node()
 
 
 if __name__ == '__main__':
@@ -222,15 +272,13 @@ if __name__ == '__main__':
     screen = pygame.display.get_surface()
 
     labyrinth = load_image("labyrinth.png")
-    labyrinth_collision_mask = pygame.mask.from_surface(load_image("labyrinth_collision_map.png"))
-
-    pacman = Pacman()
 
     clock = pygame.time.Clock()
 
     graph = Graph()
     graph.fill_graph_from_collision_map("labyrinth_collision_map.png")
 
+    pacman = Pacman()
     blinky = Blinky()
     all_sprites = pygame.sprite.RenderPlain(pacman, blinky)
 
