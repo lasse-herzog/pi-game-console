@@ -120,8 +120,24 @@ class GameManager:
         self.ball_group.update()
         self.reset_ball()
         self.draw_score()
+    
+    def reset_ball(self):
+        if self.ball_group.sprite.rect.right >= screen_width:
+            self.opponent_score += 1
+            self.ball_group.sprite.reset_ball()
+        if self.ball_group.sprite.rect.left <= 0:
+            self.player_score += 1
+            self.ball_group.sprite.reset_ball()
 
-    #more to come...
+    def draw_score(self):
+        player_score = pixelFont.render(str(self.player_score), True, WHITE)
+        opponent_score = pixelFont.render(str(self.opponent_score), True, WHITE)
+
+        player_score_rect = player_score.get_rect((screen_width/2+35, 0))
+        opponent_score_rect = opponent_score.get_rect((screen_width/2-85, 0))
+
+        screen.blit(player_score, player_score_rect)
+        screen.blit(opponent_score, opponent_score_rect)
 
 #Initialize Game
 pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -149,8 +165,8 @@ middle_line = pygame.Rect(screen_width/2 - 2, 0, 4, screen_height)
 
 
 #Objects
-player = Player('paddle.png', screen_width - 20, screen_height/2.5)
-opponent = Opponent('paddle.png', 20, screen_width/2.5)
+player = Player("paddle.png", screen_width - 20, screen_height/2, 5)
+opponent = Opponent("paddle.png", 20, screen_width/2, 5)
 paddle_group = pygame.sprite.Group()
 paddle_group.add(player)
 paddle_group.add(opponent)
@@ -159,6 +175,7 @@ ball = Ball("ball.png", screen_width/2, screen_height/2, 4, 4, paddle_group)
 ball_sprite = pygame.sprite.GroupSingle()
 ball_sprite.add(ball)
 
+game_manager = GameManager(ball_sprite, paddle_group)
 
 #Speed Variables
 ball_speedX = 5
@@ -167,12 +184,10 @@ player_speed = 0
 opponent_speed = 4
 
 
-    
-
 #Text variables
 player_score = 0
 opponent_score = 0
-game_font = pygame.font.Font("Pixeled.ttf", 64)
+#game_font = pygame.font.Font("Pixeled.ttf", 64)
 
 #Timer
 score_time = True
@@ -203,15 +218,6 @@ while True:
     #Drawing
     screen.fill(BLACK)
     pygame.draw.rect(screen, WHITE, middle_line)
-
-    if score_time:
-        ball_reset()
-
-    #Text surface
-    player_text = game_font.render(f"{player_score}", True, WHITE)
-    opponent_text = game_font.render(f"{opponent_score}", True, WHITE)
-    screen.blit(player_text, (screen_width/2+35, 0))
-    screen.blit(opponent_text, (screen_width/2-85, 0))
 
     #Run game
     game_manager.run_game()
