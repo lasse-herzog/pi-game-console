@@ -15,7 +15,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 #Display setup
-screen_width = 800
+screen_width = 1024
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('PiG-C Pong')
@@ -26,10 +26,10 @@ player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
 opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 
 #Speed Variables
-ball_speedX = 5
-ball_speedY = 5
+ball_speedX = 6
+ball_speedY = 6
 player_speed = 0
-opponent_speed = 4
+opponent_speed = 5
 
 #Game Logic Functions
 def ballMovement():
@@ -86,7 +86,8 @@ def opponentMovement():
 
 def ball_reset():
     global ball_speedY, ball_speedX, score_time
-
+    currentSpeedX = ball_speedX
+    currentSpeedY = ball_speedY
     current_time = pygame.time.get_ticks()
     ball.center = (screen_width/2, screen_height/2)
     #Countdown
@@ -106,8 +107,8 @@ def ball_reset():
     if current_time - score_time < 2100:
         ball_speedX, ball_speedY = 0, 0
     else:
-        ball_speedY = 5 * random.choice((1, -1))
-        ball_speedX = 5 * random.choice((1, -1))
+        ball_speedY = 6 * random.choice((1, -1))
+        ball_speedX = 6 * random.choice((1, -1))
         score_time = None
     
 
