@@ -1,6 +1,6 @@
-# Hello World!
-## Lol
-* etwas
-* etwas anderes
-1. erstens
-2. zweitens
+---
+layout: default
+title: Home
+nav_order: 1
+---
+# Home
