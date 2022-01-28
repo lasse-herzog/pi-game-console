@@ -176,9 +176,9 @@ def hardLoop():
         pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
 
         if score_time:
-            if player_score==7:
+            if player_score==5:
                 end(1)
-            elif opponent_score==7:
+            elif opponent_score==5:
                 end(0)
             else:
                 ball_reset()

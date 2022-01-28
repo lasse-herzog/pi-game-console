@@ -176,9 +176,9 @@ def unfLoop():
         pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
 
         if score_time:
-            if player_score==5:
+            if player_score==7:
                 end(1)
-            elif opponent_score==5:
+            elif opponent_score==7:
                 end(0)
             else:
                 ball_reset()
