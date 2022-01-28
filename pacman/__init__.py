@@ -197,7 +197,7 @@ class Pacman(Entity):
         self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
 
     def update_target_node(self, direction):
-        if self.input is not Directions.NONE:
+        if direction is not Directions.NONE:
             if graph.check_for_neighbour(self.current_node, direction) is not None:
                 self.target_node = graph.check_for_neighbour(self.current_node, direction)
 
@@ -217,6 +217,7 @@ class Pacman(Entity):
                 self.update_target_node(self.direction)
             if self.current_node is self.target_node:
                 self.direction = Directions.NONE
+            self.rect.center = (self.current_node.x, self.current_node.y)
         # if self.next_node is not None and self.rect.center == (self.next_node.x, self.next_node.y):
         #     self.current_node = self.next_node
         #     if self.current_node == self.target_node:
@@ -283,7 +284,6 @@ def input(events):
                 return Directions.UP
             if event.key == pygame.K_DOWN or event.key == ord('s'):
                 return Directions.DOWN
-            return Directions.NONE
 
 
 if __name__ == '__main__':
@@ -307,7 +307,9 @@ if __name__ == '__main__':
 
     while True:
         clock.tick(60)
-        pacman.input = input(pygame.event.get())
+        lol = input(pygame.event.get())
+        if isinstance(lol, Directions):
+            pacman.input = lol
         all_sprites.update()
 
         screen.fill([0, 0, 0])
