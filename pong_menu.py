@@ -1,7 +1,10 @@
-from multiprocessing.dummy import Array
+import subprocess
 import pygame
 from pygame.locals import *
 import os
+import main
+
+
 
 # Game Initialization
 pygame.init()
@@ -116,11 +119,16 @@ def level_select():
                     selected=selection[s]
                     print(selected)
                 if event.key==pygame.K_RETURN:
-                    if selected=="start":
+                    if selected=="easy":
                         print("Start")
-                    if selected=="quit":
-                        pygame.quit()
-                        quit()
+                        main.easyLoop()
+                    if selected=="medium":
+                        print("Coming soon")
+                    if selected=="hard":
+                        print("Coming soon")
+                    if selected=="unfair":
+                        print("Coming soon")
+                    
  
         # Main Menu UI
         screen.fill(black)
