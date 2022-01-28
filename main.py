@@ -28,7 +28,7 @@ opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 #Speed Variables
 ball_speedX = 6
 ball_speedY = 6
-player_speed = 0
+
 opponent_speed = 5
 
 #Game Logic Functions
@@ -67,7 +67,7 @@ def ballMovement():
         elif abs(ball.top - opponent.bottom) < 10 and ball_speedY < 0:
             ball_speedY *= -1
 
-def playerMovement():
+def playerMovement(player_speed):
     player.y += player_speed
     if player.top <=0:
         player.top = 0
@@ -125,45 +125,47 @@ pong_sound = pygame.mixer.Sound("pong.ogg")
 score_sound = pygame.mixer.Sound("score.ogg")
 
 #Game Loop
-while True:
-    #Eventhandling
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_DOWN:
-                player_speed += 7
-            if event.key == pygame.K_UP:
-                player_speed -= 7
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_DOWN:
-                player_speed -= 7
-            if event.key == pygame.K_UP:
-                player_speed += 7
-    
-    #Game Logic
-    ballMovement()
-    playerMovement()
-    opponentMovement()
+def easyLoop():
+    player_speed = 0
+    while True:
+        #Eventhandling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    player_speed += 5
+                if event.key == pygame.K_UP:
+                    player_speed -= 5
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_DOWN:
+                    player_speed -= 5
+                if event.key == pygame.K_UP:
+                    player_speed += 5
+        
+        #Game Logic
+        ballMovement()
+        playerMovement(player_speed)
+        opponentMovement()
 
-    #Drawing
-    screen.fill(BLACK)
-    pygame.draw.rect(screen, WHITE, player)
-    pygame.draw.rect(screen, WHITE, opponent)
-    pygame.draw.ellipse(screen, WHITE, ball)
-    pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
+        #Drawing
+        screen.fill(BLACK)
+        pygame.draw.rect(screen, WHITE, player)
+        pygame.draw.rect(screen, WHITE, opponent)
+        pygame.draw.ellipse(screen, WHITE, ball)
+        pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
 
-    if score_time:
-        ball_reset()
+        if score_time:
+            ball_reset()
 
-    #Text surface
-    player_text = game_font.render(f"{player_score}", True, WHITE)
-    opponent_text = game_font.render(f"{opponent_score}", True, WHITE)
-    screen.blit(player_text, (screen_width/2+35, 0))
-    screen.blit(opponent_text, (screen_width/2-85, 0))
+        #Text surface
+        player_text = game_font.render(f"{player_score}", True, WHITE)
+        opponent_text = game_font.render(f"{opponent_score}", True, WHITE)
+        screen.blit(player_text, (screen_width/2+35, 0))
+        screen.blit(opponent_text, (screen_width/2-85, 0))
 
 
-    #Update Screen
-    pygame.display.flip()
-    clock.tick(60)
+        #Update Screen
+        pygame.display.flip()
+        clock.tick(60)
