@@ -1,10 +1,7 @@
-import subprocess
 import pygame
 from pygame.locals import *
 import os
-import main
-
-
+import main, level_hard, level_med, level_unf
 
 # Game Initialization
 pygame.init()
@@ -124,10 +121,11 @@ def level_select():
                         main.easyLoop()
                     if selected=="medium":
                         print("Coming soon")
+                        level_med.medLoop()
                     if selected=="hard":
-                        print("Coming soon")
+                        level_hard.hardLoop()
                     if selected=="unfair":
-                        print("Coming soon")
+                        level_unf.unfLoop()
                     
  
         # Main Menu UI
@@ -165,6 +163,7 @@ def level_select():
         pygame.display.update()
         clock.tick(FPS)
         pygame.display.set_caption("PiG-C Pong Main Menu")
+
 
 main_menu()
 pygame.quit()

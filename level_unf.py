@@ -24,13 +24,13 @@ pygame.display.set_caption('PiG-C Pong')
 
 #Rects
 ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
-player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
-opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
+player = pygame.Rect(screen_width - 31, screen_height/2 - 70, 10, 70)
+opponent = pygame.Rect(22, screen_height/2 - 70, 10, 160)
 
 # Variables
-ball_speedX = 6
-ball_speedY = 6
-opponent_speed = 5
+ball_speedX = 8
+ball_speedY = 8
+opponent_speed = 8
 
 
 #Game Logic Functions
@@ -55,19 +55,19 @@ def ballMovement():
     if ball.colliderect(player) and ball_speedX > 0:
         pygame.mixer.Sound.play(pong_sound)
         if abs(ball.right - player.left) < 10:
-            ball_speedX *= -1
+            ball_speedX *= -1.2
         elif abs(ball.bottom - player.top) < 10 and ball_speedY > 0:
-            ball_speedY *= -1
+            ball_speedY *= -1.2
         elif abs(ball.top - player.bottom) < 10 and ball_speedY < 0:
-            ball_speedY *= -1
+            ball_speedY *= -1.2
     if ball.colliderect(opponent) and ball_speedX < 0:
         pygame.mixer.Sound.play(pong_sound)
         if abs(ball.left - opponent.right) < 10:
-            ball_speedX *= -1
+            ball_speedX *= -1.2
         elif abs(ball.bottom - opponent.top) < 10 and ball_speedY > 0:
-            ball_speedY *= -1
+            ball_speedY *= -1.2
         elif abs(ball.top - opponent.bottom) < 10 and ball_speedY < 0:
-            ball_speedY *= -1
+            ball_speedY *= -1.2
 
 def playerMovement(player_speed):
     player.y += player_speed
@@ -143,7 +143,7 @@ def end(won):
 
 
 #Game Loop
-def easyLoop():
+def unfLoop():
     player_speed = 0
     
     while True:
@@ -154,14 +154,14 @@ def easyLoop():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    player_speed += 5
+                    player_speed += 8
                 if event.key == pygame.K_UP:
-                    player_speed -= 5
+                    player_speed -= 8
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    player_speed -= 5
+                    player_speed -= 8
                 if event.key == pygame.K_UP:
-                    player_speed += 5
+                    player_speed += 8
         
         #Game Logic
         ballMovement()

@@ -28,9 +28,9 @@ player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
 opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 
 # Variables
-ball_speedX = 6
-ball_speedY = 6
-opponent_speed = 5
+ball_speedX = 8
+ball_speedY = 8
+opponent_speed = 6.3
 
 
 #Game Logic Functions
@@ -109,8 +109,8 @@ def ball_reset():
     if current_time - score_time < 2100:
         ball_speedX, ball_speedY = 0, 0
     else:
-        ball_speedY = 6 * random.choice((1, -1))
-        ball_speedX = 6 * random.choice((1, -1))
+        ball_speedY = 8 * random.choice((1, -1))
+        ball_speedX = 8 * random.choice((1, -1))
         score_time = None
     
 
@@ -143,7 +143,7 @@ def end(won):
 
 
 #Game Loop
-def easyLoop():
+def medLoop():
     player_speed = 0
     
     while True:
@@ -154,14 +154,14 @@ def easyLoop():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    player_speed += 5
+                    player_speed += 6
                 if event.key == pygame.K_UP:
-                    player_speed -= 5
+                    player_speed -= 6
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    player_speed -= 5
+                    player_speed -= 6
                 if event.key == pygame.K_UP:
-                    player_speed += 5
+                    player_speed += 6
         
         #Game Logic
         ballMovement()
