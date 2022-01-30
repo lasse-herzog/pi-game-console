@@ -1,6 +1,7 @@
 import heapq
 import os
 import sys
+from abc import abstractmethod, ABCMeta
 from dataclasses import dataclass
 from enum import Enum
 from functools import total_ordering
@@ -27,12 +28,11 @@ class GhostState(Enum):
 @dataclass(unsafe_hash=True)
 @total_ordering
 class Node:
-    id: str
     x: int
     y: int
 
     def __lt__(self, other):
-        return self.id < other.id
+        return self.x < other.x
 
 
 class Graph:
@@ -56,12 +56,11 @@ class Graph:
 
     def check_for_neighbour(self, node, direction):
         for neighbour in self.adjacency_list[node]:
-            if neighbour[2] == direction:
+            if neighbour[2] is direction:
                 return neighbour[0]
 
     def fill_graph_from_collision_map(self, level):
         img = Image.open(os.path.join("data", level))
-        node_id = 'a'
         height_iterator = iter(range(img.height))
 
         for y in height_iterator:
@@ -75,8 +74,7 @@ class Graph:
                 if rgba[0] == 255:
                     if node_found is not True:
                         node_found = True
-                    node = Node(node_id, x, y)
-                    node_id = chr(ord(node_id) + 1)
+                    node = Node(x, y)
 
                     if left_node is not None:
                         self.add_horizontal_bidirectional_edge(left_node, node)
@@ -144,127 +142,138 @@ class Graph:
                 return node
 
 
-class Entity(pygame.sprite.Sprite):
+class Actor(pygame.sprite.Sprite, metaclass=ABCMeta):
+    @abstractmethod
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__()
         self.current_node = None
-        self.__target_node = None
-        self.path = []
         self.direction = Directions.NONE
 
     @property
-    def next_node(self):
-        return self.path[1] if len(self.path) > 1 else None
+    @abstractmethod
+    def next_node(self) -> Node:
+        pass
 
-    @property
-    def target_node(self):
-        return self.__target_node
-
-    @target_node.setter
-    def target_node(self, value):
-        if self.__target_node != value:
-            self.__target_node = value
-            self.update_target_node(None)
-
-    def update_target_node(self, direction):
-        self.path = graph.find_shortest_path(self.current_node, self.target_node)
-        self.move_to_next_node()
+    @abstractmethod
+    def update_target_node(self):
+        pass
 
     def move_to_next_node(self):
         for neighbour in graph.adjacency_list[self.current_node]:
             if neighbour[0] is self.next_node:
                 self.direction = neighbour[2]
-                return
-
-    def update(self):
-        if len(self.path) > 1 and self.rect.center == (self.path[1].x, self.path[1].y):
-            self.current_node = self.path[1]
-            del self.path[0]
-            self.move_to_next_node()
-        if len(self.path) == 1:
-            self.direction = None
-        if self.direction:
-            self.rect = self.rect.move(self.direction.value)
-
-
-class Pacman(Entity):
-    def __init__(self):
-        Entity.__init__(self)
-        self.input = None
-        self.current_node = graph.get_node_at_position(111, 139)
-        self.target_node = self.current_node
-        self.image = load_image("pacman_01.png")
-        self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
-
-    def update_target_node(self, direction):
-        if direction is not Directions.NONE:
-            if graph.check_for_neighbour(self.current_node, direction) is not None:
-                self.target_node = graph.check_for_neighbour(self.current_node, direction)
 
     def out_of_bounds(self):
-        node_distance = abs(self.current_node.x - self.target_node.x + self.current_node.y - self.target_node.y)
+        node_distance = abs(self.current_node.x - self.next_node.x + self.current_node.y - self.next_node.y)
         distance = abs(self.rect.center[0] - self.current_node.x + self.rect.center[1] - self.current_node.y)
         return distance >= node_distance
 
     def update(self):
         self.rect = self.rect.move(self.direction.value)
         if self.out_of_bounds():
-            self.current_node = self.target_node
-            self.update_target_node(self.input)
-            if self.current_node is not self.target_node:
-                self.direction = self.input
+            self.current_node = self.next_node
+            self.update_target_node()
+            if self.next_node is not self.current_node:
+                self.move_to_next_node()
             else:
-                self.update_target_node(self.direction)
-            if self.current_node is self.target_node:
                 self.direction = Directions.NONE
             self.rect.center = (self.current_node.x, self.current_node.y)
-        # if self.next_node is not None and self.rect.center == (self.next_node.x, self.next_node.y):
-        #     self.current_node = self.next_node
-        #     if self.current_node == self.target_node:
-        #         neighbour = graph.check_for_neighbour(self.current_node, self.direction)
-        #
-        #         if neighbour is not None:
-        #             self.target_node = neighbour
-        #         else:
-        #             del self.path[0]
-        #             self.direction = None
-        #     else:
-        #         del self.path[0]
-        #         self.move_to_next_node()
 
 
-class Ghost(Entity):
+class Pacman(Actor):
     def __init__(self):
-        Entity.__init__(self)
+        super().__init__()
+        self.input = None
+        self.current_node = graph.get_node_at_position(111, 139)
+        self.next_node = self.current_node
+        self.image = load_image("pacman_01.png")
+        self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
 
-        self.corner = None
-        self.state = None
+    @property
+    def next_node(self):
+        return self._next_node
 
-    def update(self):
-        if self.state is GhostState.SCATTER:
+    @next_node.setter
+    def next_node(self, value):
+        self._next_node = value
+
+    def update_target_node(self):
+        node_in_input_direction = graph.check_for_neighbour(self.current_node, self.input)
+        node_in_current_direction = graph.check_for_neighbour(self.current_node, self.direction)
+
+        if node_in_input_direction is not None:
+            self.next_node = node_in_input_direction
+        elif node_in_current_direction is not None:
+            self.next_node = node_in_current_direction
+
+
+class Ghost(Actor):
+    @abstractmethod
+    def __init__(self):
+        super().__init__()
+        self.path = []
+        self.state = GhostState.SCATTER
+        self.target_node = self.current_node
+
+    @property
+    @abstractmethod
+    def corner(self):
+        pass
+
+    @property
+    def next_node(self):
+        return self.path[1] if len(self.path) > 1 else self.target_node
+
+    @abstractmethod
+    def update_target(self):
+        pass
+
+    def scatter(self):
+        if self.target_node is not self.corner:
             self.target_node = self.corner
-            if self.current_node == self.corner:
-                self.state = GhostState.CHASE
+        if self.current_node is self.corner:
+            self.state = GhostState.CHASE
 
+    def update_target_node(self):
+        if self.state is GhostState.SCATTER:
+            self.scatter()
         elif self.state is GhostState.CHASE:
-            self.target_node = pacman.current_node
-
+            self.update_target()
         elif self.state is GhostState.FLIGHT:
             pass
-
-        Entity.update(self)
+        self.path = graph.find_shortest_path(self.current_node, self.target_node)
 
 
 class Blinky(Ghost):
     def __init__(self):
-        Ghost.__init__(self)
+        super().__init__()
         self.current_node = graph.get_node_at_position(111, 91)
-        self.target_node = None
-        self.corner = graph.get_node_at_position(11, 11)
-        self.state = GhostState.SCATTER
-
+        self.target_node = self.current_node
         self.image = load_image("blinky.png")
         self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
+
+    @property
+    def corner(self):
+        return graph.get_node_at_position(211, 11)
+
+    def update_target(self):
+        self.target_node = pacman.current_node
+
+
+class Pinky(Ghost):
+    def __init__(self):
+        super().__init__()
+        self.current_node = graph.get_node_at_position(111, 91)
+        self.target_node = self.current_node
+        self.image = load_image("blinky.png")
+        self.rect = self.image.get_rect(center=(self.current_node.x, self.current_node.y))
+
+    @property
+    def corner(self):
+        return graph.get_node_at_position(11, 11)
+
+    def update_target(self):
+        self.target_node = pacman.next_node
 
 
 def load_image(i):
@@ -303,13 +312,14 @@ if __name__ == '__main__':
 
     pacman = Pacman()
     blinky = Blinky()
-    all_sprites = pygame.sprite.RenderPlain(pacman, blinky)
+    pinky = Pinky()
+    all_sprites = pygame.sprite.RenderPlain(pacman, blinky, pinky)
 
     while True:
         clock.tick(60)
-        lol = input(pygame.event.get())
-        if isinstance(lol, Directions):
-            pacman.input = lol
+        pacman_input = input(pygame.event.get())
+        if isinstance(pacman_input, Directions):
+            pacman.input = pacman_input
         all_sprites.update()
 
         screen.fill([0, 0, 0])
