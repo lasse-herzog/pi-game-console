@@ -30,6 +30,7 @@ red=(255, 0, 0)
 green=(0, 255, 0)
 blue=(0, 0, 255)
 yellow=(255, 255, 0)
+gray_b=(25,25,75)
  
 # Game Fonts
 font = "Pixeled.ttf"
@@ -124,31 +125,48 @@ def game_select():
                         print("back to menu")
                         main_menu()
                     
- 
+        #Game demo Rectangles
+        #Pong
+        paddle = pygame.Rect(screen_width - 31, screen_height/2 - 15, 10, 120)
+        paddle_2 = pygame.Rect(32, screen_height/2 - 125, 10, 120)
+        ball = pygame.Rect(screen_width - 181, screen_height/2 -25, 15,15)
+        #Snake
+        snake = pygame.Rect(55, screen_height/2 - 110, 50, 10)
+        apple = pygame.Rect(screen_width - 181, screen_height- 200, 10, 10)
+        #Pac-Man
         # Main Menu UI
         screen.fill(black)
         title=text_format("GAME SELECT", font, 45, white)
         if selected=="Pong":
             text_pong=text_format("Pong", font, 35, white)
+            pygame.draw.rect(screen, white, paddle)
+            pygame.draw.rect(screen, white, paddle_2)
+            pygame.draw.ellipse(screen, white, ball)
         else:
             text_pong = text_format("Pong", font, 35, gray)
+            i=0
+            while(i<121):
+                snake = pygame.Rect(55 + i, screen_height/2 - 100, 15, 15)
+                pygame.draw.ellipse(screen, green, snake)
+                i+=15
+            pygame.draw.ellipse(screen, red, apple)
         if selected=="Snake":
-            text_snake=text_format("Snake", font, 35, white)
+            text_snake=text_format("Snake", font, 35, green)
         else:
             text_snake = text_format("Snake", font, 35, gray)
         if selected=="Pac-Man":
-            text_pacman=text_format("Pac-Man", font, 35, white)
+            text_pacman=text_format("Pac-Man", font, 35, yellow)
         else:
             text_pacman = text_format("Pac-Man", font, 35, gray)
         if selected=="Space Invaders":
-            text_si=text_format("Space Invaders", font, 35, white)
+            text_si=text_format("Space Invaders", font, 35, blue)
         else:
             text_si = text_format("Space Invaders", font, 35, gray)
         if selected=="back":
-            text_back=text_format("back to menu", font, 35, white)
+            text_back=text_format("back to menu", font, 35, gray_b)
         else:
             text_back = text_format("back to menu", font, 35, gray)
- 
+        #Text Rectangles
         title_rect=title.get_rect()
         pong_rect=text_pong.get_rect()
         snake_rect=text_snake.get_rect()
