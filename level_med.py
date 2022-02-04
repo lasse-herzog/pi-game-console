@@ -140,12 +140,21 @@ def end(won):
     time.sleep(5)
     
     
-
+def countdown(start_ticks, first_time):
+    
+    current_time = pygame.time.get_ticks()
+    seconds = (current_time-start_ticks)/1000
+  
+    if seconds<3:
+    
+        first_time = False
 
 #Game Loop
 def medLoop():
     player_speed = 0
     loop = True
+    start_ticks=pygame.time.get_ticks()
+    first_time = True
     while loop:
         #Eventhandling
         for event in pygame.event.get():
@@ -191,6 +200,9 @@ def medLoop():
         screen.blit(player_text, (screen_width/2+35, 0))
         screen.blit(opponent_text, (screen_width/2-85, 0))
 
+
+        if(first_time):
+            countdown(start_ticks, first_time)
 
         #Update Screen
         pygame.display.flip()
