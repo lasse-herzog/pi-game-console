@@ -1,197 +1,178 @@
-import pygame, sys
-import math
-import random
-import time
+import pygame
+from pygame.locals import *
+import os
+import level_easy, level_hard, level_med, level_unf
 
-
-#Initialize Game
-pygame.mixer.pre_init(44100, -16, 2, 512)
+# Game Initialization
 pygame.init()
+ 
+# Center the Game Application
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+ 
+# Game Resolution
+screen_width=1024
+screen_height=600
+screen=pygame.display.set_mode((screen_width, screen_height))
+ 
+# Text Renderer
+def text_format(message, textFont, textSize, textColor):
+    newFont=pygame.font.Font(textFont, textSize)
+    newText=newFont.render(message, 0, textColor)
+ 
+    return newText
+ 
+ 
+# Colors
+white=(255, 255, 255)
+black=(0, 0, 0)
+gray=(50, 50, 50)
+red=(255, 0, 0)
+green=(0, 255, 0)
+blue=(0, 0, 255)
+yellow=(255, 255, 0)
+ 
+# Game Fonts
+font = "Pixeled.ttf"
+ 
+# Sounds
+select_sound = pygame.mixer.Sound("pong2.wav")
+
+# Game Framerate
 clock = pygame.time.Clock()
+FPS=30
 
-#Colors
-BLUE  = (0, 0, 255)
-RED   = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
-#Display setup
-screen_width = 1024
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('PiG-C Pong')
-
-#Rects
-ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
-player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
-opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
-
-# Variables
-ball_speedX = 6
-ball_speedY = 6
-opponent_speed = 5
-
-
-#Game Logic Functions
-def ballMovement():
-    global ball_speedX, ball_speedY, player_score, opponent_score, score_time
-    ball.x += ball_speedX 
-    ball.y += ball_speedY 
-
-    #Collisions
-    if ball.top <= 0 or ball.bottom >= screen_height:
-        pygame.mixer.Sound.play(pong_sound)
-        ball_speedY *= -1   #reverses the ball speed
-    if ball.left <= 0: 
-        pygame.mixer.Sound.play(score_sound)
-        player_score +=1
-        score_time = pygame.time.get_ticks()
-    if ball.right >= screen_width:
-        pygame.mixer.Sound.play(score_sound)
-        opponent_score += 1
-        score_time = pygame.time.get_ticks()
-    
-    if ball.colliderect(player) and ball_speedX > 0:
-        pygame.mixer.Sound.play(pong_sound)
-        if abs(ball.right - player.left) < 10:
-            ball_speedX *= -1
-        elif abs(ball.bottom - player.top) < 10 and ball_speedY > 0:
-            ball_speedY *= -1
-        elif abs(ball.top - player.bottom) < 10 and ball_speedY < 0:
-            ball_speedY *= -1
-    if ball.colliderect(opponent) and ball_speedX < 0:
-        pygame.mixer.Sound.play(pong_sound)
-        if abs(ball.left - opponent.right) < 10:
-            ball_speedX *= -1
-        elif abs(ball.bottom - opponent.top) < 10 and ball_speedY > 0:
-            ball_speedY *= -1
-        elif abs(ball.top - opponent.bottom) < 10 and ball_speedY < 0:
-            ball_speedY *= -1
-
-def playerMovement(player_speed):
-    player.y += player_speed
-    if player.top <=0:
-        player.top = 0
-    if player.bottom >= screen_height:
-        player.bottom = screen_height
-
-def opponentMovement():
-    if opponent.top < ball.y:
-        opponent.top += opponent_speed
-    if opponent.top > ball.y:
-        opponent.top -= opponent_speed
-    if opponent.top <=0:
-        opponent.top = 0
-    if opponent.bottom >= screen_height:
-        opponent.bottom = screen_height
-
-def ball_reset():
-    global ball_speedY, ball_speedX, score_time
-    currentSpeedX = ball_speedX
-    currentSpeedY = ball_speedY
-    current_time = pygame.time.get_ticks()
-    ball.center = (screen_width/2, screen_height/2)
-    #Countdown
-    if current_time - score_time < 700:
-       
-        countdown_three = game_font.render("3", False, WHITE)
-        screen.blit(countdown_three, (screen_width/2-10, screen_height/2 + 20))
-    if 700 < current_time - score_time < 1400:
-       
-        countdown_two = game_font.render("2", False, WHITE)
-        screen.blit(countdown_two, (screen_width/2-10, screen_height/2 + 20))  
-    if 1400 < current_time - score_time < 2100:
-        
-        countdown_one = game_font.render("1", False, WHITE)
-        screen.blit(countdown_one, (screen_width/2-10, screen_height/2 + 20))
-    #Wait at start
-    if current_time - score_time < 2100:
-        ball_speedX, ball_speedY = 0, 0
-    else:
-        ball_speedY = 6 * random.choice((1, -1))
-        ball_speedX = 6 * random.choice((1, -1))
-        score_time = None
-    
-
-#Text variables
-player_score = 0
-opponent_score = 0
-game_font = pygame.font.Font("Pixeled.ttf", 64)
-
-#Timer
-score_time = True
-
-#Sounds
-pong_sound = pygame.mixer.Sound("pong.ogg")
-score_sound = pygame.mixer.Sound("score.ogg")
-
-
-#End Game
-def end(won):
-    win_text = game_font.render("YOU WIN!", False, WHITE)
-    lose_text = game_font.render("YOU LOSE!", False, WHITE)
-    if won==1:
-        screen.blit(win_text, (screen_width/2-200, 50))
-    else:
-        screen.blit(lose_text, (screen_width/2-200, 50))
-    pygame.display.flip()
-    
-    time.sleep(5)
-    
-    
-
-
-#Game Loop
-def easyLoop():
-    player_speed = 0
-    loop = True
-    while loop:
-        #Eventhandling
+# Main Menu
+def main_menu():
+ 
+    menu=True
+    selected="start"
+ 
+    while menu:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type==pygame.QUIT:
                 pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    player_speed += 5
-                if event.key == pygame.K_UP:
-                    player_speed -= 5
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_DOWN:
-                    player_speed -= 5
-                if event.key == pygame.K_UP:
-                    player_speed += 5
-        
-        #Game Logic
-        ballMovement()
-        playerMovement(player_speed)
-        opponentMovement()
-
-        #Drawing
-        screen.fill(BLACK)
-        pygame.draw.rect(screen, WHITE, player)
-        pygame.draw.rect(screen, WHITE, opponent)
-        pygame.draw.ellipse(screen, WHITE, ball)
-        pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
-
-        if score_time:
-            if player_score==5:
-                end(1)
-                loop = False
-            elif opponent_score==5:
-                end(0)
-                loop = False
-            else:
-                ball_reset()
-
-        #Text surface
-        player_text = game_font.render(f"{player_score}", True, WHITE)
-        opponent_text = game_font.render(f"{opponent_score}", True, WHITE)
-        screen.blit(player_text, (screen_width/2+35, 0))
-        screen.blit(opponent_text, (screen_width/2-85, 0))
+                quit()
+            if event.type==pygame.KEYDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                if event.key==pygame.K_UP:
+                    selected="start"
+                elif event.key==pygame.K_DOWN:
+                    selected="quit"
+                if event.key==pygame.K_RETURN:
+                    if selected=="start":
+                        level_select()
+                    if selected=="quit":
+                        pygame.quit()
+                        quit()
+ 
+        # Main Menu UI
+        screen.fill(black)
+        title=text_format("PiG-C PONG", font, 45, white)
+        if selected=="start":
+            text_start=text_format("START", font, 35, white)
+        else:
+            text_start = text_format("START", font, 35, gray)
+        if selected=="quit":
+            text_quit=text_format("QUIT", font, 35, white)
+        else:
+            text_quit = text_format("QUIT", font, 35, gray)
+ 
+        title_rect=title.get_rect()
+        start_rect=text_start.get_rect()
+        quit_rect=text_quit.get_rect()
+ 
+        # Main Menu Text
+        screen.blit(title, (screen_width/2 - (title_rect[2]/2), 80))
+        screen.blit(text_start, (screen_width/2 - (start_rect[2]/2), 300))
+        screen.blit(text_quit, (screen_width/2 - (quit_rect[2]/2), 360))
+        pygame.display.update()
+        clock.tick(FPS)
+        pygame.display.set_caption("PiG-C Pong Main Menu")
 
 
-        #Update Screen
-        pygame.display.flip()
-        clock.tick(60)
+def level_select():
+    menu=True
+    selection=["easy", "medium", "hard", "unfair", "back"]
+    s: int =0
+    selected = selection[s]
+    
+    while menu:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type==pygame.KEYDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                if event.key==pygame.K_UP:
+                    s-=1
+                    if(s<0):
+                        s=4
+                    selected=selection[s]
+                    print(selected)
+                elif event.key==pygame.K_DOWN:
+                    s+=1
+                    if (s>4):
+                        s=0
+                    selected=selection[s]
+                    print(selected)
+                if event.key==pygame.K_RETURN:
+                    if selected=="easy":
+                        print("Start")
+                        level_easy.easyLoop()
+                    if selected=="medium":
+                        print("Coming soon")
+                        level_med.medLoop()
+                    if selected=="hard":
+                        level_hard.hardLoop()
+                    if selected=="unfair":
+                        level_unf.unfLoop()
+                    if selected== "back":
+                        main_menu()
+                    
+ 
+        # Main Menu UI
+        screen.fill(black)
+        title=text_format("LEVEL SELECT", font, 45, white)
+        if selected=="easy":
+            text_easy=text_format("easy", font, 35, white)
+        else:
+            text_easy = text_format("easy", font, 35, gray)
+        if selected=="medium":
+            text_med=text_format("medium", font, 35, white)
+        else:
+            text_med = text_format("medium", font, 35, gray)
+        if selected=="hard":
+            text_hard=text_format("hard", font, 35, white)
+        else:
+            text_hard = text_format("hard", font, 35, gray)
+        if selected=="unfair":
+            text_unf=text_format("unfair", font, 35, white)
+        else:
+            text_unf = text_format("unfair", font, 35, gray)
+        if selected=="back":
+            text_back=text_format("back to menu", font, 35, white)
+        else:
+            text_back = text_format("back to menu", font, 35, gray)
+ 
+        title_rect=title.get_rect()
+        easy_rect=text_easy.get_rect()
+        med_rect=text_med.get_rect()
+        hard_rect=text_hard.get_rect()
+        unf_rect=text_unf.get_rect()
+        back_rect=text_back.get_rect()
+ 
+        # Main Menu Text
+        screen.blit(title, (screen_width/2 - (title_rect[2]/2), 50))
+        screen.blit(text_easy, (screen_width/2 - (easy_rect[2]/2), 200))
+        screen.blit(text_med, (screen_width/2 - (med_rect[2]/2), 260))
+        screen.blit(text_hard, (screen_width/2 - (hard_rect[2]/2), 320))
+        screen.blit(text_unf, (screen_width/2 - (unf_rect[2]/2), 380))
+        screen.blit(text_back, (screen_width/2 - (unf_rect[2]/2)-100, 440))
+        pygame.display.update()
+        clock.tick(FPS)
+        pygame.display.set_caption("PiG-C Pong Main Menu")
+
+while True:
+    main_menu()
+pygame.quit()
+quit()
