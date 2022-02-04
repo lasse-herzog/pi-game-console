@@ -134,7 +134,13 @@ def game_select():
         snake = pygame.Rect(55, screen_height/2 - 110, 50, 10)
         apple = pygame.Rect(screen_width - 181, screen_height- 200, 10, 10)
         #Pac-Man
-        # Main Menu UI
+
+        #Space Invaders
+        crab = pygame.image.load('si_crab.png')
+        octopus = pygame.image.load('si_octopus.png')
+        player = pygame.image.load('si_player.png')
+        
+        # Select Menu UI
         screen.fill(black)
         title=text_format("GAME SELECT", font, 45, white)
         if selected=="Pong":
@@ -144,14 +150,15 @@ def game_select():
             pygame.draw.ellipse(screen, white, ball)
         else:
             text_pong = text_format("Pong", font, 35, gray)
+           
+        if selected=="Snake":
+            text_snake=text_format("Snake", font, 35, green)
             i=0
             while(i<121):
                 snake = pygame.Rect(55 + i, screen_height/2 - 100, 15, 15)
                 pygame.draw.ellipse(screen, green, snake)
                 i+=15
             pygame.draw.ellipse(screen, red, apple)
-        if selected=="Snake":
-            text_snake=text_format("Snake", font, 35, green)
         else:
             text_snake = text_format("Snake", font, 35, gray)
         if selected=="Pac-Man":
@@ -160,6 +167,8 @@ def game_select():
             text_pacman = text_format("Pac-Man", font, 35, gray)
         if selected=="Space Invaders":
             text_si=text_format("Space Invaders", font, 35, blue)
+            screen.blit(crab, (85, screen_height/2 - 125))
+            screen.blit(octopus, (screen_width - 161, screen_height - 125))
         else:
             text_si = text_format("Space Invaders", font, 35, gray)
         if selected=="back":
