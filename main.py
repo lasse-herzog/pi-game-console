@@ -31,6 +31,7 @@ green=(0, 255, 0)
 blue=(0, 0, 255)
 yellow=(255, 255, 0)
 gray_b=(25,25,75)
+dark_blue=(0, 0, 152)
  
 # Game Fonts
 font = "Pixeled.ttf"
@@ -132,7 +133,7 @@ def game_select():
         ball = pygame.Rect(screen_width - 181, screen_height/2 -25, 15,15)
         #Snake
         snake = pygame.Rect(55, screen_height/2 - 110, 50, 10)
-        apple = pygame.Rect(screen_width - 181, screen_height- 200, 10, 10)
+        apple = pygame.Rect(screen_width - 181, screen_height- 200, 20, 20)
         #Pac-Man
 
         #Space Invaders
@@ -163,6 +164,7 @@ def game_select():
             text_snake = text_format("Snake", font, 35, gray)
         if selected=="Pac-Man":
             text_pacman=text_format("Pac-Man", font, 35, yellow)
+            screen.fill(dark_blue)
         else:
             text_pacman = text_format("Pac-Man", font, 35, gray)
         if selected=="Space Invaders":
