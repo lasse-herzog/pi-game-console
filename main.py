@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 import os
-import level_easy, level_hard, level_med, level_unf
+
 
 # Game Initialization
 pygame.init()
@@ -33,20 +33,23 @@ yellow=(255, 255, 0)
  
 # Game Fonts
 font = "Pixeled.ttf"
- 
+header_font = "ArcadeClassic-ov2x.ttf"
+
 # Sounds
-select_sound = pygame.mixer.Sound("pong2.wav")
+select_sound = pygame.mixer.Sound("select.wav")
 
 # Game Framerate
 clock = pygame.time.Clock()
 FPS=30
 
 # Main Menu
+
+
 def main_menu():
  
     menu=True
     selected="start"
- 
+    start_time = pygame.time.get_ticks()
     while menu:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -54,45 +57,31 @@ def main_menu():
                 quit()
             if event.type==pygame.KEYDOWN:
                 pygame.mixer.Sound.play(select_sound)
-                if event.key==pygame.K_UP:
-                    selected="start"
-                elif event.key==pygame.K_DOWN:
-                    selected="quit"
-                if event.key==pygame.K_RETURN:
-                    if selected=="start":
-                        level_select()
-                    if selected=="quit":
-                        pygame.quit()
-                        quit()
+                game_select()
  
         # Main Menu UI
         screen.fill(black)
-        title=text_format("PiG-C PONG", font, 45, white)
-        if selected=="start":
-            text_start=text_format("START", font, 35, white)
-        else:
-            text_start = text_format("START", font, 35, gray)
-        if selected=="quit":
-            text_quit=text_format("QUIT", font, 35, white)
-        else:
-            text_quit = text_format("QUIT", font, 35, gray)
- 
+        title=text_format("RETRO PiG", header_font, 100, white)
+        text_start=text_format("Press any button", font, 20, white)
+
         title_rect=title.get_rect()
         start_rect=text_start.get_rect()
-        quit_rect=text_quit.get_rect()
+        
  
         # Main Menu Text
-        screen.blit(title, (screen_width/2 - (title_rect[2]/2), 80))
-        screen.blit(text_start, (screen_width/2 - (start_rect[2]/2), 300))
-        screen.blit(text_quit, (screen_width/2 - (quit_rect[2]/2), 360))
+        screen.blit(title, (screen_width/2 - (title_rect[2]/2), 200))
+        
+        screen.blit(text_start, (screen_width/2 - (start_rect[2]/2)+10, 400))
+    
+    
         pygame.display.update()
         clock.tick(FPS)
-        pygame.display.set_caption("PiG-C Pong Main Menu")
+        pygame.display.set_caption("PiG-C Main Menu")
 
-
-def level_select():
+#Game select
+def game_select():
     menu=True
-    selection=["easy", "medium", "hard", "unfair", "back"]
+    selection=["Pong", "Snake", "Pac-Man", "Space Invaders", "back"]
     s: int =0
     selected = selection[s]
     
@@ -116,63 +105,64 @@ def level_select():
                     selected=selection[s]
                     print(selected)
                 if event.key==pygame.K_RETURN:
-                    if selected=="easy":
-                        print("Start")
-                        level_easy.easyLoop()
-                    if selected=="medium":
-                        print("Coming soon")
-                        level_med.medLoop()
-                    if selected=="hard":
-                        level_hard.hardLoop()
-                    if selected=="unfair":
-                        level_unf.unfLoop()
+                    if selected=="Pong":
+                        print("Pong Start")
+                        
+                    if selected=="Snake":
+                        print("Snake Start")
+                       
+                    if selected=="Pac-Man":
+                        print("Pac-Man Start")
+                    if selected=="Space Invaders":
+                        print("Space Invaders Start")
                     if selected== "back":
+                        print("back to menu")
                         main_menu()
                     
  
         # Main Menu UI
         screen.fill(black)
-        title=text_format("LEVEL SELECT", font, 45, white)
-        if selected=="easy":
-            text_easy=text_format("easy", font, 35, white)
+        title=text_format("GAME SELECT", font, 45, white)
+        if selected=="Pong":
+            text_pong=text_format("Pong", font, 35, white)
         else:
-            text_easy = text_format("easy", font, 35, gray)
-        if selected=="medium":
-            text_med=text_format("medium", font, 35, white)
+            text_pong = text_format("Pong", font, 35, gray)
+        if selected=="Snake":
+            text_snake=text_format("Snake", font, 35, white)
         else:
-            text_med = text_format("medium", font, 35, gray)
-        if selected=="hard":
-            text_hard=text_format("hard", font, 35, white)
+            text_snake = text_format("Snake", font, 35, gray)
+        if selected=="Pac-Man":
+            text_pacman=text_format("Pac-Man", font, 35, white)
         else:
-            text_hard = text_format("hard", font, 35, gray)
-        if selected=="unfair":
-            text_unf=text_format("unfair", font, 35, white)
+            text_pacman = text_format("Pac-Man", font, 35, gray)
+        if selected=="Space Invaders":
+            text_si=text_format("Space Invaders", font, 35, white)
         else:
-            text_unf = text_format("unfair", font, 35, gray)
+            text_si = text_format("Space Invaders", font, 35, gray)
         if selected=="back":
             text_back=text_format("back to menu", font, 35, white)
         else:
             text_back = text_format("back to menu", font, 35, gray)
  
         title_rect=title.get_rect()
-        easy_rect=text_easy.get_rect()
-        med_rect=text_med.get_rect()
-        hard_rect=text_hard.get_rect()
-        unf_rect=text_unf.get_rect()
+        pong_rect=text_pong.get_rect()
+        snake_rect=text_snake.get_rect()
+        pacman_rect=text_pacman.get_rect()
+        si_rect=text_si.get_rect()
         back_rect=text_back.get_rect()
  
         # Main Menu Text
         screen.blit(title, (screen_width/2 - (title_rect[2]/2), 50))
-        screen.blit(text_easy, (screen_width/2 - (easy_rect[2]/2), 200))
-        screen.blit(text_med, (screen_width/2 - (med_rect[2]/2), 260))
-        screen.blit(text_hard, (screen_width/2 - (hard_rect[2]/2), 320))
-        screen.blit(text_unf, (screen_width/2 - (unf_rect[2]/2), 380))
-        screen.blit(text_back, (screen_width/2 - (unf_rect[2]/2)-100, 440))
+        screen.blit(text_pong, (screen_width/2 - (pong_rect[2]/2), 200))
+        screen.blit(text_snake, (screen_width/2 - (snake_rect[2]/2), 260))
+        screen.blit(text_pacman, (screen_width/2 - (pacman_rect[2]/2), 320))
+        screen.blit(text_si, (screen_width/2 - (si_rect[2]/2), 380))
+        screen.blit(text_back, (screen_width/2 - (back_rect[2]/2), 440))
         pygame.display.update()
         clock.tick(FPS)
         pygame.display.set_caption("PiG-C Pong Main Menu")
 
-while True:
-    main_menu()
+
+main_menu()
 pygame.quit()
 quit()
