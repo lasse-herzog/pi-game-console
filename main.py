@@ -50,6 +50,7 @@ def main_menu():
     menu=True
     selected="start"
     start_time = pygame.time.get_ticks()
+    show_text = 0
     while menu:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -70,10 +71,14 @@ def main_menu():
  
         # Main Menu Text
         screen.blit(title, (screen_width/2 - (title_rect[2]/2), 200))
+        if(show_text<15):
+            screen.blit(text_start, (screen_width/2 - (start_rect[2]/2)+10, 400))
         
-        screen.blit(text_start, (screen_width/2 - (start_rect[2]/2)+10, 400))
-    
-    
+        if(show_text > 30):
+            show_text=0
+            show_text+=1
+        else:
+            show_text+=1
         pygame.display.update()
         clock.tick(FPS)
         pygame.display.set_caption("PiG-C Main Menu")
