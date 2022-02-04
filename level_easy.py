@@ -139,14 +139,15 @@ def end(won):
     
     time.sleep(5)
     
-    
 
+
+        
 
 #Game Loop
 def easyLoop():
     player_speed = 0
     loop = True
-    
+  
     while loop:
        
         #Eventhandling
@@ -193,8 +194,7 @@ def easyLoop():
         screen.blit(player_text, (screen_width/2+35, 0))
         screen.blit(opponent_text, (screen_width/2-85, 0))
 
-       
         #Update Screen
         pygame.display.flip()
-        
         clock.tick(60)
+        
