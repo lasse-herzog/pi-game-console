@@ -92,7 +92,7 @@ def main_menu():
 
 def level_select():
     menu=True
-    selection=["easy", "medium", "hard", "unfair"]
+    selection=["easy", "medium", "hard", "unfair", "back"]
     s: int =0
     selected = selection[s]
     
@@ -106,12 +106,12 @@ def level_select():
                 if event.key==pygame.K_UP:
                     s-=1
                     if(s<0):
-                        s=3
+                        s=4
                     selected=selection[s]
                     print(selected)
                 elif event.key==pygame.K_DOWN:
                     s+=1
-                    if (s>3):
+                    if (s>4):
                         s=0
                     selected=selection[s]
                     print(selected)
@@ -126,6 +126,8 @@ def level_select():
                         level_hard.hardLoop()
                     if selected=="unfair":
                         level_unf.unfLoop()
+                    if selected== "back":
+                        main_menu()
                     
  
         # Main Menu UI
@@ -147,12 +149,17 @@ def level_select():
             text_unf=text_format("unfair", font, 35, white)
         else:
             text_unf = text_format("unfair", font, 35, gray)
+        if selected=="back":
+            text_back=text_format("back to menu", font, 35, white)
+        else:
+            text_back = text_format("back to menu", font, 35, gray)
  
         title_rect=title.get_rect()
         easy_rect=text_easy.get_rect()
         med_rect=text_med.get_rect()
         hard_rect=text_hard.get_rect()
         unf_rect=text_unf.get_rect()
+        back_rect=text_back.get_rect()
  
         # Main Menu Text
         screen.blit(title, (screen_width/2 - (title_rect[2]/2), 50))
@@ -160,11 +167,12 @@ def level_select():
         screen.blit(text_med, (screen_width/2 - (med_rect[2]/2), 260))
         screen.blit(text_hard, (screen_width/2 - (hard_rect[2]/2), 320))
         screen.blit(text_unf, (screen_width/2 - (unf_rect[2]/2), 380))
+        screen.blit(text_back, (screen_width/2 - (unf_rect[2]/2)-100, 440))
         pygame.display.update()
         clock.tick(FPS)
         pygame.display.set_caption("PiG-C Pong Main Menu")
 
-
-main_menu()
+while True:
+    main_menu()
 pygame.quit()
 quit()

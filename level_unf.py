@@ -139,14 +139,14 @@ def end(won):
     
     time.sleep(5)
     
-    pygame.quit()
+    
 
 
 #Game Loop
 def unfLoop():
     player_speed = 0
-    
-    while True:
+    loop = True
+    while loop:
         #Eventhandling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -178,8 +178,10 @@ def unfLoop():
         if score_time:
             if player_score==7:
                 end(1)
+                loop=False
             elif opponent_score==7:
                 end(0)
+                loop=False
             else:
                 ball_reset()
 
