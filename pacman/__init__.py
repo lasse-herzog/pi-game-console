@@ -10,6 +10,8 @@ import pygame
 from PIL import Image
 from pygame.locals import *
 
+TILE_SIZE = 16
+
 
 class Directions(Enum):
     UP = (0, -1)
@@ -33,6 +35,17 @@ class Node:
 
     def __lt__(self, other):
         return self.x < other.x
+
+
+class Eatable(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.points = 0
+
+    def update(self):
+        if self.rect.colliderect(pacman.rect):
+            pacman.score += self.points
+            self.kill()
 
 
 class Graph:
@@ -60,7 +73,7 @@ class Graph:
                 return neighbour[0]
 
     def fill_graph_from_collision_map(self, level):
-        img = Image.open(os.path.join("data", level))
+        img = Image.open(os.path.join("assets", level))
         height_iterator = iter(range(img.height))
 
         for y in height_iterator:
@@ -183,6 +196,7 @@ class Actor(pygame.sprite.Sprite, metaclass=ABCMeta):
 class Pacman(Actor):
     def __init__(self):
         super().__init__()
+        self.score = 0
         self.input = None
         self.current_node = graph.get_node_at_position(111, 139)
         self.next_node = self.current_node
@@ -277,7 +291,7 @@ class Pinky(Ghost):
 
 
 def load_image(i):
-    return pygame.image.load(os.path.join("data", i))
+    return pygame.image.load(os.path.join("assets", i))
 
 
 def input(events):
