@@ -5,8 +5,11 @@ import os
 
 # Game Initialization
 pygame.init()
+
+#Joystick Initialization
+pygame.joystick.init()
  
-# Center the Game Application
+#Center the Game
 os.environ['SDL_VIDEO_CENTERED'] = '1'
  
 # Game Resolution
@@ -54,14 +57,16 @@ def main_menu():
     start_time = pygame.time.get_ticks()
     show_text = 0
     while menu:
-        for event in pygame.event.get():
+        for event in pygame.event.get(): #Keyboard Controls
             if event.type==pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type==pygame.KEYDOWN:
                 pygame.mixer.Sound.play(select_sound)
                 game_select()
- 
+            if event.type == JOYBUTTONDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                game_select()
         # Main Menu UI
         screen.fill(black)
         title=text_format("RETRO PiG", header_font, 100, white)
@@ -125,7 +130,42 @@ def game_select():
                     if selected== "back":
                         print("back to menu")
                         main_menu()
-                    
+            if event.type == JOYBUTTONDOWN:
+                if selected=="Pong":
+                    print("Pong Start")
+                if selected=="Snake":
+                    print("Snake Start")   
+                if selected=="Pac-Man":
+                    print("Pac-Man Start")
+                if selected=="Space Invaders":
+                    print("Space Invaders Start")
+                if selected== "back":
+                    print("back to menu")
+                    main_menu()
+        
+        #Joystick Controls
+        axis = [0, 0]
+        for i in range(pygame.joystick.get_count()):
+            joystick = pygame.joystick.Joystick(i)
+            joystick.init()
+
+            axes = joystick.get_numaxes()
+
+            for j in range(axes):
+                axis[j] = joystick.get_axis(j)
+        
+        if (axis[0]==1 and axis[1]==0): #Joystick Up
+            s-=1
+            if(s<0):
+                s=4
+                selected=selection[s]
+                print(selected)
+        if (axis[0]==-1 and axis[1]==0): #Joystick Down
+            s+=1
+            if (s>4):
+                    s=0
+                    selected=selection[s]
+                    print(selected)    
         #Game demo Rectangles
         #Pong
         paddle = pygame.Rect(screen_width - 31, screen_height/2 - 15, 10, 120)
