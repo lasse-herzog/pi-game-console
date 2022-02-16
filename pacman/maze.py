@@ -15,7 +15,8 @@ class Tile(pygame.sprite.Sprite):
 
     def has_legal_neighbour(self, direction):
         try:
-            if isinstance(tiles[(self.row + direction.value[1], self.column + direction.value[0])], LegalTile):
+            if isinstance(
+                    tiles[(self.row + direction.value[1], self.column + direction.value[0])], LegalTile):
                 return True
         except KeyError:
             return False

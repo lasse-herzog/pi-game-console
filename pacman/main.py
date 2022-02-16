@@ -12,17 +12,19 @@ TILE_SIZE = 16
 
 class Directions(Enum):
     UP = (0, -1)
+    RIGHT = (1, 0)
     DOWN = (0, 1)
     LEFT = (-1, 0)
-    RIGHT = (1, 0)
     NONE = (0, 0)
 
 
 class Pacman(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.is_cornering = False
         self.input = Directions.NONE
         self.direction = Directions.NONE
+        self.last_tile = None
 
         self.image = pygame.image.load(load_asset("pacman_01.png"))
         self.rect = self.image.get_rect(topleft=(8, 56))
@@ -31,31 +33,54 @@ class Pacman(pygame.sprite.Sprite):
     def tile(self):
         return tiles[(self.rect.centery // TILE_SIZE, self.rect.centerx // TILE_SIZE)]
 
-    def entered_new_tile(self):
+    def update(self):
+        distance = 0
+
+        if self.direction is Directions.NONE:
+            if self.input is not Directions.NONE and self.tile.has_legal_neighbour(self.input):
+                self.direction = self.input
+            else:
+                return
+
         match self.direction:
             case Directions.UP:
-                if (self.rect.bottom - 24 - self.tile.row * TILE_SIZE) <= 0:
-                    return True
+                distance = 15 - (self.rect.centery - self.tile.row * TILE_SIZE)
             case Directions.RIGHT:
-                if (self.tile.column + 1) * TILE_SIZE - (self.rect.left + 24) <= 0:
-                    return True
+                distance = self.rect.centerx - self.tile.column * TILE_SIZE
             case Directions.DOWN:
-                if (self.tile.row + 1) * TILE_SIZE - (self.rect.top + 24) <= 0:
-                    return True
+                distance = self.rect.centery - self.tile.row * TILE_SIZE
             case Directions.LEFT:
-                if (self.rect.right - 24 - self.tile.column * TILE_SIZE) <= 0:
-                    return True
-        return False
+                distance = 15 - (self.rect.centerx - self.tile.column * TILE_SIZE)
 
-    def update(self):
-        if self.entered_new_tile():
-            if not self.tile.has_legal_neighbour(self.direction):
+        if distance < TILE_SIZE // 2:
+            if self.tile.has_legal_neighbour(self.input):
+                if self.direction is self.input or (
+                        self.direction.value[0] + self.input.value[0],
+                        self.direction.value[1] + self.input.value[1]) == (0, 0):
+                    self.direction = self.input
+                else:
+                    self.rect = self.rect.move(self.input.value)
+            self.rect = self.rect.move(self.direction.value)
+        elif distance == TILE_SIZE // 2:
+            if self.tile.has_legal_neighbour(self.input):
+                self.direction = self.input
+            elif not self.tile.has_legal_neighbour(self.direction):
                 self.direction = Directions.NONE
-
-        if self.tile.has_legal_neighbour(self.input):
-            self.direction = self.input
-
-        self.rect = self.rect.move(self.direction.value)
+            self.rect = self.rect.move(self.direction.value)
+        else:
+            if self.tile.has_legal_neighbour(self.input):
+                if (self.direction.value[0] + self.input.value[0], self.direction.value[1] + self.input.value[1]) == (
+                        0, 0):
+                    self.direction = self.input
+                if self.direction is self.input:
+                    self.rect = self.rect.move(self.direction.value)
+                else:
+                    self.rect = self.rect.move(self.input.value)
+                    self.rect = self.rect.move((self.direction.value[0] * -1, self.direction.value[1] * -1))
+            elif not self.tile.has_legal_neighbour(self.direction):
+                self.direction = Directions.NONE
+            else:
+                self.rect = self.rect.move(self.direction.value)
 
 
 def load_asset(asset):
