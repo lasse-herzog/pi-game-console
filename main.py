@@ -24,7 +24,6 @@ def text_format(message, textFont, textSize, textColor):
  
     return newText
  
- 
 # Colors
 white=(255, 255, 255)
 black=(0, 0, 0)
@@ -175,7 +174,8 @@ def game_select():
         snake = pygame.Rect(55, screen_height/2 - 110, 50, 10)
         apple = pygame.Rect(screen_width - 181, screen_height- 200, 20, 20)
         #Pac-Man
-
+        pacman = pygame.image.load('pm_pacman.png')
+        superpill = pygame.Rect(822, screen_height/2 - 105, 15, 15)
         #Space Invaders
         crab = pygame.image.load('si_crab.png')
         octopus = pygame.image.load('si_octopus.png')
@@ -204,7 +204,15 @@ def game_select():
             text_snake = text_format("Snake", font, 35, gray)
         if selected=="Pac-Man":
             text_pacman=text_format("Pac-Man", font, 35, yellow)
-            screen.fill(dark_blue)
+            i=0
+            while(i<197):
+                pills_1 = pygame.Rect(0 + i, screen_height/2 - 100, 5, 5)
+                pills_2 = pygame.Rect(1024 - i, screen_height/2 - 100, 5, 5)
+                pygame.draw.ellipse(screen, white, pills_1)
+                pygame.draw.ellipse(screen, white, pills_2)
+                i+=15
+            screen.blit(pacman, (176, screen_height/2 - 115))
+            pygame.draw.ellipse(screen, white, superpill)
         else:
             text_pacman = text_format("Pac-Man", font, 35, gray)
         if selected=="Space Invaders":
