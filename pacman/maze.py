@@ -1,10 +1,68 @@
 import pygame
 
-from main import Directions
-from main import TILE_SIZE
-from main import load_asset
+from pacman.utils import Directions, load_asset, TILE_SIZE
 
 tiles = {}
+sprites = pygame.sprite.RenderPlain()
+
+
+def load_level(level):
+    row_counter = 0
+
+    for line in open(load_asset(level)):
+        column_counter = 0
+
+        for char in line.replace(" ", ""):
+            new_tile = None
+            match char:
+                case 'X':
+                    new_tile = EmptyTile(row_counter, column_counter)
+                case 'B':
+                    new_tile = BorderTile(row_counter, column_counter, True)
+                    sprites.add(new_tile)
+                case 'b':
+                    new_tile = BorderTile(row_counter, column_counter, False)
+                    sprites.add(new_tile)
+                case 'W':
+                    new_tile = WallTile(row_counter, column_counter, True)
+                    sprites.add(new_tile)
+                case 'w':
+                    new_tile = WallTile(row_counter, column_counter, False)
+                    sprites.add(new_tile)
+                case '*':
+                    new_tile = LegalTile(row_counter, column_counter, True)
+                    sprites.add(new_tile)
+                case '.':
+                    new_tile = LegalTile(row_counter, column_counter, True)
+                    sprites.add(new_tile)
+                case '-' | '|':
+                    new_tile = LegalTile(row_counter, column_counter, False)
+                    sprites.add(new_tile)
+
+            tiles[(row_counter, column_counter)] = new_tile
+            column_counter += 1
+        row_counter += 1
+
+    for tile in tiles.values():
+        if issubclass(type(tile), WallTile):
+            if tile.is_corner:
+                if tile.has_wall_neighbour(Directions.UP) and tile.has_wall_neighbour(Directions.RIGHT):
+                    tile.rotate(Directions.UP)
+                elif tile.has_wall_neighbour(Directions.RIGHT) and tile.has_wall_neighbour(Directions.DOWN):
+                    tile.rotate(Directions.RIGHT)
+                elif tile.has_wall_neighbour(Directions.DOWN) and tile.has_wall_neighbour(Directions.LEFT):
+                    tile.rotate(Directions.DOWN)
+                elif tile.has_wall_neighbour(Directions.LEFT) and tile.has_wall_neighbour(Directions.UP):
+                    tile.rotate(Directions.LEFT)
+            else:
+                if tile.has_legal_neighbour(Directions.DOWN):
+                    tile.rotate(Directions.UP)
+                elif tile.has_legal_neighbour(Directions.LEFT):
+                    tile.rotate(Directions.RIGHT)
+                elif tile.has_legal_neighbour(Directions.UP):
+                    tile.rotate(Directions.DOWN)
+                elif tile.has_legal_neighbour(Directions.RIGHT):
+                    tile.rotate(Directions.LEFT)
 
 
 class Tile(pygame.sprite.Sprite):
@@ -13,10 +71,22 @@ class Tile(pygame.sprite.Sprite):
         self.row = row
         self.column = column
 
+    def distance(self, other_tile):
+        return (other_tile.row - self.row) ** 2 + (other_tile.column - self.column) ** 2
+
+    def get_direction(self, other_tile):
+        return Directions((other_tile.column - self.column, other_tile.row - self.row))
+
+    def get_neighbour(self, direction):
+        return tiles[(self.row + direction.value[1], self.column + direction.value[0])]
+
+    def get_legal_neighbours(self):
+        return [self.get_neighbour(direction) for direction in Directions if
+                direction is not Directions.NONE and self.has_legal_neighbour(direction)]
+
     def has_legal_neighbour(self, direction):
         try:
-            if isinstance(
-                    tiles[(self.row + direction.value[1], self.column + direction.value[0])], LegalTile):
+            if isinstance(self.get_neighbour(direction), LegalTile):
                 return True
         except KeyError:
             return False
@@ -24,7 +94,7 @@ class Tile(pygame.sprite.Sprite):
 
     def has_wall_neighbour(self, direction):
         try:
-            if isinstance(tiles[(self.row + direction.value[1], self.column + direction.value[0])], WallTile):
+            if isinstance(self.get_neighbour(direction), WallTile):
                 return True
         except KeyError:
             return False
@@ -73,62 +143,3 @@ class BorderTile(WallTile):
         self.image = pygame.image.load(load_asset("border_corner.png")) if is_corner else pygame.image.load(
             load_asset("border.png"))
         self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
-
-
-def load_level(level):
-    row_counter = 0
-    maze_sprites = pygame.sprite.RenderPlain()
-
-    for line in open(load_asset(level)):
-        column_counter = 0
-
-        for char in line.replace(" ", ""):
-            new_tile = None
-            match char:
-                case 'X':
-                    new_tile = EmptyTile(row_counter, column_counter)
-                case 'B':
-                    new_tile = BorderTile(row_counter, column_counter, True)
-                    maze_sprites.add(new_tile)
-                case 'b':
-                    new_tile = BorderTile(row_counter, column_counter, False)
-                    maze_sprites.add(new_tile)
-                case 'W':
-                    new_tile = WallTile(row_counter, column_counter, True)
-                    maze_sprites.add(new_tile)
-                case 'w':
-                    new_tile = WallTile(row_counter, column_counter, False)
-                    maze_sprites.add(new_tile)
-                case '*':
-                    new_tile = LegalTile(row_counter, column_counter, True)
-                    maze_sprites.add(new_tile)
-                case '.':
-                    new_tile = LegalTile(row_counter, column_counter, True)
-                    maze_sprites.add(new_tile)
-
-            tiles[(row_counter, column_counter)] = new_tile
-            column_counter += 1
-        row_counter += 1
-
-    for tile in tiles.values():
-        if issubclass(type(tile), WallTile):
-            if tile.is_corner:
-                if tile.has_wall_neighbour(Directions.UP) and tile.has_wall_neighbour(Directions.RIGHT):
-                    tile.rotate(Directions.UP)
-                elif tile.has_wall_neighbour(Directions.RIGHT) and tile.has_wall_neighbour(Directions.DOWN):
-                    tile.rotate(Directions.RIGHT)
-                elif tile.has_wall_neighbour(Directions.DOWN) and tile.has_wall_neighbour(Directions.LEFT):
-                    tile.rotate(Directions.DOWN)
-                elif tile.has_wall_neighbour(Directions.LEFT) and tile.has_wall_neighbour(Directions.UP):
-                    tile.rotate(Directions.LEFT)
-            else:
-                if tile.has_legal_neighbour(Directions.DOWN):
-                    tile.rotate(Directions.UP)
-                elif tile.has_legal_neighbour(Directions.LEFT):
-                    tile.rotate(Directions.RIGHT)
-                elif tile.has_legal_neighbour(Directions.UP):
-                    tile.rotate(Directions.DOWN)
-                elif tile.has_legal_neighbour(Directions.RIGHT):
-                    tile.rotate(Directions.LEFT)
-
-    return tiles, maze_sprites
