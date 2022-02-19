@@ -1,8 +1,7 @@
 import os
 import pygame
 import pygame.sprite as sprite
-import EnemyFactory
-import Player
+import Entities
 
 HEIGHT_HEADER = 0.2
 HEIGHT_GAME = 000.6
@@ -19,7 +18,7 @@ enemy_attack_event = pygame.USEREVENT + 2
 
 class GameController():
 
-    def __init__(self, width, height, enemyGroup: EnemyFactory.EnemyGroup):
+    def __init__(self, width, height, enemyGroup: Entities.EnemyGroup):
         pygame.font.init()
         self.width = width
         self.height = height
@@ -28,7 +27,7 @@ class GameController():
         self.font = pygame.font.SysFont(
             'Pixeled', int(30))
         self.enemies = enemyGroup
-        self.player = Player.Player(EnemyFactory.ENEMY_SCALE, 512, 550)
+        self.player = Entities.Player(Entities.ENEMY_SCALE, 512, 550)
         self.playerRockets = sprite.Group()
         self.enemyRockets = sprite.Group()
         self.corpses = sprite.Group()
@@ -58,11 +57,11 @@ class GameController():
 
     def input(self, key: int):
         if key == pygame.K_SPACE:
-            posX = self.player.rect.centerx - EnemyFactory.ROCKET_WIDTH
+            posX = self.player.rect.centerx - Entities.ROCKET_WIDTH
             posY = self.player.rect.topleft[1] - \
-                EnemyFactory.ENEMY_HEIGHT * EnemyFactory.ENEMY_SCALE
-            rocket = EnemyFactory.Rocket(
-                EnemyFactory.ENEMY_SCALE, posX, posY, True)
+                Entities.ENEMY_HEIGHT * Entities.ENEMY_SCALE
+            rocket = Entities.Rocket(
+                Entities.ENEMY_SCALE, posX, posY, True)
             self.playerRockets.add(rocket)
 
     def ManageCollisions(self):
@@ -73,7 +72,8 @@ class GameController():
         self.corpses.add(corpses)
 
         if sprite.spritecollide(self.player, self.enemyRockets, True):  # game over
-            self.corpses.add(EnemyFactory.Corpse(EnemyFactory.ENEMY_SCALE, self.player.rect.left, self.player.rect.top))
+            self.corpses.add(Entities.Corpse(
+                Entities.ENEMY_SCALE, self.player.rect.left, self.player.rect.top))
             self.player.remove()
 
     def DrawText(self, screen: pygame.Surface):
@@ -86,9 +86,9 @@ class GameController():
 
         lives = self.font.render("Lives: ", False, (255, 255, 255))
         width, height = lives.get_size()
-        scale = height / EnemyFactory.ENEMY_HEIGHT
+        scale = height / Entities.ENEMY_HEIGHT
         image = pygame.transform.scale(
-            self.playerImage, (Player.PLAYER_WIDTH * scale, height))
+            self.playerImage, (Entities.PLAYER_WIDTH * scale, height))
         start = self.width - width - (image.get_width()*3) - (spacing * 3)
         screen.blit(lives, (start, top))
 
@@ -109,7 +109,7 @@ def BuildGameController(availableWidth, availableHeight) -> GameController:
     gameHeight = availableHeight - headerHeight
 
     # Build game
-    enemyGroup = EnemyFactory.BuildEnemyGroup(
+    enemyGroup = Entities.BuildEnemyGroup(
         availableWidth, gameHeight, headerHeight)
     gameController = GameController(
         availableWidth, availableHeight, enemyGroup)
