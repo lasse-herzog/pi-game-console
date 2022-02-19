@@ -1,7 +1,10 @@
-from itertools import count
-from typing import List, Tuple
 import pygame
 import os
+from typing import List, Tuple
+from itertools import count
+
+PLAYER_WIDTH = 15
+PLAYER_SPEED = 3
 
 BLACK = (0, 0, 0)
 
@@ -21,40 +24,68 @@ ROCKET_WIDTH = 3
 ROCKET_SPEED = 5
 
 
-class EnemyRow(pygame.sprite.Group):
-    def __init__(self, sprites, score, leftEdge, rightEdge):
+class Entity(pygame.sprite.Sprite):
+    def __init__(self, image, width, height, posX, posY):
+        super().__init__()
+
+        self.image = pygame.transform.scale(image, (width, height))
+        self.rect = self.image.get_rect()
+        centerX = posX + round(width/2, 0)
+        centerY = posY + round(height/2, 0)
+        self.rect.center = (centerX, centerY)
+
+    def update(self, window: pygame.Surface):
+        return super().update()
+
+
+class Player(Entity):
+    def __init__(self, scale, posX, posY):
+        image = pygame.image.load(os.path.join('Assets', 'player_1.png'))
+        super().__init__(image, PLAYER_WIDTH * scale,
+                         ENEMY_HEIGHT * scale, posX, posY)
+
+    def move(self):
+        keys = pygame.key.get_pressed()
+        self.rect.move_ip(
+            (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * PLAYER_SPEED, 0)
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+
+class Enemy(Entity):
+    def __init__(self, images, altImages, width, height, posX, posY, score):
         self.score = score
-        self.leftEdge = leftEdge
-        self.rightEdge = rightEdge
-        super().__init__(sprites)
+        self.images = images
+        self.altImages = altImages
+        self.imageCounter = 0
+        self.width = width
+        self.height = height
+        super().__init__(images[0], width, height, posX, posY)
 
-    def hasReachedBorder(self, moveRight: bool) -> bool:
-        if len(self.sprites()) == 0:
-            return False
+    def switchImage(self, hasReachedBorder: bool):
+        if hasReachedBorder:
+            self.images = self.altImages
 
-        left = self.leftEdge + (ENEMY_WIDTH * ENEMY_SCALE) / 2
-        right = self.rightEdge + (ENEMY_WIDTH * ENEMY_SCALE) / 2
-        first: pygame.sprite.Sprite = self.sprites()[0]
-        last: pygame.sprite.Sprite = self.sprites()[-1]
-        return first.rect.centerx <= left if not moveRight else last.rect.centerx >= right
+        self.imageCounter = self.imageCounter + \
+            1 if self.imageCounter + 1 < len(self.images) else 0
 
-    def moveVertical(self, screen: pygame.Surface):
-        for enemy in self.sprites():
-            rect = pygame.draw.rect(screen, BLACK, (enemy.rect.x, enemy.rect.y,
-                                                    ENEMY_WIDTH*ENEMY_SCALE, ENEMY_HEIGHT*ENEMY_SCALE))
-            enemy.switchImage(False)
-            Enemy.moveVertical(enemy)
-            screen.blit(enemy.image, enemy.rect)
-            pygame.display.update((rect, enemy.rect))
+        self.image = pygame.transform.scale(
+            self.images[self.imageCounter], (self.width, self.height))
 
-    def moveHorizontal(self, moveRight: bool, screen: pygame.Surface):
-        for enemy in self.sprites():
-            rect = pygame.draw.rect(screen, BLACK, (enemy.rect.x, enemy.rect.y,
-                                                    ENEMY_WIDTH*ENEMY_SCALE, ENEMY_HEIGHT*ENEMY_SCALE))
-            enemy.switchImage(False)
-            Enemy.moveHorizontal(enemy, moveRight)
-            screen.blit(enemy.image, enemy.rect)
-            pygame.display.update((rect, enemy.rect))
+    def GetScore(self):
+        return self.score
+
+    def moveHorizontal(self, moveRight):
+        stepWidth = (ENEMY_WIDTH / ENEMY_STEPS_PER_WIDTH) * ENEMY_SCALE
+        step = stepWidth if moveRight else stepWidth * (-1)
+        self.rect.move_ip(step, 0)
+
+    def moveVertical(self):
+        self.rect.move_ip(0, ENEMY_HEIGHT * ENEMY_SCALE)
+
+    def update(self, window: pygame.Surface):
+        return super().update(window)
 
 
 class EnemyGroup():
@@ -64,7 +95,7 @@ class EnemyGroup():
         self.enemyRows: List['EnemyRow'] = []
         super().__init__()
 
-    def addRow(self, enemyRow: EnemyRow):
+    def addRow(self, enemyRow: 'EnemyRow'):
         self.enemyRows.append(enemyRow)
 
     def move(self, screen: pygame.Surface):
@@ -103,12 +134,12 @@ class EnemyGroup():
                     else:
                         isUnobstructed = False
                         break
-                
+
                 if isUnobstructed:
                     unobstructedEnemies.append(enemy)
 
         shooter: pygame.sprite.Sprite = None
-        
+
         for enemy in unobstructedEnemies:
             if shooter == None or abs(playerXCenter - enemy.rect.centerx) < abs(playerXCenter - shooter.rect.centerx):
                 shooter = enemy
@@ -139,18 +170,40 @@ class EnemyGroup():
             row.draw(screen)
 
 
-class Entity(pygame.sprite.Sprite):
-    def __init__(self, image, width, height, posX, posY):
-        super().__init__()
+class EnemyRow(pygame.sprite.Group):
+    def __init__(self, sprites, score, leftEdge, rightEdge):
+        self.score = score
+        self.leftEdge = leftEdge
+        self.rightEdge = rightEdge
+        super().__init__(sprites)
 
-        self.image = pygame.transform.scale(image, (width, height))
-        self.rect = self.image.get_rect()
-        centerX = posX + round(width/2, 0)
-        centerY = posY + round(height/2, 0)
-        self.rect.center = (centerX, centerY)
+    def hasReachedBorder(self, moveRight: bool) -> bool:
+        if len(self.sprites()) == 0:
+            return False
 
-    def update(self, window: pygame.Surface):
-        return super().update()
+        left = self.leftEdge + (ENEMY_WIDTH * ENEMY_SCALE) / 2
+        right = self.rightEdge + (ENEMY_WIDTH * ENEMY_SCALE) / 2
+        first: pygame.sprite.Sprite = self.sprites()[0]
+        last: pygame.sprite.Sprite = self.sprites()[-1]
+        return first.rect.centerx <= left if not moveRight else last.rect.centerx >= right
+
+    def moveVertical(self, screen: pygame.Surface):
+        for enemy in self.sprites():
+            rect = pygame.draw.rect(screen, BLACK, (enemy.rect.x, enemy.rect.y,
+                                                    ENEMY_WIDTH*ENEMY_SCALE, ENEMY_HEIGHT*ENEMY_SCALE))
+            enemy.switchImage(False)
+            Enemy.moveVertical(enemy)
+            screen.blit(enemy.image, enemy.rect)
+            pygame.display.update((rect, enemy.rect))
+
+    def moveHorizontal(self, moveRight: bool, screen: pygame.Surface):
+        for enemy in self.sprites():
+            rect = pygame.draw.rect(screen, BLACK, (enemy.rect.x, enemy.rect.y,
+                                                    ENEMY_WIDTH*ENEMY_SCALE, ENEMY_HEIGHT*ENEMY_SCALE))
+            enemy.switchImage(False)
+            Enemy.moveHorizontal(enemy, moveRight)
+            screen.blit(enemy.image, enemy.rect)
+            pygame.display.update((rect, enemy.rect))
 
 
 class Rocket(Entity):
@@ -166,39 +219,13 @@ class Rocket(Entity):
         return super().update(screen)
 
 
-class Enemy(Entity):
-    def __init__(self, images, altImages, width, height, posX, posY, score):
-        self.score = score
-        self.images = images
-        self.altImages = altImages
-        self.imageCounter = 0
-        self.width = width
-        self.height = height
-        super().__init__(images[0], width, height, posX, posY)
-
-    def switchImage(self, hasReachedBorder: bool):
-        if hasReachedBorder:
-            self.images = self.altImages
-
-        self.imageCounter = self.imageCounter + \
-            1 if self.imageCounter + 1 < len(self.images) else 0
-
-        self.image = pygame.transform.scale(
-            self.images[self.imageCounter], (self.width, self.height))
-
-    def GetScore(self):
-        return self.score
-
-    def moveHorizontal(self, moveRight):
-        stepWidth = (ENEMY_WIDTH / ENEMY_STEPS_PER_WIDTH) * ENEMY_SCALE
-        step = stepWidth if moveRight else stepWidth * (-1)
-        self.rect.move_ip(step, 0)
-
-    def moveVertical(self):
-        self.rect.move_ip(0, ENEMY_HEIGHT * ENEMY_SCALE)
-
-    def update(self, window: pygame.Surface):
-        return super().update(window)
+class Ufo(Enemy):
+    def __init__(self, scale, posX, posY):
+        images = [pygame.image.load(os.path.join('Assets', 'ufo.png')),
+                  pygame.image.load(os.path.join('Assets', 'ufo.png'))]
+        altImages = images
+        super().__init__(images, altImages, CRAB_WIDTH *
+                         scale, ENEMY_HEIGHT * scale, posX, posY, 100)
 
 
 class Crab(Enemy):
