@@ -24,7 +24,9 @@ class GameController():
         self.height = height
         self.playerImage = pygame.image.load(
             os.path.join('Assets', 'player_1.png'))
-        self.font = pygame.font.SysFont(
+        self.fontBig = pygame.font.SysFont(
+            'Pixeled', int(60))
+        self.fontRegular = pygame.font.SysFont(
             'Pixeled', int(30))
         self.enemies = enemyGroup
         self.player = Entities.Player(Entities.ENEMY_SCALE, 512, 550)
@@ -33,12 +35,18 @@ class GameController():
         self.corpses = sprite.Group()
         self.lives = 3
         self.score = 0
+        self.isPaused = False
+        self.isGameOver = True
 
         # set timer for the movement events
         pygame.time.set_timer(move_enemy_event, ENEMY_MOVEMENT_TIMING)
         pygame.time.set_timer(enemy_attack_event, ENEMY_ATTACK_TIMING)
 
+    # handles updates like movement and stuff
     def update(self, screen: pygame.Surface, events):
+        if self.isPaused or self.isGameOver:
+            return
+
         for event in events:
             if event.type == move_enemy_event:
                 self.enemies.move(screen)
@@ -48,7 +56,6 @@ class GameController():
                 if rocket != None:
                     self.enemyRockets.add(rocket)
 
-        self.DrawText(screen)
         self.player.move()
         self.playerRockets.update(screen)
         self.enemyRockets.update(screen)
@@ -56,13 +63,20 @@ class GameController():
         self.ManageCollisions()
 
     def input(self, key: int):
-        if key == pygame.K_SPACE:
-            posX = self.player.rect.centerx - Entities.ROCKET_WIDTH
-            posY = self.player.rect.topleft[1] - \
-                Entities.ENEMY_HEIGHT * Entities.ENEMY_SCALE
-            rocket = Entities.Rocket(
-                Entities.ENEMY_SCALE, posX, posY, True)
-            self.playerRockets.add(rocket)
+        if self.isPaused:
+            pass
+        elif self.isGameOver:
+            pass
+        else:
+            if key == pygame.K_SPACE:
+                posX = self.player.rect.centerx - Entities.ROCKET_WIDTH
+                posY = self.player.rect.topleft[1] - \
+                    Entities.ENEMY_HEIGHT * Entities.ENEMY_SCALE
+                rocket = Entities.Rocket(
+                    Entities.ENEMY_SCALE, posX, posY, True)
+                self.playerRockets.add(rocket)
+            elif key == pygame.K_q:
+                self.isPaused = True
 
     def ManageCollisions(self):
         sprite.groupcollide(self.playerRockets, self.enemyRockets, True, True)
@@ -80,11 +94,11 @@ class GameController():
         top = 4
         spacing = 5
 
-        score = self.font.render(
+        score = self.fontRegular.render(
             f"Score: {self.score:04d}", False, (255, 255, 255))
         screen.blit(score, (0, top))
 
-        lives = self.font.render("Lives: ", False, (255, 255, 255))
+        lives = self.fontRegular.render("Lives: ", False, (255, 255, 255))
         width, height = lives.get_size()
         scale = height / Entities.ENEMY_HEIGHT
         image = pygame.transform.scale(
@@ -96,12 +110,29 @@ class GameController():
             screen.blit(image, (start + lives.get_width() +
                         i*image.get_width() + i*spacing, 0))
 
-    def draw(self, window: pygame.Surface):
-        self.enemies.draw(window)
-        self.player.draw(window)
-        self.playerRockets.draw(window)
-        self.enemyRockets.draw(window)
-        self.corpses.draw(window)
+    def draw(self, screen: pygame.Surface):
+        if self.isGameOver:
+            self.DisplayMainMenu(screen)
+            return
+
+        self.DrawText(screen)
+        self.enemies.draw(screen)
+        self.player.draw(screen)
+        self.playerRockets.draw(screen)
+        self.enemyRockets.draw(screen)
+        self.corpses.draw(screen)
+
+        if self.isPaused:
+            self.DisplayPauseMenu(screen)
+
+    def DisplayPauseMenu(self, screen:pygame.Surface):
+        pass
+
+    def DisplayMainMenu(self, screen:pygame.Surface):
+        score = self.fontRegular.render(
+            "Space Invaders", False, (255, 29, 28))
+        screen.blit(score, (0, 20))
+        
 
 
 def BuildGameController(availableWidth, availableHeight) -> GameController:
