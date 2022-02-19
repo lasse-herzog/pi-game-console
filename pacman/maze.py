@@ -1,9 +1,10 @@
 import pygame
 
-from pacman.utils import Directions, load_asset, TILE_SIZE
+from pacman.utils import Directions, TILE_SIZE, load_asset
 
 tiles = {}
-sprites = pygame.sprite.RenderPlain()
+tile_sprites = pygame.sprite.RenderPlain()
+pellet_sprites = pygame.sprite.RenderPlain()
 
 
 def load_level(level):
@@ -17,27 +18,34 @@ def load_level(level):
             match char:
                 case 'X':
                     new_tile = EmptyTile(row_counter, column_counter)
+                case 'N':
+                    new_tile = BorderTile(row_counter, column_counter, True, True)
+                    tile_sprites.add(new_tile)
                 case 'B':
-                    new_tile = BorderTile(row_counter, column_counter, True)
-                    sprites.add(new_tile)
+                    new_tile = BorderTile(row_counter, column_counter, True, False)
+                    tile_sprites.add(new_tile)
                 case 'b':
-                    new_tile = BorderTile(row_counter, column_counter, False)
-                    sprites.add(new_tile)
+                    new_tile = BorderTile(row_counter, column_counter, False, False)
+                    tile_sprites.add(new_tile)
                 case 'W':
                     new_tile = WallTile(row_counter, column_counter, True)
-                    sprites.add(new_tile)
+                    tile_sprites.add(new_tile)
                 case 'w':
                     new_tile = WallTile(row_counter, column_counter, False)
-                    sprites.add(new_tile)
-                case '*':
-                    new_tile = LegalTile(row_counter, column_counter, True)
-                    sprites.add(new_tile)
+                    tile_sprites.add(new_tile)
                 case '.':
-                    new_tile = LegalTile(row_counter, column_counter, True)
-                    sprites.add(new_tile)
+                    pellet = Pellet(row_counter, column_counter)
+                    new_tile = LegalTile(row_counter, column_counter, pellet)
+                    tile_sprites.add(new_tile)
+                    pellet_sprites.add(pellet)
+                case '*':
+                    pellet = PowerPellet(row_counter, column_counter)
+                    new_tile = LegalTile(row_counter, column_counter, pellet)
+                    tile_sprites.add(new_tile)
+                    pellet_sprites.add(pellet)
                 case '-' | '|':
-                    new_tile = LegalTile(row_counter, column_counter, False)
-                    sprites.add(new_tile)
+                    new_tile = LegalTile(row_counter, column_counter, None)
+                    tile_sprites.add(new_tile)
 
             tiles[(row_counter, column_counter)] = new_tile
             column_counter += 1
@@ -137,9 +145,25 @@ class WallTile(Tile):
 
 
 class BorderTile(WallTile):
-    def __init__(self, row, column, is_corner):
+    def __init__(self, row, column, is_corner, is_narrow):
         super().__init__(row, column, is_corner)
 
-        self.image = pygame.image.load(load_asset("border_corner.png")) if is_corner else pygame.image.load(
-            load_asset("border.png"))
+        self.image = pygame.image.load(load_asset("border_narrow_corner.png")) if is_narrow else pygame.image.load(
+            load_asset("border_corner.png")) if is_corner else pygame.image.load(load_asset("border.png"))
+        self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
+
+
+class Pellet(pygame.sprite.Sprite):
+    def __init__(self, row, column):
+        super().__init__()
+        self.points = 10
+        self.image = pygame.image.load(load_asset("pellet.png"))
+        self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
+
+
+class PowerPellet(pygame.sprite.Sprite):
+    def __init__(self, row, column):
+        super().__init__()
+        self.points = 50
+        self.image = pygame.image.load(load_asset("power_pellet.png"))
         self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
