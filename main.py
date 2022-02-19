@@ -16,12 +16,6 @@ GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# the enemies move every 1000ms
-ENEMY_MOVEMENT_TIMING = 250
-
-# create a bunch of events
-move_enemy_event = pygame.USEREVENT + 1
-
 
 def draw_window():
     pygame.display.update()
@@ -31,22 +25,20 @@ def main():
     clock = pygame.time.Clock()
     gameController = GameController.BuildGameController(WIDTH, HEIGHT)
 
-    # set timer for the movement events
-    pygame.time.set_timer(move_enemy_event, ENEMY_MOVEMENT_TIMING)
-
     run = True
     while run:
         WINDOW.fill(BLACK)
         clock.tick(FPS)
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 run = False
-            elif event.type == move_enemy_event:
-                gameController.update(WINDOW)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                run = False
             elif event.type == pygame.KEYDOWN:
                 gameController.input(event.key)
 
-        gameController.update(WINDOW)
+        gameController.update(WINDOW, events)
         gameController.draw(WINDOW)
 
         draw_window()
