@@ -35,7 +35,8 @@ yellow=(255, 255, 0)
 font = "Pong/Pixeled.ttf"
  
 # Sounds
-select_sound = pygame.mixer.Sound("Pong/pong2.wav")
+select_sound = pygame.mixer.Sound("Pong/choose.wav")
+confirm_sound = pygame.mixer.Sound("Pong/chooseThis.wav")
 
 # Game Framerate
 clock = pygame.time.Clock()
@@ -53,12 +54,15 @@ def main_menu():
                 pygame.quit()
                 quit()
             if event.type==pygame.KEYDOWN:
-                pygame.mixer.Sound.play(select_sound)
+                
                 if event.key==pygame.K_UP:
+                    pygame.mixer.Sound.play(select_sound)
                     selected="start"
                 elif event.key==pygame.K_DOWN:
+                    pygame.mixer.Sound.play(select_sound)
                     selected="quit"
                 if event.key==pygame.K_RETURN:
+                    pygame.mixer.Sound.play(confirm_sound)
                     if selected=="start":
                         level_select()
                     if selected=="quit":
@@ -102,20 +106,23 @@ def level_select():
                 pygame.quit()
                 quit()
             if event.type==pygame.KEYDOWN:
-                pygame.mixer.Sound.play(select_sound)
+               
                 if event.key==pygame.K_UP:
+                    pygame.mixer.Sound.play(select_sound)
                     s-=1
                     if(s<0):
                         s=4
                     selected=selection[s]
                     print(selected)
                 elif event.key==pygame.K_DOWN:
+                    pygame.mixer.Sound.play(select_sound)
                     s+=1
                     if (s>4):
                         s=0
                     selected=selection[s]
                     print(selected)
                 if event.key==pygame.K_RETURN:
+                    pygame.mixer.Sound.play(confirm_sound)
                     if selected=="easy":
                         print("Start")
                         level_easy.easyLoop()
