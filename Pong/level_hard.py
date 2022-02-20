@@ -1,4 +1,5 @@
 import pygame, sys
+from pygame.locals import *
 import math
 import random
 import time
@@ -140,7 +141,9 @@ def end(won):
     time.sleep(5)
     
    
-
+#Joystick initialization
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
 
 #Game Loop
 def hardLoop():
@@ -162,6 +165,21 @@ def hardLoop():
                     player_speed -= 7
                 if event.key == pygame.K_UP:
                     player_speed += 7
+            if event.type == JOYAXISMOTION:
+                #Joystick Controls
+                axis = [0, 0]
+        
+                for j in range(2):
+                    axis[j] = joystick.get_axis(j)
+
+                if round(axis[0]) == 1 and axis[1] == 0: #Joystick Up
+                    player_speed -= 7
+                   
+                if round(axis[0]) == -1 and axis[1] == 0: #Joystick Down
+                    player_speed += 7
+                
+                if round(axis[0]) == -1 and axis[0] == 0: #Joystick neutral
+                    player_speed = 0
         
         #Game Logic
         ballMovement()

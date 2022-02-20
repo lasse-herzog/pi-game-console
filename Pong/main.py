@@ -42,6 +42,10 @@ confirm_sound = pygame.mixer.Sound("Pong/chooseThis.wav")
 clock = pygame.time.Clock()
 FPS=30
 
+#Joystick initialization
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
+
 # Main Menu
 def main_menu():
  
@@ -53,8 +57,7 @@ def main_menu():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type==pygame.KEYDOWN:
-                
+            elif event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_UP:
                     pygame.mixer.Sound.play(select_sound)
                     selected="start"
@@ -68,7 +71,26 @@ def main_menu():
                     if selected=="quit":
                         pygame.quit()
                         quit()
- 
+            elif event.type == JOYBUTTONDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                print("Joystick button pressed.")
+                level_select()
+            elif event.type == JOYAXISMOTION:
+                #Joystick Controls
+                axis = [0, 0]
+        
+                for j in range(2):
+                    axis[j] = joystick.get_axis(j)
+
+                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
+                    last_select = pygame.time.get_ticks()
+                    selected="start"
+                  
+                if round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
+                    last_select = pygame.time.get_ticks()
+                    selected="quit"
+                    
+            
         # Main Menu UI
         screen.fill(black)
         title=text_format("PiG-C PONG", font, 45, white)
@@ -105,7 +127,7 @@ def level_select():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type==pygame.KEYDOWN:
+            elif event.type==pygame.KEYDOWN:
                
                 if event.key==pygame.K_UP:
                     pygame.mixer.Sound.play(select_sound)
@@ -135,7 +157,30 @@ def level_select():
                         level_unf.unfLoop()
                     if selected== "back":
                         main_menu()
-                    
+            elif event.type == JOYBUTTONDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                print("Joystick button pressed.")
+                level_select()
+            elif event.type == JOYAXISMOTION:
+                #Joystick Controls
+                axis = [0, 0]
+        
+                for j in range(2):
+                    axis[j] = joystick.get_axis(j)
+
+                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
+                    last_select = pygame.time.get_ticks()
+                    s -= 1
+                    if(s<0):
+                        s=4
+                    selected=selection[s]
+                  
+                if round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
+                    last_select = pygame.time.get_ticks()
+                    s+=1
+                    if (s>4):
+                        s=0
+                    selected=selection[s]      
  
         # Main Menu UI
         screen.fill(black)
