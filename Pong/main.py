@@ -122,12 +122,12 @@ def main_menu():
 
 
 def level_select():
-    menu=True
-    selection=["easy", "medium", "hard", "unfair", "back"]
+    run=True
+    selection=["easy", "medium", "hard", "unfair"]
     s: int =0
     selected = selection[s]
     
-    while menu:
+    while run:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
@@ -138,13 +138,13 @@ def level_select():
                     pygame.mixer.Sound.play(select_sound)
                     s-=1
                     if(s<0):
-                        s=4
+                        s=3
                     selected=selection[s]
                     print(selected)
                 elif event.key==pygame.K_DOWN:
                     pygame.mixer.Sound.play(select_sound)
                     s+=1
-                    if (s>4):
+                    if (s>3):
                         s=0
                     selected=selection[s]
                     print(selected)
@@ -152,20 +152,33 @@ def level_select():
                     pygame.mixer.Sound.play(confirm_sound)
                     if selected=="easy":
                         print("Start")
+                        run = False
                         level_easy.easyLoop()
                     if selected=="medium":
                         print("Coming soon")
+                        run = False
                         level_med.medLoop()
                     if selected=="hard":
                         level_hard.hardLoop()
+                        run = False
                     if selected=="unfair":
+                        run = False
                         level_unf.unfLoop()
-                    if selected== "back":
-                        main_menu()
             elif event.type == JOYBUTTONDOWN:
-                pygame.mixer.Sound.play(select_sound)
-                print("Joystick button pressed.")
-                level_select()
+                pygame.mixer.Sound.play(confirm_sound)
+                if selected=="easy":
+                    print("Start")
+                    run = False
+                    level_easy.easyLoop()
+                if selected=="medium":
+                    run = False
+                    level_med.medLoop()
+                if selected=="hard":
+                    level_hard.hardLoop()
+                    run = False
+                if selected=="unfair":
+                    run = False
+                    level_unf.unfLoop()
             elif event.type == JOYAXISMOTION:
                 #Joystick Controls
                 axis = [0, 0]
@@ -206,29 +219,25 @@ def level_select():
             text_unf=text_format("unfair", font, 35, white)
         else:
             text_unf = text_format("unfair", font, 35, gray)
-        if selected=="back":
-            text_back=text_format("back to menu", font, 35, white)
-        else:
-            text_back = text_format("back to menu", font, 35, gray)
- 
+        
         title_rect=title.get_rect()
         easy_rect=text_easy.get_rect()
         med_rect=text_med.get_rect()
         hard_rect=text_hard.get_rect()
         unf_rect=text_unf.get_rect()
-        back_rect=text_back.get_rect()
- 
+        
         # Main Menu Text
         screen.blit(title, (screen_width/2 - (title_rect[2]/2), 50))
         screen.blit(text_easy, (screen_width/2 - (easy_rect[2]/2), 200))
         screen.blit(text_med, (screen_width/2 - (med_rect[2]/2), 260))
         screen.blit(text_hard, (screen_width/2 - (hard_rect[2]/2), 320))
         screen.blit(text_unf, (screen_width/2 - (unf_rect[2]/2), 380))
-        screen.blit(text_back, (screen_width/2 - (unf_rect[2]/2)-100, 440))
+        
         pygame.display.update()
         clock.tick(FPS)
         pygame.display.set_caption("PiG-C Pong Main Menu")
 
 
 main_menu()
+    
 
