@@ -6,6 +6,7 @@ from pygame.locals import *
 from pong.main import main_menu as pong_menu
 import snake.main
 import space_invaders.main
+import pacman.main
 
 
 def load_asset(asset):
@@ -145,6 +146,7 @@ def game_select():
                         snake.main.gameLoop()
                     if selected == "Pac-Man":
                         print("Pac-Man Start")
+                        pacman.main.start_level()
                     if selected == "Space Invaders":
                         print("Space Invaders Start")
                         space_invaders.main.main()
@@ -197,7 +199,7 @@ def game_select():
         snake_icon = pygame.Rect(55, screen_height / 2 - 110, 50, 10)
         apple = pygame.Rect(screen_width - 181, screen_height - 200, 20, 20)
         # Pac-Man
-        pacman = pygame.image.load(load_asset('pm_pacman.png'))
+        pacman_icon = pygame.image.load(load_asset('pm_pacman.png'))
         superpill = pygame.Rect(822, screen_height / 2 - 105, 15, 15)
         # Space Invaders
         crab = pygame.image.load(load_asset('si_crab.png'))
@@ -234,7 +236,7 @@ def game_select():
                 pygame.draw.ellipse(screen, white, pills_1)
                 pygame.draw.ellipse(screen, white, pills_2)
                 i += 15
-            screen.blit(pacman, (176, screen_height / 2 - 115))
+            screen.blit(pacman_icon, (176, screen_height / 2 - 115))
             pygame.draw.ellipse(screen, white, superpill)
         else:
             text_pacman = text_format("Pac-Man", font, 35, gray)

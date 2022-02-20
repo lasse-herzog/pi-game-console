@@ -27,4 +27,4 @@ class Directions(Enum):
 
 
 def load_asset(asset):
-    return os.path.join("./assets", asset)
+    return os.path.join('pacman', 'assets', asset)

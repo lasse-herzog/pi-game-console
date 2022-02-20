@@ -3,9 +3,9 @@ from enum import Enum
 
 import pygame
 
-import maze
-from pacman import main
-from utils import TILE_SIZE, Directions, load_asset, FPS, GHOST_FRIGHT_SPEED, GHOST_SPEED, PACMAN_SPEED
+import pacman.maze as maze
+import pacman.main as main
+from pacman.utils import TILE_SIZE, Directions, load_asset, FPS, GHOST_FRIGHT_SPEED, GHOST_SPEED, PACMAN_SPEED
 
 
 class Actor(pygame.sprite.Sprite, metaclass=ABCMeta):
