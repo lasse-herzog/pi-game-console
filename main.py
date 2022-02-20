@@ -46,14 +46,16 @@ confirm_sound = pygame.mixer.Sound("chooseThis.wav")
 # Musik/Soundeffekte einrichten
 pygame.mixer.music.load("mainMenu.wav")
 pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.4)
 
 # Game Framerate
 clock = pygame.time.Clock()
 FPS=30
 
 # Main Menu
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
+if pygame.joystick.get_count()>0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
 
 def main_menu(): 
     menu=True
@@ -66,24 +68,12 @@ def main_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-<<<<<<< HEAD
+
             if event.type==pygame.KEYDOWN:
                 pygame.mixer.Sound.play(confirm_sound)
                 game_select()
             if event.type == JOYBUTTONDOWN:
                 pygame.mixer.Sound.play(confirm_sound)
-=======
-            elif event.type == pygame.KEYDOWN:
-                pygame.mixer.Sound.play(select_sound)
-                game_select()
-            elif event.type == JOYBUTTONDOWN:
-                pygame.mixer.Sound.play(select_sound)
-                print("Joystick button pressed.")
->>>>>>> 5702c237ce2a9dbdda4b7776992dba740f33f752
-                game_select()
-            elif event.type == pygame.JOYBUTTONDOWN:
-                pygame.mixer.Sound.play(select_sound)
-                print("Joystick button pressed.")
                 game_select()
             
         # Main Menu UI
@@ -160,6 +150,7 @@ def game_select():
                     axis[j] = joystick.get_axis(j)
 
                 if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
+                    pygame.mixer.Sound.play(select_sound)
                     last_select = pygame.time.get_ticks()
                     s -= 1
                     if(s<0):
@@ -167,6 +158,7 @@ def game_select():
                     selected=selection[s]
                     print(selected)
                 if round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
+                    pygame.mixer.Sound.play(select_sound)
                     last_select = pygame.time.get_ticks()
                     s+=1
                     if (s>4):
@@ -187,36 +179,7 @@ def game_select():
                 if selected== "back":
                     print("back to menu")
                     main_menu()
-<<<<<<< HEAD
         
-        #Joystick Controls
-        axis = [0, 0]
-        for i in range(pygame.joystick.get_count()):
-            joystick = pygame.joystick.Joystick(i)
-            joystick.init()
-
-            axes = joystick.get_numaxes()
-
-            for j in range(axes):
-                axis[j] = joystick.get_axis(j)
-        
-        if (axis[0]==1 and axis[1]==0): #Joystick Up
-            pygame.mixer.Sound.play(select_sound)
-            s-=1
-            if(s<0):
-                s=4
-                selected=selection[s]
-                print(selected)
-        if (axis[0]==-1 and axis[1]==0): #Joystick Down
-            pygame.mixer.Sound.play(select_sound)
-            s+=1
-            if (s>4):
-                    s=0
-                    selected=selection[s]
-                    print(selected)    
-=======
-           
->>>>>>> 5702c237ce2a9dbdda4b7776992dba740f33f752
         #Game demo Rectangles
         #Pong
         paddle = pygame.Rect(screen_width - 31, screen_height/2 - 15, 10, 120)
