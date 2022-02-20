@@ -33,7 +33,7 @@ def main():
 
         draw_window()
 
-    pygame.quit()
+    # pygame.quit()
 
 
 if __name__ == "__main__":
