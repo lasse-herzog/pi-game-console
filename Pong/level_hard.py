@@ -142,8 +142,9 @@ def end(won):
     
    
 #Joystick initialization
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
+if pygame.joystick.get_count()>0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
 
 #Game Loop
 def hardLoop():

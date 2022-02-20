@@ -43,9 +43,11 @@ clock = pygame.time.Clock()
 FPS=30
 
 #Joystick initialization
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
+if pygame.joystick.get_count()>0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
 
+loop = True
 # Main Menu
 def main_menu():
  
@@ -61,20 +63,23 @@ def main_menu():
                 if event.key==pygame.K_UP:
                     pygame.mixer.Sound.play(select_sound)
                     selected="start"
+                    print(selected)
                 elif event.key==pygame.K_DOWN:
                     pygame.mixer.Sound.play(select_sound)
                     selected="quit"
-                if event.key==pygame.K_RETURN:
+                    print(selected)
+                elif event.key==pygame.K_RETURN:
                     pygame.mixer.Sound.play(confirm_sound)
                     if selected=="start":
                         level_select()
-                    if selected=="quit":
-                        pygame.quit()
-                        quit()
+                    elif selected=="quit":
+                        menu = False
             elif event.type == JOYBUTTONDOWN:
                 pygame.mixer.Sound.play(select_sound)
-                print("Joystick button pressed.")
-                level_select()
+                if selected == "start":
+                    level_select()
+                elif selected == "quit":
+                    menu = False
             elif event.type == JOYAXISMOTION:
                 #Joystick Controls
                 axis = [0, 0]
@@ -224,7 +229,6 @@ def level_select():
         clock.tick(FPS)
         pygame.display.set_caption("PiG-C Pong Main Menu")
 
-while True:
-    main_menu()
-pygame.quit()
-quit()
+
+main_menu()
+
