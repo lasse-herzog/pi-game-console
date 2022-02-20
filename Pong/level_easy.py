@@ -24,13 +24,13 @@ pygame.display.set_caption('PiG-C Pong')
 
 #Rects
 ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
-player = pygame.Rect(screen_width - 31, screen_height/2 - 70, 10, 70)
-opponent = pygame.Rect(22, screen_height/2 - 70, 10, 160)
+player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
+opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 
 # Variables
-ball_speedX = 8
-ball_speedY = 8
-opponent_speed = 8
+ball_speedX = 6
+ball_speedY = 6
+opponent_speed = 5
 
 
 #Game Logic Functions
@@ -55,19 +55,19 @@ def ballMovement():
     if ball.colliderect(player) and ball_speedX > 0:
         pygame.mixer.Sound.play(pong_sound)
         if abs(ball.right - player.left) < 10:
-            ball_speedX *= -1.2
+            ball_speedX *= -1
         elif abs(ball.bottom - player.top) < 10 and ball_speedY > 0:
-            ball_speedY *= -1.2
+            ball_speedY *= -1
         elif abs(ball.top - player.bottom) < 10 and ball_speedY < 0:
-            ball_speedY *= -1.2
+            ball_speedY *= -1
     if ball.colliderect(opponent) and ball_speedX < 0:
         pygame.mixer.Sound.play(pong_sound)
         if abs(ball.left - opponent.right) < 10:
-            ball_speedX *= -1.2
+            ball_speedX *= -1
         elif abs(ball.bottom - opponent.top) < 10 and ball_speedY > 0:
-            ball_speedY *= -1.2
+            ball_speedY *= -1
         elif abs(ball.top - opponent.bottom) < 10 and ball_speedY < 0:
-            ball_speedY *= -1.2
+            ball_speedY *= -1
 
 def playerMovement(player_speed):
     player.y += player_speed
@@ -117,14 +117,14 @@ def ball_reset():
 #Text variables
 player_score = 0
 opponent_score = 0
-game_font = pygame.font.Font("Pixeled.ttf", 64)
+game_font = pygame.font.Font("Pong/Pixeled.ttf", 64)
 
 #Timer
 score_time = True
 
 #Sounds
-pong_sound = pygame.mixer.Sound("pong.ogg")
-score_sound = pygame.mixer.Sound("score.ogg")
+pong_sound = pygame.mixer.Sound("Pong/pong.ogg")
+score_sound = pygame.mixer.Sound("Pong/score.ogg")
 
 
 #End Game
@@ -139,14 +139,17 @@ def end(won):
     
     time.sleep(5)
     
-    
 
+
+        
 
 #Game Loop
-def unfLoop():
+def easyLoop():
     player_speed = 0
     loop = True
+  
     while loop:
+       
         #Eventhandling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -154,14 +157,14 @@ def unfLoop():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    player_speed += 8
+                    player_speed += 5
                 if event.key == pygame.K_UP:
-                    player_speed -= 8
+                    player_speed -= 5
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    player_speed -= 8
+                    player_speed -= 5
                 if event.key == pygame.K_UP:
-                    player_speed += 8
+                    player_speed += 5
         
         #Game Logic
         ballMovement()
@@ -176,12 +179,12 @@ def unfLoop():
         pygame.draw.aaline(screen, WHITE, (screen_width/2,0), (screen_width/2, screen_height))
 
         if score_time:
-            if player_score==7:
+            if player_score==5:
                 end(1)
-                loop=False
-            elif opponent_score==7:
+                loop = False
+            elif opponent_score==5:
                 end(0)
-                loop=False
+                loop = False
             else:
                 ball_reset()
 
@@ -191,7 +194,7 @@ def unfLoop():
         screen.blit(player_text, (screen_width/2+35, 0))
         screen.blit(opponent_text, (screen_width/2-85, 0))
 
-
         #Update Screen
         pygame.display.flip()
         clock.tick(60)
+        

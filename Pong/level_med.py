@@ -28,9 +28,9 @@ player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
 opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 
 # Variables
-ball_speedX = 6
-ball_speedY = 6
-opponent_speed = 5
+ball_speedX = 8
+ball_speedY = 8
+opponent_speed = 6.3
 
 
 #Game Logic Functions
@@ -109,22 +109,22 @@ def ball_reset():
     if current_time - score_time < 2100:
         ball_speedX, ball_speedY = 0, 0
     else:
-        ball_speedY = 6 * random.choice((1, -1))
-        ball_speedX = 6 * random.choice((1, -1))
+        ball_speedY = 8 * random.choice((1, -1))
+        ball_speedX = 8 * random.choice((1, -1))
         score_time = None
     
 
 #Text variables
 player_score = 0
 opponent_score = 0
-game_font = pygame.font.Font("Pixeled.ttf", 64)
+game_font = pygame.font.Font("Pong/Pixeled.ttf", 64)
 
 #Timer
 score_time = True
 
 #Sounds
-pong_sound = pygame.mixer.Sound("pong.ogg")
-score_sound = pygame.mixer.Sound("score.ogg")
+pong_sound = pygame.mixer.Sound("Pong/pong.ogg")
+score_sound = pygame.mixer.Sound("Pong/score.ogg")
 
 
 #End Game
@@ -139,17 +139,23 @@ def end(won):
     
     time.sleep(5)
     
-
-
-        
+    
+def countdown(start_ticks, first_time):
+    
+    current_time = pygame.time.get_ticks()
+    seconds = (current_time-start_ticks)/1000
+  
+    if seconds<3:
+    
+        first_time = False
 
 #Game Loop
-def easyLoop():
+def medLoop():
     player_speed = 0
     loop = True
-  
+    start_ticks=pygame.time.get_ticks()
+    first_time = True
     while loop:
-       
         #Eventhandling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -157,14 +163,14 @@ def easyLoop():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    player_speed += 5
+                    player_speed += 6
                 if event.key == pygame.K_UP:
-                    player_speed -= 5
+                    player_speed -= 6
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    player_speed -= 5
+                    player_speed -= 6
                 if event.key == pygame.K_UP:
-                    player_speed += 5
+                    player_speed += 6
         
         #Game Logic
         ballMovement()
@@ -181,10 +187,10 @@ def easyLoop():
         if score_time:
             if player_score==5:
                 end(1)
-                loop = False
+                loop=False
             elif opponent_score==5:
                 end(0)
-                loop = False
+                loop=False
             else:
                 ball_reset()
 
@@ -194,7 +200,10 @@ def easyLoop():
         screen.blit(player_text, (screen_width/2+35, 0))
         screen.blit(opponent_text, (screen_width/2-85, 0))
 
+
+        if(first_time):
+            countdown(start_ticks, first_time)
+
         #Update Screen
         pygame.display.flip()
         clock.tick(60)
-        
