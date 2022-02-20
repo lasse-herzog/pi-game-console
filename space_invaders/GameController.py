@@ -2,7 +2,12 @@ from gzip import READ
 import os
 import pygame
 import pygame.sprite as sprite
-import Entities
+import space_invaders.Entities as Entities
+
+
+def load_asset(asset):
+    return os.path.join('space_invaders', 'assets', asset)
+
 
 # colors
 WHITE = (255, 255, 255)
@@ -38,18 +43,12 @@ class GameController():
         self.selectedMenuItem = 0
         self.countdown = 3
         self.exit = False
-        self.playerImage = pygame.image.load(
-            os.path.join('space_invaders\\assets', 'player_1.png'))
-        self.fontBig = pygame.font.Font(
-            'space_invaders\\Pixeled.ttf', int(45))
-        self.fontMedium = pygame.font.Font(
-            'space_invaders\\Pixeled.ttf', int(35))
-        self.fontSmall = pygame.font.Font(
-            'space_invaders\\Pixeled.ttf', int(15))
-        self.chooseSound = pygame.mixer.Sound(
-            os.path.join('space_invaders\\assets', 'choose.wav'))
-        self.chooseThisSound = pygame.mixer.Sound(
-            os.path.join('space_invaders\\assets', 'chooseThis.wav'))
+        self.playerImage = pygame.image.load(load_asset('player_1.png'))
+        self.fontBig = pygame.font.Font(load_asset('Pixeled.ttf'), int(45))
+        self.fontMedium = pygame.font.Font(load_asset('Pixeled.ttf'), int(35))
+        self.fontSmall = pygame.font.Font(load_asset('Pixeled.ttf'), int(15))
+        self.chooseSound = pygame.mixer.Sound(load_asset('choose.wav'))
+        self.chooseThisSound = pygame.mixer.Sound(load_asset('chooseThis.wav'))
 
     def SetStartingConditions(self):
         self.enemies = Entities.BuildEnemyGroup(self.width, self.height, 50)
@@ -167,7 +166,7 @@ class GameController():
             elif key == pygame.K_SPACE and not self.playerDead:
                 posX = self.player.rect.centerx - Entities.ROCKET_WIDTH
                 posY = self.player.rect.topleft[1] - \
-                    Entities.ENEMY_HEIGHT * Entities.ENEMY_SCALE
+                       Entities.ENEMY_HEIGHT * Entities.ENEMY_SCALE
                 rocket = Entities.Rocket(posX, posY, True)
                 self.playerRockets.add(rocket)
 
@@ -201,13 +200,13 @@ class GameController():
         width, height = lives.get_size()
         scale = height / 2 / Entities.ENEMY_HEIGHT
         image = pygame.transform.scale(
-            self.playerImage, (Entities.PLAYER_WIDTH * scale, height/2))
-        start = self.width - width - (image.get_width()*3) - (spacing * 3)
+            self.playerImage, (Entities.PLAYER_WIDTH * scale, height / 2))
+        start = self.width - width - (image.get_width() * 3) - (spacing * 3)
         screen.blit(lives, (start, top))
 
         for i in range(self.lives):
             screen.blit(image, (start + lives.get_width() +
-                        i*image.get_width() + i*spacing, height / 4))
+                                i * image.get_width() + i * spacing, height / 4))
 
     def draw(self, screen: pygame.Surface):
         if self.isGameOver and not self.playerDead and not self.hasWon:
@@ -247,44 +246,44 @@ class GameController():
 
         title = self.fontBig.render("Space Invaders", 0, (255, 29, 28))
         titleSize = title.get_size()
-        screen.blit(title, ((self.width-titleSize[0]) / 2, startY))
+        screen.blit(title, ((self.width - titleSize[0]) / 2, startY))
 
         startY += titleSize[1] + 40
         option1 = self.fontMedium.render(
             "Continue", 0, WHITE if self.selectedMenuItem == 0 else LIGHT_GRAY)
         option1Size = option1.get_size()
-        screen.blit(option1, ((self.width-option1Size[0]) / 2, startY))
+        screen.blit(option1, ((self.width - option1Size[0]) / 2, startY))
 
         startY += option1Size[1] + 20
         option2 = self.fontMedium.render(
             "Back to menu", 0, WHITE if self.selectedMenuItem == 1 else LIGHT_GRAY)
         option2Size = option2.get_size()
-        screen.blit(option2, ((self.width-option2Size[0]) / 2, startY))
+        screen.blit(option2, ((self.width - option2Size[0]) / 2, startY))
 
         startY += option2Size[1] + 20
         option3 = self.fontMedium.render(
             "Exit", 0, WHITE if self.selectedMenuItem == 2 else LIGHT_GRAY)
         option3Size = option3.get_size()
-        screen.blit(option3, ((self.width-option3Size[0]) / 2, startY))
+        screen.blit(option3, ((self.width - option3Size[0]) / 2, startY))
 
     def DisplayMainMenu(self, screen: pygame.Surface):
         startY = 20
 
         title = self.fontBig.render("Space Invaders", 0, (255, 29, 28))
         titleSize = title.get_size()
-        screen.blit(title, ((self.width-titleSize[0]) / 2, startY))
+        screen.blit(title, ((self.width - titleSize[0]) / 2, startY))
 
         startY += titleSize[1] + 40
         option1 = self.fontMedium.render(
             "Start", 0, WHITE if self.selectedMenuItem == 0 else LIGHT_GRAY)
         option1Size = option1.get_size()
-        screen.blit(option1, ((self.width-option1Size[0]) / 2, startY))
+        screen.blit(option1, ((self.width - option1Size[0]) / 2, startY))
 
         startY += option1Size[1] + 20
         option2 = self.fontMedium.render(
             "Exit", 0, WHITE if self.selectedMenuItem == 1 else LIGHT_GRAY)
         option2Size = option2.get_size()
-        screen.blit(option2, ((self.width-option2Size[0]) / 2, startY))
+        screen.blit(option2, ((self.width - option2Size[0]) / 2, startY))
 
     def DisplayGameOver(self, screen: pygame.Surface):
         startY = 200
@@ -297,7 +296,7 @@ class GameController():
         gameOver = self.fontMedium.render(
             "Game Over", 0, RED)
         option1Size = gameOver.get_size()
-        screen.blit(gameOver, ((self.width-option1Size[0]) / 2, startY))
+        screen.blit(gameOver, ((self.width - option1Size[0]) / 2, startY))
 
     def DisplayWin(self, screen: pygame.Surface):
         startY = 200
@@ -310,7 +309,7 @@ class GameController():
         gameOver = self.fontMedium.render(
             "You have won!", 0, GREEN)
         option1Size = gameOver.get_size()
-        screen.blit(gameOver, ((self.width-option1Size[0]) / 2, startY))
+        screen.blit(gameOver, ((self.width - option1Size[0]) / 2, startY))
 
     def DisplayCountdown(self, screen: pygame.Surface):
         startY = 200
@@ -323,4 +322,4 @@ class GameController():
         gameOver = self.fontMedium.render(
             f"{self.countdown}", 0, RED)
         option1Size = gameOver.get_size()
-        screen.blit(gameOver, ((self.width-option1Size[0]) / 2, startY))
+        screen.blit(gameOver, ((self.width - option1Size[0]) / 2, startY))
