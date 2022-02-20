@@ -1,5 +1,4 @@
 import os
-from turtle import width
 import pygame
 import GameController
 
