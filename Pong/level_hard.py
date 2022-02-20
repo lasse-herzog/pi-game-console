@@ -24,13 +24,13 @@ pygame.display.set_caption('PiG-C Pong')
 
 #Rects
 ball = pygame.Rect(screen_width/2 - 7.5, screen_height/2 - 7.5, 15,15)
-player = pygame.Rect(screen_width - 21, screen_height/2 - 70, 10, 120)
+player = pygame.Rect(screen_width - 121, screen_height/2 - 70, 10, 110)
 opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 
 # Variables
 ball_speedX = 8
 ball_speedY = 8
-opponent_speed = 6.3
+opponent_speed = 6.2
 
 
 #Game Logic Functions
@@ -117,14 +117,14 @@ def ball_reset():
 #Text variables
 player_score = 0
 opponent_score = 0
-game_font = pygame.font.Font("Pixeled.ttf", 64)
+game_font = pygame.font.Font("Pong/Pixeled.ttf", 64)
 
 #Timer
 score_time = True
 
 #Sounds
-pong_sound = pygame.mixer.Sound("pong.ogg")
-score_sound = pygame.mixer.Sound("score.ogg")
+pong_sound = pygame.mixer.Sound("Pong/pong.ogg")
+score_sound = pygame.mixer.Sound("Pong/score.ogg")
 
 
 #End Game
@@ -139,22 +139,13 @@ def end(won):
     
     time.sleep(5)
     
-    
-def countdown(start_ticks, first_time):
-    
-    current_time = pygame.time.get_ticks()
-    seconds = (current_time-start_ticks)/1000
-  
-    if seconds<3:
-    
-        first_time = False
+   
+
 
 #Game Loop
-def medLoop():
+def hardLoop():
     player_speed = 0
-    loop = True
-    start_ticks=pygame.time.get_ticks()
-    first_time = True
+    loop=True
     while loop:
         #Eventhandling
         for event in pygame.event.get():
@@ -163,14 +154,14 @@ def medLoop():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    player_speed += 6
+                    player_speed += 7
                 if event.key == pygame.K_UP:
-                    player_speed -= 6
+                    player_speed -= 7
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    player_speed -= 6
+                    player_speed -= 7
                 if event.key == pygame.K_UP:
-                    player_speed += 6
+                    player_speed += 7
         
         #Game Logic
         ballMovement()
@@ -200,9 +191,6 @@ def medLoop():
         screen.blit(player_text, (screen_width/2+35, 0))
         screen.blit(opponent_text, (screen_width/2-85, 0))
 
-
-        if(first_time):
-            countdown(start_ticks, first_time)
 
         #Update Screen
         pygame.display.flip()

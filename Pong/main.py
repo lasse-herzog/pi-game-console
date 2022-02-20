@@ -32,10 +32,10 @@ blue=(0, 0, 255)
 yellow=(255, 255, 0)
  
 # Game Fonts
-font = "Pixeled.ttf"
+font = "Pong/Pixeled.ttf"
  
 # Sounds
-select_sound = pygame.mixer.Sound("pong2.wav")
+select_sound = pygame.mixer.Sound("Pong/pong2.wav")
 
 # Game Framerate
 clock = pygame.time.Clock()
