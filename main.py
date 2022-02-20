@@ -3,7 +3,13 @@ import os
 import pygame
 from pygame.locals import *
 
+from pong.main import main_menu as pong_menu
 import snake.main
+
+
+def load_asset(asset):
+    return os.path.join('assets', asset)
+
 
 # Game Initialization
 pygame.init()
@@ -40,11 +46,11 @@ gray_b = (25, 25, 75)
 dark_blue = (0, 0, 152)
 
 # Game Fonts
-font = "Pixeled.ttf"
-header_font = "ArcadeClassic-ov2x.ttf"
+font = load_asset('Pixeled.ttf')
+header_font = load_asset('ArcadeClassic-ov2x.ttf')
 
 # Sounds
-select_sound = pygame.mixer.Sound("select.wav")
+select_sound = pygame.mixer.Sound("assets/select.wav")
 
 # Game Framerate
 clock = pygame.time.Clock()
@@ -105,7 +111,7 @@ def main_menu():
 # Game select
 def game_select():
     menu = True
-    selection = ["Pong", "Snake", "Pac-Man", "Space Invaders", "back"]
+    selection = ["pong", "Snake", "Pac-Man", "Space Invaders", "back"]
     s: int = 0
     selected = selection[s]
     last_select = 0
@@ -130,12 +136,12 @@ def game_select():
                     selected = selection[s]
                     print(selected)
                 if event.key == pygame.K_RETURN:
-                    if selected == "Pong":
-                        print("Pong Start")
-
+                    if selected == "pong":
+                        print("pong Start")
+                        pong_menu()
                     if selected == "Snake":
                         print("Snake Start")
-                    snake.main.gameLoop()
+                        snake.main.gameLoop()
                     if selected == "Pac-Man":
                         print("Pac-Man Start")
                     if selected == "Space Invaders":
@@ -167,8 +173,8 @@ def game_select():
                     print(selected)
 
             if event.type == JOYBUTTONDOWN:
-                if selected == "Pong":
-                    print("Pong Start")
+                if selected == "pong":
+                    print("pong Start")
                 if selected == "Snake":
                     print("Snake Start")
                     snake.main.gameLoop()
@@ -181,7 +187,7 @@ def game_select():
                     main_menu()
 
         # Game demo Rectangles
-        # Pong
+        # pong
         paddle = pygame.Rect(screen_width - 31, screen_height / 2 - 15, 10, 120)
         paddle_2 = pygame.Rect(32, screen_height / 2 - 125, 10, 120)
         ball = pygame.Rect(screen_width - 181, screen_height / 2 - 25, 15, 15)
@@ -189,23 +195,23 @@ def game_select():
         snake_icon = pygame.Rect(55, screen_height / 2 - 110, 50, 10)
         apple = pygame.Rect(screen_width - 181, screen_height - 200, 20, 20)
         # Pac-Man
-        pacman = pygame.image.load('pm_pacman.png')
+        pacman = pygame.image.load(load_asset('pm_pacman.png'))
         superpill = pygame.Rect(822, screen_height / 2 - 105, 15, 15)
         # Space Invaders
-        crab = pygame.image.load('si_crab.png')
-        octopus = pygame.image.load('si_octopus.png')
-        player = pygame.image.load('si_player.png')
+        crab = pygame.image.load(load_asset('si_crab.png'))
+        octopus = pygame.image.load(load_asset('si_octopus.png'))
+        player = pygame.image.load(load_asset('si_player.png'))
 
         # Select Menu UI
         screen.fill(black)
         title = text_format("GAME SELECT", font, 45, white)
-        if selected == "Pong":
-            text_pong = text_format("Pong", font, 35, white)
+        if selected == "pong":
+            text_pong = text_format("pong", font, 35, white)
             pygame.draw.rect(screen, white, paddle)
             pygame.draw.rect(screen, white, paddle_2)
             pygame.draw.ellipse(screen, white, ball)
         else:
-            text_pong = text_format("Pong", font, 35, gray)
+            text_pong = text_format("pong", font, 35, gray)
 
         if selected == "Snake":
             text_snake = text_format("Snake", font, 35, green)
@@ -257,7 +263,7 @@ def game_select():
         screen.blit(text_back, (screen_width / 2 - (back_rect[2] / 2), 440))
         pygame.display.update()
         clock.tick(FPS)
-        pygame.display.set_caption("PiG-C Pong Main Menu")
+        pygame.display.set_caption("PiG-C pong Main Menu")
 
 
 main_menu()
