@@ -40,7 +40,7 @@ class Entity(pygame.sprite.Sprite):
 
 class Player(Entity):
     def __init__(self, scale, posX, posY, leftEdge, rightEdge):
-        image = pygame.image.load(os.path.join('Assets', 'player_1.png'))
+        image = pygame.image.load(os.path.join('space_invaders\\assets', 'player_1.png'))
         self.leftEdge = leftEdge
         self.rightEdge = rightEdge
         super().__init__(image, PLAYER_WIDTH * scale,
@@ -238,7 +238,7 @@ class EnemyRow(pygame.sprite.Group):
 
 class Rocket(Entity):
     def __init__(self, posX, posY, moveUp):
-        image = pygame.image.load(os.path.join('Assets', 'rocket_1.png'))
+        image = pygame.image.load(os.path.join('space_invaders\\assets', 'rocket_1.png'))
         image = image if not moveUp else pygame.transform.rotate(image, 180)
         self.direction = -1 if moveUp else 1
         super().__init__(image, ROCKET_WIDTH * ENEMY_SCALE,
@@ -251,8 +251,8 @@ class Rocket(Entity):
 
 class Ufo(Enemy):
     def __init__(self, posX, posY):
-        images = [pygame.image.load(os.path.join('Assets', 'ufo.png')),
-                  pygame.image.load(os.path.join('Assets', 'ufo.png'))]
+        images = [pygame.image.load(os.path.join('space_invaders\\assets', 'ufo.png')),
+                  pygame.image.load(os.path.join('space_invaders\\assets', 'ufo.png'))]
         altImages = images
         super().__init__(images, altImages, CRAB_WIDTH *
                          ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 100)
@@ -260,40 +260,40 @@ class Ufo(Enemy):
 
 class Crab(Enemy):
     def __init__(self, posX, posY):
-        images = [pygame.image.load(os.path.join('Assets', 'crab_white_1.png')),
-                  pygame.image.load(os.path.join('Assets', 'crab_white_2.png'))]
-        altImages = [pygame.image.load(os.path.join('Assets', 'crab_green_1.png')),
-                     pygame.image.load(os.path.join('Assets', 'crab_green_2.png'))]
+        images = [pygame.image.load(os.path.join('space_invaders\\assets', 'crab_white_1.png')),
+                  pygame.image.load(os.path.join('space_invaders\\assets', 'crab_white_2.png'))]
+        altImages = [pygame.image.load(os.path.join('space_invaders\\assets', 'crab_green_1.png')),
+                     pygame.image.load(os.path.join('space_invaders\\assets', 'crab_green_2.png'))]
         super().__init__(images, altImages, CRAB_WIDTH *
                          ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 20)
 
 
 class Octopus(Enemy):
     def __init__(self, posX, posY):
-        images = [pygame.image.load(os.path.join('Assets', 'octopus_white_1.png')),
-                  pygame.image.load(os.path.join('Assets', 'octopus_white_2.png'))]
-        altImages = [pygame.image.load(os.path.join('Assets', 'octopus_green_1.png')),
-                     pygame.image.load(os.path.join('Assets', 'octopus_green_2.png'))]
+        images = [pygame.image.load(os.path.join('space_invaders\\assets', 'octopus_white_1.png')),
+                  pygame.image.load(os.path.join('space_invaders\\assets', 'octopus_white_2.png'))]
+        altImages = [pygame.image.load(os.path.join('space_invaders\\assets', 'octopus_green_1.png')),
+                     pygame.image.load(os.path.join('space_invaders\\assets', 'octopus_green_2.png'))]
         super().__init__(images, altImages, OCTOPUS_WIDTH *
                          ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 10)
 
 
 class Squid(Enemy):
     def __init__(self, posX, posY):
-        images = [pygame.image.load(os.path.join('Assets', 'squid_white_1.png')),
-                  pygame.image.load(os.path.join('Assets', 'squid_white_2.png'))]
-        altImages = [pygame.image.load(os.path.join('Assets', 'squid_green_1.png')),
-                     pygame.image.load(os.path.join('Assets', 'squid_green_2.png'))]
+        images = [pygame.image.load(os.path.join('space_invaders\\assets', 'squid_white_1.png')),
+                  pygame.image.load(os.path.join('space_invaders\\assets', 'squid_white_2.png'))]
+        altImages = [pygame.image.load(os.path.join('space_invaders\\assets', 'squid_green_1.png')),
+                     pygame.image.load(os.path.join('space_invaders\\assets', 'squid_green_2.png'))]
         super().__init__(images, altImages, SQUID_WIDTH *
                          ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 30)
 
 
 class Corpse(Enemy):
     def __init__(self, posX, posY):
-        images = [pygame.image.load(os.path.join('Assets', 'corpse_white.png')),
-                  pygame.image.load(os.path.join('Assets', 'corpse_white.png'))]
-        altImages = [pygame.image.load(os.path.join('Assets', 'corpse_green.png')),
-                     pygame.image.load(os.path.join('Assets', 'corpse_green.png'))]
+        images = [pygame.image.load(os.path.join('space_invaders\\assets', 'corpse_white.png')),
+                  pygame.image.load(os.path.join('space_invaders\\assets', 'corpse_white.png'))]
+        altImages = [pygame.image.load(os.path.join('space_invaders\\assets', 'corpse_green.png')),
+                     pygame.image.load(os.path.join('space_invaders\\assets', 'corpse_green.png'))]
         super().__init__(images, altImages, CORPSE_WIDTH *
                          ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 0)
 

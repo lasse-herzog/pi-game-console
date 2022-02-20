@@ -39,13 +39,13 @@ class GameController():
         self.countdown = 3
         self.exit = False
         self.playerImage = pygame.image.load(
-            os.path.join('Assets', 'player_1.png'))
+            os.path.join('space_invaders\\assets', 'player_1.png'))
         self.fontBig = pygame.font.Font(
-            'Pixeled.ttf', int(45))
+            'space_invaders\\Pixeled.ttf', int(45))
         self.fontMedium = pygame.font.Font(
-            'Pixeled.ttf', int(35))
+            'space_invaders\\Pixeled.ttf', int(35))
         self.fontSmall = pygame.font.Font(
-            'Pixeled.ttf', int(15))
+            'space_invaders\\Pixeled.ttf', int(15))
 
     def SetStartingConditions(self):
         self.enemies = Entities.BuildEnemyGroup(self.width, self.height, 50)
