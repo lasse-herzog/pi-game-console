@@ -39,13 +39,22 @@ class Entity(pygame.sprite.Sprite):
 
 
 class Player(Entity):
-    def __init__(self, scale, posX, posY):
+    def __init__(self, scale, posX, posY, leftEdge, rightEdge):
         image = pygame.image.load(os.path.join('Assets', 'player_1.png'))
+        self.leftEdge = leftEdge
+        self.rightEdge = rightEdge
         super().__init__(image, PLAYER_WIDTH * scale,
                          ENEMY_HEIGHT * scale, posX, posY)
 
     def move(self):
         keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT] and self.rect.left <= self.leftEdge:
+            return
+
+        if keys[pygame.K_RIGHT] and self.rect.right >= self.rightEdge:
+            return
+
         self.rect.move_ip(
             (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * PLAYER_SPEED, 0)
 
@@ -93,10 +102,31 @@ class EnemyGroup():
         self.step = 0
         self.moveRight = True
         self.enemyRows: List['EnemyRow'] = []
+        self.leftEdge = 0
+        self.rightEdge = 0
         super().__init__()
 
     def addRow(self, enemyRow: 'EnemyRow'):
         self.enemyRows.append(enemyRow)
+        self.leftEdge = enemyRow.leftEdge if enemyRow.leftEdge > self.leftEdge else self.leftEdge
+        self.rightEdge = enemyRow.rightEdge if enemyRow.rightEdge > self.rightEdge else self.rightEdge
+
+    def isEmpty(self):
+        for row in self.enemyRows:
+            for enemy in row.sprites():
+                return False
+
+        return True
+
+    def hasReached(self, player: Player):
+        for row in reversed(self.enemyRows):
+            for enemy in row.sprites():
+                if enemy.rect.bottom > player.rect.top:
+                    return True
+                else:
+                    break
+
+        return False
 
     def move(self, screen: pygame.Surface):
         hasReachedBorder = False
@@ -128,8 +158,8 @@ class EnemyGroup():
             for enemy in row.sprites():
                 isUnobstructed = True
                 for unobstructed in unobstructedEnemies:
-                    if (unobstructed.rect.left > enemy.rect.left and unobstructed.rect.right > enemy.rect.right) \
-                            or (unobstructed.rect.left < enemy.rect.left and unobstructed.rect.right < enemy.rect.right):
+                    if (enemy.rect.left < unobstructed.rect.left and enemy.rect.right < unobstructed.rect.left) \
+                            or (enemy.rect.left > unobstructed.rect.right and enemy.rect.right > unobstructed.rect.right):
                         continue
                     else:
                         isUnobstructed = False
@@ -149,7 +179,7 @@ class EnemyGroup():
 
         posX = shooter.rect.centerx - ROCKET_WIDTH
         posY = shooter.rect.topleft[1] + ENEMY_HEIGHT * ENEMY_SCALE
-        return Rocket(ENEMY_SCALE, posX, posY, False)
+        return Rocket(posX, posY, False)
 
     # handles collisions and returns the score
 
@@ -161,7 +191,7 @@ class EnemyGroup():
             for enemy in (pygame.sprite.groupcollide(group, row, True, True).values()):
                 score += row.score
                 corpses.append(
-                    Corpse(ENEMY_SCALE, enemy[0].rect.left, enemy[0].rect.top))
+                    Corpse(enemy[0].rect.left, enemy[0].rect.top))
 
         return (score, corpses)
 
@@ -207,12 +237,12 @@ class EnemyRow(pygame.sprite.Group):
 
 
 class Rocket(Entity):
-    def __init__(self, scale, posX, posY, moveUp):
+    def __init__(self, posX, posY, moveUp):
         image = pygame.image.load(os.path.join('Assets', 'rocket_1.png'))
         image = image if not moveUp else pygame.transform.rotate(image, 180)
         self.direction = -1 if moveUp else 1
-        super().__init__(image, ROCKET_WIDTH * scale,
-                         ENEMY_HEIGHT * scale, posX, posY)
+        super().__init__(image, ROCKET_WIDTH * ENEMY_SCALE,
+                         ENEMY_HEIGHT * ENEMY_SCALE, posX, posY)
 
     def update(self, screen: pygame.Surface):
         self.rect.move_ip(0, ROCKET_SPEED * self.direction)
@@ -220,58 +250,58 @@ class Rocket(Entity):
 
 
 class Ufo(Enemy):
-    def __init__(self, scale, posX, posY):
+    def __init__(self, posX, posY):
         images = [pygame.image.load(os.path.join('Assets', 'ufo.png')),
                   pygame.image.load(os.path.join('Assets', 'ufo.png'))]
         altImages = images
         super().__init__(images, altImages, CRAB_WIDTH *
-                         scale, ENEMY_HEIGHT * scale, posX, posY, 100)
+                         ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 100)
 
 
 class Crab(Enemy):
-    def __init__(self, scale, posX, posY):
+    def __init__(self, posX, posY):
         images = [pygame.image.load(os.path.join('Assets', 'crab_white_1.png')),
                   pygame.image.load(os.path.join('Assets', 'crab_white_2.png'))]
         altImages = [pygame.image.load(os.path.join('Assets', 'crab_green_1.png')),
                      pygame.image.load(os.path.join('Assets', 'crab_green_2.png'))]
         super().__init__(images, altImages, CRAB_WIDTH *
-                         scale, ENEMY_HEIGHT * scale, posX, posY, 20)
+                         ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 20)
 
 
 class Octopus(Enemy):
-    def __init__(self, scale, posX, posY):
+    def __init__(self, posX, posY):
         images = [pygame.image.load(os.path.join('Assets', 'octopus_white_1.png')),
                   pygame.image.load(os.path.join('Assets', 'octopus_white_2.png'))]
         altImages = [pygame.image.load(os.path.join('Assets', 'octopus_green_1.png')),
                      pygame.image.load(os.path.join('Assets', 'octopus_green_2.png'))]
         super().__init__(images, altImages, OCTOPUS_WIDTH *
-                         scale, ENEMY_HEIGHT * scale, posX, posY, 10)
+                         ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 10)
 
 
 class Squid(Enemy):
-    def __init__(self, scale, posX, posY):
+    def __init__(self, posX, posY):
         images = [pygame.image.load(os.path.join('Assets', 'squid_white_1.png')),
                   pygame.image.load(os.path.join('Assets', 'squid_white_2.png'))]
         altImages = [pygame.image.load(os.path.join('Assets', 'squid_green_1.png')),
                      pygame.image.load(os.path.join('Assets', 'squid_green_2.png'))]
         super().__init__(images, altImages, SQUID_WIDTH *
-                         scale, ENEMY_HEIGHT * scale, posX, posY, 30)
+                         ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 30)
 
 
 class Corpse(Enemy):
-    def __init__(self, scale, posX, posY):
+    def __init__(self, posX, posY):
         images = [pygame.image.load(os.path.join('Assets', 'corpse_white.png')),
                   pygame.image.load(os.path.join('Assets', 'corpse_white.png'))]
         altImages = [pygame.image.load(os.path.join('Assets', 'corpse_green.png')),
                      pygame.image.load(os.path.join('Assets', 'corpse_green.png'))]
         super().__init__(images, altImages, CORPSE_WIDTH *
-                         scale, ENEMY_HEIGHT * scale, posX, posY, 0)
+                         ENEMY_SCALE, ENEMY_HEIGHT * ENEMY_SCALE, posX, posY, 0)
 
 
 def BuildEnemyGroup(availableWidth, availableHeight, posYStart) -> EnemyGroup:
     group = EnemyGroup()
     formationHeight = 6 * ENEMY_HEIGHT + 5 * ENEMY_HEIGHT  # rows + space
-    formationHeight += 8 * ENEMY_HEIGHT  # space down
+    formationHeight += 12 * ENEMY_HEIGHT  # space down
     formationWidth = 11 * ENEMY_WIDTH + 10 * \
         ENEMY_WIDTH / 4  # 11 enemies + space between them
     formationSpace = 2 * ENEMY_WIDTH  # space left and right
@@ -321,12 +351,12 @@ def BuildEnemy(row, posX, posY) -> Enemy:
     enemy: Enemy
 
     if row == 0:
-        enemy = Squid(ENEMY_SCALE, posX, posY)
+        enemy = Squid(posX, posY)
     elif row == 1:
-        enemy = Squid(ENEMY_SCALE, posX, posY)
+        enemy = Squid(posX, posY)
     elif row >= 2 and row <= 3:
-        enemy = Crab(ENEMY_SCALE, posX, posY)
+        enemy = Crab(posX, posY)
     elif row >= 4 and row <= 5:
-        enemy = Octopus(ENEMY_SCALE, posX, posY)
+        enemy = Octopus(posX, posY)
 
     return enemy
