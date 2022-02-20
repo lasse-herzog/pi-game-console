@@ -5,6 +5,7 @@ from pygame.locals import *
 
 from pong.main import main_menu as pong_menu
 import snake.main
+import space_invaders.main
 
 
 def load_asset(asset):
@@ -146,6 +147,7 @@ def game_select():
                         print("Pac-Man Start")
                     if selected == "Space Invaders":
                         print("Space Invaders Start")
+                        space_invaders.main.main()
                     if selected == "back":
                         print("back to menu")
                         main_menu()

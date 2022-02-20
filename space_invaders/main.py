@@ -1,12 +1,16 @@
 import os
 import pygame
-import GameController
+import space_invaders.GameController as GameController
 
 WIDTH, HEIGHT = 1024, 600
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
 
 BLACK = (0, 0, 0)
+
+
+def load_asset(asset):
+    return os.path.join('space_invaders', 'assets', asset)
 
 
 def draw_window():
@@ -19,9 +23,8 @@ def main():
     pygame.mixer.quit()
     pygame.mixer.init(22050, -16, 2, 1024)
     clock = pygame.time.Clock()
-    file = os.path.join('space_invaders\\assets', 'SpaceInvaders.wav')
     pygame.mixer.music.set_volume(.1)
-    pygame.mixer.music.load(file)
+    pygame.mixer.music.load(load_asset('SpaceInvaders.wav'))
     pygame.mixer.music.play(-1)
     gameController = GameController.GameController(WIDTH, HEIGHT)
 
