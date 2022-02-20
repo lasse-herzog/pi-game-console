@@ -13,9 +13,9 @@ pygame.joystick.init()
 os.environ['SDL_VIDEO_CENTERED'] = '1'
  
 # Game Resolution
-screen_width=1024
-screen_height=600
-screen=pygame.display.set_mode((screen_width, screen_height))
+screen_width = 1024
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
  
 # Text Renderer
 def text_format(message, textFont, textSize, textColor):
@@ -52,25 +52,40 @@ clock = pygame.time.Clock()
 FPS=30
 
 # Main Menu
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
 
-
-def main_menu():
- 
+def main_menu(): 
     menu=True
     selected="start"
     start_time = pygame.time.get_ticks()
     show_text = 0
+    
     while menu:
         for event in pygame.event.get(): #Keyboard Controls
-            if event.type==pygame.QUIT:
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+<<<<<<< HEAD
             if event.type==pygame.KEYDOWN:
                 pygame.mixer.Sound.play(confirm_sound)
                 game_select()
             if event.type == JOYBUTTONDOWN:
                 pygame.mixer.Sound.play(confirm_sound)
+=======
+            elif event.type == pygame.KEYDOWN:
+                pygame.mixer.Sound.play(select_sound)
                 game_select()
+            elif event.type == JOYBUTTONDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                print("Joystick button pressed.")
+>>>>>>> 5702c237ce2a9dbdda4b7776992dba740f33f752
+                game_select()
+            elif event.type == pygame.JOYBUTTONDOWN:
+                pygame.mixer.Sound.play(select_sound)
+                print("Joystick button pressed.")
+                game_select()
+            
         # Main Menu UI
         screen.fill(black)
         title=text_format("PYCO", header_font, 100, white)
@@ -100,6 +115,7 @@ def game_select():
     selection=["Pong", "Snake", "Pac-Man", "Space Invaders", "back"]
     s: int =0
     selected = selection[s]
+    last_select = 0
     
     while menu:
         for event in pygame.event.get():
@@ -136,6 +152,28 @@ def game_select():
                     if selected== "back":
                         print("back to menu")
                         main_menu()
+            if event.type == JOYAXISMOTION:
+                #Joystick Controls
+                axis = [0, 0]
+        
+                for j in range(2):
+                    axis[j] = joystick.get_axis(j)
+
+                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
+                    last_select = pygame.time.get_ticks()
+                    s -= 1
+                    if(s<0):
+                        s=4
+                    selected=selection[s]
+                    print(selected)
+                if round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
+                    last_select = pygame.time.get_ticks()
+                    s+=1
+                    if (s>4):
+                        s=0
+                    selected=selection[s]
+                    print(selected) 
+                
             if event.type == JOYBUTTONDOWN:
                 pygame.mixer.Sound.play(confirm_sound)
                 if selected=="Pong":
@@ -149,6 +187,7 @@ def game_select():
                 if selected== "back":
                     print("back to menu")
                     main_menu()
+<<<<<<< HEAD
         
         #Joystick Controls
         axis = [0, 0]
@@ -175,6 +214,9 @@ def game_select():
                     s=0
                     selected=selection[s]
                     print(selected)    
+=======
+           
+>>>>>>> 5702c237ce2a9dbdda4b7776992dba740f33f752
         #Game demo Rectangles
         #Pong
         paddle = pygame.Rect(screen_width - 31, screen_height/2 - 15, 10, 120)
