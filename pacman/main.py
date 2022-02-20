@@ -3,12 +3,20 @@ import sys
 import pygame
 from pygame.locals import *
 
-import actors
-import maze
+import pacman.actors as actors
+import pacman.maze as maze
 from pacman.utils import Directions, TILE_SIZE, GHOST_PHASES_0, GHOST_PHASES_1, GHOST_PHASES_2, FPS
 
+pygame.init()
 level = 1
 last_phase_change = 0
+font = pygame.freetype.SysFont("Pixeled", TILE_SIZE)
+window = pygame.display.set_mode((448, 576))
+pygame.display.set_caption('Pacman')
+screen = pygame.display.get_surface()
+background = screen.convert().fill((0, 0, 0))
+clock = pygame.time.Clock()
+actor_sprites = pygame.sprite.RenderPlain(actors.pacman, actors.ghosts)
 
 
 def input(events):
