@@ -40,7 +40,12 @@ font = "Pixeled.ttf"
 header_font = "ArcadeClassic-ov2x.ttf"
 
 # Sounds
-select_sound = pygame.mixer.Sound("select.wav")
+select_sound = pygame.mixer.Sound("choose.wav")
+confirm_sound = pygame.mixer.Sound("chooseThis.wav")
+
+# Musik/Soundeffekte einrichten
+pygame.mixer.music.load("mainMenu.wav")
+pygame.mixer.music.play(-1,0.0)
 
 # Game Framerate
 clock = pygame.time.Clock()
@@ -61,14 +66,14 @@ def main_menu():
                 pygame.quit()
                 quit()
             if event.type==pygame.KEYDOWN:
-                pygame.mixer.Sound.play(select_sound)
+                pygame.mixer.Sound.play(confirm_sound)
                 game_select()
             if event.type == JOYBUTTONDOWN:
-                pygame.mixer.Sound.play(select_sound)
+                pygame.mixer.Sound.play(confirm_sound)
                 game_select()
         # Main Menu UI
         screen.fill(black)
-        title=text_format("RETRO PiG", header_font, 100, white)
+        title=text_format("PYCO", header_font, 100, white)
         text_start=text_format("Press any button", font, 20, white)
 
         title_rect=title.get_rect()
@@ -102,20 +107,22 @@ def game_select():
                 pygame.quit()
                 quit()
             if event.type==pygame.KEYDOWN:
-                pygame.mixer.Sound.play(select_sound)
                 if event.key==pygame.K_UP:
+                    pygame.mixer.Sound.play(select_sound)
                     s-=1
                     if(s<0):
                         s=4
                     selected=selection[s]
                     print(selected)
                 elif event.key==pygame.K_DOWN:
+                    pygame.mixer.Sound.play(select_sound)
                     s+=1
                     if (s>4):
                         s=0
                     selected=selection[s]
                     print(selected)
                 if event.key==pygame.K_RETURN:
+                    pygame.mixer.Sound.play(confirm_sound)
                     if selected=="Pong":
                         print("Pong Start")
                         
@@ -130,6 +137,7 @@ def game_select():
                         print("back to menu")
                         main_menu()
             if event.type == JOYBUTTONDOWN:
+                pygame.mixer.Sound.play(confirm_sound)
                 if selected=="Pong":
                     print("Pong Start")
                 if selected=="Snake":
@@ -154,12 +162,14 @@ def game_select():
                 axis[j] = joystick.get_axis(j)
         
         if (axis[0]==1 and axis[1]==0): #Joystick Up
+            pygame.mixer.Sound.play(select_sound)
             s-=1
             if(s<0):
                 s=4
                 selected=selection[s]
                 print(selected)
         if (axis[0]==-1 and axis[1]==0): #Joystick Down
+            pygame.mixer.Sound.play(select_sound)
             s+=1
             if (s>4):
                     s=0
