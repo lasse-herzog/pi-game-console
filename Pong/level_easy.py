@@ -1,4 +1,5 @@
 import pygame, sys
+from pygame.locals import *
 import math
 import random
 import time
@@ -31,7 +32,6 @@ opponent = pygame.Rect(12, screen_height/2 - 70, 10, 120)
 ball_speedX = 6
 ball_speedY = 6
 opponent_speed = 5
-
 
 #Game Logic Functions
 def ballMovement():
@@ -139,9 +139,9 @@ def end(won):
     
     time.sleep(5)
     
-
-
-        
+#Joystick initialization
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
 
 #Game Loop
 def easyLoop():
@@ -165,7 +165,22 @@ def easyLoop():
                     player_speed -= 5
                 if event.key == pygame.K_UP:
                     player_speed += 5
+            if event.type == JOYAXISMOTION:
+                #Joystick Controls
+                axis = [0, 0]
         
+                for j in range(2):
+                    axis[j] = joystick.get_axis(j)
+
+                if round(axis[0]) == 1 and axis[1] == 0: #Joystick Up
+                    player_speed -= 5
+                   
+                if round(axis[0]) == -1 and axis[1] == 0: #Joystick Down
+                    player_speed += 5
+                
+                if round(axis[0]) == -1 and axis[0] == 0: #Joystick neutral
+                    player_speed = 0
+
         #Game Logic
         ballMovement()
         playerMovement(player_speed)
