@@ -46,6 +46,10 @@ class GameController():
             'space_invaders\\Pixeled.ttf', int(35))
         self.fontSmall = pygame.font.Font(
             'space_invaders\\Pixeled.ttf', int(15))
+        self.chooseSound = pygame.mixer.Sound(
+            os.path.join('space_invaders\\assets', 'choose.wav'))
+        self.chooseThisSound = pygame.mixer.Sound(
+            os.path.join('space_invaders\\assets', 'chooseThis.wav'))
 
     def SetStartingConditions(self):
         self.enemies = Entities.BuildEnemyGroup(self.width, self.height, 50)
@@ -126,26 +130,35 @@ class GameController():
                 self.isPaused = False
                 self.selectedMenuItem = 0
             elif key == pygame.K_UP:
+                self.chooseSound.play()
                 self.selectedMenuItem = 0 if self.selectedMenuItem <= 0 else self.selectedMenuItem - 1
             elif key == pygame.K_DOWN:
+                self.chooseSound.play()
                 self.selectedMenuItem = 2 if self.selectedMenuItem >= 2 else self.selectedMenuItem + 1
             elif key == pygame.K_SPACE and self.selectedMenuItem == 0:
+                self.chooseThisSound.play()
                 self.isPaused = False
             elif key == pygame.K_SPACE and self.selectedMenuItem == 1:
+                self.chooseThisSound.play()
                 self.isGameOver = True
                 self.isPaused = False
                 self.selectedMenuItem = 0
             elif key == pygame.K_SPACE and self.selectedMenuItem == 2:
+                self.chooseThisSound.play()
                 self.exit = True
         elif self.isGameOver and not self.playerDead and not self.hasWon:
             if key == pygame.K_UP:
+                self.chooseSound.play()
                 self.selectedMenuItem = 0
             elif key == pygame.K_DOWN:
+                self.chooseSound.play()
                 self.selectedMenuItem = 1
             elif key == pygame.K_SPACE and self.selectedMenuItem == 0:
+                self.chooseThisSound.play()
                 self.SetStartingConditions()
                 self.isGameOver = False
             elif key == pygame.K_SPACE and self.selectedMenuItem == 1:
+                self.chooseThisSound.play()
                 self.exit = True
         elif not self.isGameOver:
             if key == pygame.K_ESCAPE:
@@ -206,7 +219,7 @@ class GameController():
         self.playerRockets.draw(screen)
         self.enemyRockets.draw(screen)
         self.corpses.draw(screen)
-        
+
         if self.hasWon:
             self.DisplayWin(screen)
             return
@@ -285,7 +298,7 @@ class GameController():
             "Game Over", 0, RED)
         option1Size = gameOver.get_size()
         screen.blit(gameOver, ((self.width-option1Size[0]) / 2, startY))
-        
+
     def DisplayWin(self, screen: pygame.Surface):
         startY = 200
 

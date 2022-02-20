@@ -1,3 +1,4 @@
+import os
 from turtle import width
 import pygame
 import GameController
@@ -14,7 +15,15 @@ def draw_window():
 
 
 def main():
+    pygame.mixer.pre_init(22050, -16, 2, 1024)
+    pygame.init()
+    pygame.mixer.quit()
+    pygame.mixer.init(22050, -16, 2, 1024)
     clock = pygame.time.Clock()
+    file = os.path.join('space_invaders\\assets', 'SpaceInvaders.wav')
+    pygame.mixer.music.set_volume(.1)
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play(-1)
     gameController = GameController.GameController(WIDTH, HEIGHT)
 
     run = True
