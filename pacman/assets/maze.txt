@@ -13,9 +13,9 @@ b . . . . . . w w . . . . w w . . . . w w . . . . . . b
 B b b b b N . w W w w W | w w | W w w W w . N b b b b B
 X X X X X b . w W w w W | W W | W w w W w . b X X X X X
 X X X X X b . w w - - - - - - - - - - w w . b X X X X X
-X X X X X b . w w - N b b = = b b N - w w . b X X X X X
-b b b b b N . W W - b X X X X X X b - W W . N b b b b b
-t - - - - - . - - - b X X X X X X b - - - . - - - - - t
+X X X X X b . w w - N b b = - b b N - w w . b X X X X X
+b b b b b N . W W - b X X X - X X b - W W . N b b b b b
+t - - - - - . - - - b X - - - - X b - - - . - - - - - t
 b b b b b N . W W - b X X X X X X b - W W . N b b b b b
 X X X X X b . w w - N b b b b b b N - w w . b X X X X X
 X X X X X b . w w - - - - - - - - - - w w . b X X X X X

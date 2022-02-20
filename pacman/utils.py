@@ -12,6 +12,7 @@ GHOST_PHASES_2 = [5, 20, 5, 20, 5, 1037, 1 / 60]
 
 PACMAN_SPEED = [128, 144, 160, 144]
 GHOST_SPEED = [120, 136, 152, 152]
+GHOST_FRIGHT_SPEED = [80, 88, 96, 152]
 
 
 class Directions(Enum):

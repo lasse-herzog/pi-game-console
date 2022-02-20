@@ -7,6 +7,9 @@ import actors
 import maze
 from pacman.utils import Directions, TILE_SIZE, GHOST_PHASES_0, GHOST_PHASES_1, GHOST_PHASES_2, FPS
 
+level = 1
+last_phase_change = 0
+
 
 def input(events):
     for event in events:
@@ -23,10 +26,7 @@ def input(events):
                 return Directions.DOWN
 
 
-last_phase_change = 0
-
-
-def start_level(level):
+def start_level():
     global last_phase_change
     phase = 1
     last_phase_change = pygame.time.get_ticks()
@@ -77,9 +77,5 @@ if __name__ == '__main__':
     screen = pygame.display.get_surface()
     background = screen.convert().fill((0, 0, 0))
     clock = pygame.time.Clock()
-
-    # maze.load_level("maze.txt")
-
     actor_sprites = pygame.sprite.RenderPlain(actors.pacman, actors.ghosts)
-
-    start_level(1)
+    start_level()
