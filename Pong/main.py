@@ -98,7 +98,7 @@ def main_menu():
             
         # Main Menu UI
         screen.fill(black)
-        title=text_format("PiG-C PONG", font, 45, white)
+        title=text_format("PYCO PONG", font, 45, white)
         if selected=="start":
             text_start=text_format("START", font, 35, white)
         else:
