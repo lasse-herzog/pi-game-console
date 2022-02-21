@@ -199,7 +199,7 @@ def startWINDOW():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:
+            if event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                 time.sleep(0.5)
                 return
 
