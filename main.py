@@ -172,21 +172,20 @@ def game_select():
     def select_option():
         pygame.mixer.Sound.play(choose_selection_sound)
 
+        if selection is MainMenuOptions.BACK:
+            return True
+
+        pygame.mixer.music.fadeout(3)
+
         match selection:
             case MainMenuOptions.PONG:
-                pygame.mixer.music.fadeout(3)
                 pong.main.main_menu()
             case MainMenuOptions.SNAKE:
-                pygame.mixer.music.fadeout(3)
                 snake.main.gameLoop()
             case MainMenuOptions.PAC_MAN:
-                pygame.mixer.music.fadeout(3)
                 pacman.main.start_level()
             case MainMenuOptions.SPACE_INVADERS:
-                pygame.mixer.music.fadeout(3)
                 space_invaders.main.main()
-            case MainMenuOptions.BACK:
-                return True
 
     def redraw():
         pong_text = pong_unselected_text
