@@ -129,14 +129,36 @@ class Ghost(Actor):
     def __init__(self):
         super().__init__()
         self.direction = Directions.LEFT
+        self.leaving_home = False
         self.new_tile = None
         self.next_tile = None
+        self.reverse_direction_on_next_tile = False
         self.state = GhostStates.HOME
 
     @property
     @abstractmethod
     def corner_tile(self):
         pass
+
+    @property
+    @abstractmethod
+    def default_image(self):
+        pass
+
+    @property
+    @abstractmethod
+    def home_exit_tile(self):
+        pass
+
+    @property
+    def image(self):
+        match self.state:
+            case GhostStates.FRIGHT:
+                return pygame.image.load(load_asset("frightened_ghost.png"))
+            case GhostStates.DEAD:
+                return pygame.image.load(load_asset("ghost_eyes.png"))
+            case _:
+                return self.default_image
 
     @property
     @abstractmethod
@@ -154,6 +176,9 @@ class Ghost(Actor):
         else:
             speed_index = 3
 
+        if type(self.tile) is maze.TunnelTile or type(self.tile) is maze.DoorTile:
+            return 50
+
         match self.state:
             case GhostStates.FRIGHT:
                 return GHOST_FRIGHT_SPEED[speed_index]
@@ -169,6 +194,8 @@ class Ghost(Actor):
 
     @property
     def target_tile(self):
+        if self.leaving_home:
+            return maze.tiles[14, 14]
         match self.state:
             case GhostStates.SCATTER:
                 return self.corner_tile
@@ -179,13 +206,12 @@ class Ghost(Actor):
 
     def go_home(self):
         self.state = GhostStates.DEAD
-        self.image = pygame.image.load(load_asset("ghost_eyes.png"))
 
     def exit_home(self):
-        self.state = GhostStates.SCATTER
+        self.leaving_home = True
+        self.state = ghost_phase
         self.new_tile = self.start_tile
-        # self.next_tile = maze.tiles[
-        #    self.start_tile.column - pinky.start_tile.column, self.start_tile.row - pinky.start_tile.row]
+        self.next_tile = self.home_exit_tile
 
     def pathfind(self):
         neighbour_tiles = self.next_tile.get_legal_neighbours()
@@ -194,7 +220,12 @@ class Ghost(Actor):
             neighbour_tiles.remove(self.tile)
         if self.new_tile in neighbour_tiles:
             neighbour_tiles.remove(self.new_tile)
+        for tile in neighbour_tiles:
+            if type(tile) is maze.DoorTile and not self.leaving_home and self.state is not GhostStates.DEAD:
+                neighbour_tiles.remove(tile)
 
+        if len(neighbour_tiles) == 0:
+            return self.new_tile
         tile_with_smallest_distance = neighbour_tiles[0]
 
         for tile in neighbour_tiles[1:]:
@@ -206,10 +237,8 @@ class Ghost(Actor):
     def reverse_direction(self):
         super().reverse_direction()
 
-        self.next_tile = self.tile
-        self.pathfind()
-
-        self.new_tile = self.next_tile
+        self.new_tile = self.tile.get_neighbour(self.direction)
+        self.next_tile = self.new_tile
         self.pathfind()
 
     def update(self):
@@ -218,21 +247,25 @@ class Ghost(Actor):
 
         for i in range(pixels):
             if self.tile is self.new_tile:
-                match self.state:
-                    case GhostStates.HOME:
-                        if self.personal_dot_limit < 244 - len(maze.pellet_sprites):
-                            self.exit_home()
-                        if self.tile is self.start_tile:
-                            self.new_tile = self.tile.get_neighbour(self.direction)
-                        else:
-                            self.new_tile = self.start_tile
+                if self.reverse_direction_on_next_tile:
+                    self.reverse_direction_on_next_tile = False
+                    self.reverse_direction()
+                if self.tile is self.target_tile:
+                    if self.leaving_home:
+                        self.leaving_home = False
+                    elif self.state is GhostStates.DEAD:
+                        self.state = GhostStates.HOME
+                if self.state is GhostStates.HOME:
+                    if self.personal_dot_limit < 244 - len(maze.pellet_sprites):
+                        self.exit_home()
+                    elif self.tile is self.start_tile:
+                        self.new_tile = self.tile.get_neighbour(self.direction)
+                    else:
+                        self.new_tile = self.start_tile
                         self.direction = self.tile.get_direction(self.new_tile)
-                    case GhostStates.DEAD:
-                        if self.tile is self.start_tile:
-                            self.state = GhostStates.HOME
-                    case _:
-                        self.new_tile = self.next_tile
-                        self.pathfind()
+                else:
+                    self.new_tile = self.next_tile
+                    self.pathfind()
 
             if self.position_in_tile == TILE_SIZE // 2:
                 self.direction = self.tile.get_direction(self.new_tile)
@@ -244,17 +277,24 @@ class Blinky(Ghost):
     def __init__(self):
         super().__init__()
         self.state = GhostStates.SCATTER
-        self.image = pygame.image.load(load_asset("blinky.png"))
         self.rect = self.image.get_rect(
-            topleft=((self.start_tile.column - 1) * TILE_SIZE, self.start_tile.row * TILE_SIZE - TILE_SIZE // 2))
+            topleft=((self.start_tile.column - 1) * TILE_SIZE, (self.start_tile.row - 3) * TILE_SIZE - TILE_SIZE // 2))
 
-        self.new_tile = self.start_tile.get_neighbour(self.direction)
+        self.new_tile = self.tile.get_neighbour(self.direction)
         self.next_tile = self.new_tile
         self.pathfind()
 
     @property
     def corner_tile(self):
-        return maze.tiles[26, 4]
+        return maze.tiles[(4, 26)]
+
+    @property
+    def default_image(self):
+        return pygame.image.load(load_asset("blinky.png"))
+
+    @property
+    def home_exit_tile(self):
+        return self.start_tile.get_neighbour(Directions.UP)
 
     @property
     def personal_dot_limit(self):
@@ -262,13 +302,12 @@ class Blinky(Ghost):
 
     @property
     def start_tile(self):
-        return maze.tiles[(14, 14)]
+        return maze.tiles[(17, 14)]
 
 
 class Pinky(Ghost):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(load_asset("pinky.png"))
         self.rect = self.image.get_rect(
             topleft=((self.start_tile.column - 1) * TILE_SIZE, self.start_tile.row * TILE_SIZE - TILE_SIZE // 2))
 
@@ -278,7 +317,15 @@ class Pinky(Ghost):
 
     @property
     def corner_tile(self):
-        return maze.tiles[1, 4]
+        return maze.tiles[(4, 1)]
+
+    @property
+    def default_image(self):
+        return pygame.image.load(load_asset("pinky.png"))
+
+    @property
+    def home_exit_tile(self):
+        return self.start_tile.get_neighbour(Directions.UP)
 
     @property
     def personal_dot_limit(self):
@@ -292,7 +339,6 @@ class Pinky(Ghost):
 class Inky(Ghost):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(load_asset("inky.png"))
         self.rect = self.image.get_rect(
             topleft=((self.start_tile.column - 1) * TILE_SIZE, self.start_tile.row * TILE_SIZE - TILE_SIZE // 2))
 
@@ -302,7 +348,15 @@ class Inky(Ghost):
 
     @property
     def corner_tile(self):
-        return maze.tiles[26, 32]
+        return maze.tiles[(32, 26)]
+
+    @property
+    def default_image(self):
+        return pygame.image.load(load_asset("inky.png"))
+
+    @property
+    def home_exit_tile(self):
+        return self.start_tile.get_neighbour(Directions.RIGHT)
 
     @property
     def personal_dot_limit(self):
@@ -319,7 +373,6 @@ class Inky(Ghost):
 class Clyde(Ghost):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(load_asset("clyde.png"))
         self.rect = self.image.get_rect(
             topleft=((self.start_tile.column - 1) * TILE_SIZE, self.start_tile.row * TILE_SIZE - TILE_SIZE // 2))
 
@@ -329,7 +382,15 @@ class Clyde(Ghost):
 
     @property
     def corner_tile(self):
-        return maze.tiles[1, 32]
+        return maze.tiles[(32, 1)]
+
+    @property
+    def default_image(self):
+        return pygame.image.load(load_asset("clyde.png"))
+
+    @property
+    def home_exit_tile(self):
+        return self.start_tile.get_neighbour(Directions.LEFT)
 
     @property
     def personal_dot_limit(self):
@@ -365,20 +426,23 @@ inky = Inky()
 clyde = Clyde()
 
 ghosts = [blinky, pinky, inky, clyde]
+ghost_phase = GhostStates.SCATTER
 
 
 def change_ghost_state(state):
     global ghosts
+    global ghost_phase
 
     for ghost in ghosts:
-        if ghost.state is GhostStates.HOME:
+        if ghost.state is GhostStates.DEAD or ghost.state is GhostStates.HOME:
             continue
+
         ghost.state = state
-        ghost.reverse_direction()
+        if not ghost.leaving_home:
+            ghost.reverse_direction_on_next_tile = True
 
         match state:
             case GhostStates.FRIGHT:
-                ghost.image = pygame.image.load(load_asset("frightened_ghost.png"))
                 main.last_phase_change += 5000
-            case _:
-                ghost.image = pygame.image.load(load_asset("blinky.png"))
+            case GhostStates.SCATTER | GhostStates.CHASE:
+                ghost_phase = state
