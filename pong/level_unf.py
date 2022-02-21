@@ -3,7 +3,7 @@ from pygame.locals import *
 import math
 import random
 import time
-
+from pong.utils import load_asset
 
 #Initialize Game
 pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -118,14 +118,14 @@ def ball_reset():
 #Text variables
 player_score = 0
 opponent_score = 0
-game_font = pygame.font.Font("Pong/Pixeled.ttf", 64)
+game_font = pygame.font.Font(load_asset("Pixeled.ttf"), 64)
 
 #Timer
 score_time = True
 
 #Sounds
-pong_sound = pygame.mixer.Sound("Pong/pong.ogg")
-score_sound = pygame.mixer.Sound("Pong/score.ogg")
+pong_sound = pygame.mixer.Sound(load_asset("pong.ogg"))
+score_sound = pygame.mixer.Sound(load_asset("score.ogg"))
 
 
 #End Game

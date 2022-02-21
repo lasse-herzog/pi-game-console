@@ -155,10 +155,10 @@ def GameOver_show_message():
 
 def onGameOver():
     breakLoop = 1
-    if snake_Position[0] < 0 or snake_Position[0] > WIDTH - 10:
+    if snake_Position[0] < 0 or snake_Position[0] > WIDTH - (scale / 2):
         GameOver_show_message()
         breakLoop = 0
-    if snake_Position[1] < 0 or snake_Position[1] > HEIGHT - 10:
+    if snake_Position[1] < 0 or snake_Position[1] > HEIGHT - (scale / 2):
         GameOver_show_message()
         breakLoop = 0
     for part in snake_BodyLength[1:]:
