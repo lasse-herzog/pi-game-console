@@ -87,11 +87,11 @@ def main_menu():
                 for j in range(2):
                     axis[j] = joystick.get_axis(j)
 
-                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
+                if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
                     last_select = pygame.time.get_ticks()
                     selected="start"
                   
-                if round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
+                if round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
                     last_select = pygame.time.get_ticks()
                     selected="quit"
                     
