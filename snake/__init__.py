@@ -96,13 +96,13 @@ def keys_Input(snake_Direction):
             for j in range(2):
                 axis[j] = joystick.get_axis(j)
 
-            if round(axis[0]) == 1 and axis[1] == 0 and snake_Direction != Snake_Direction.DOWN:
+            if round(axis[0]) == 1 and round(axis[1]) == 0 and snake_Direction != Snake_Direction.DOWN:
                 new_Direction = Snake_Direction.UP
-            if round(axis[0]) == -1 and axis[1] == 0 and snake_Direction != Snake_Direction.UP:
+            if round(axis[0]) == -1 and round(axis[1]) == 0 and snake_Direction != Snake_Direction.UP:
                 new_Direction = Snake_Direction.DOWN
-            if round(axis[0]) == 0 and axis[1] == 1 and snake_Direction != Snake_Direction.LEFT:
+            if round(axis[0]) == 0 and round(axis[1]) == 1 and snake_Direction != Snake_Direction.LEFT:
                 new_Direction = Snake_Direction.RIGHT
-            if round(axis[0]) == 0 and axis[1] == -1 and snake_Direction != Snake_Direction.RIGHT:
+            if round(axis[0]) == 0 and round(axis[1]) == -1 and snake_Direction != Snake_Direction.RIGHT:
                 new_Direction = Snake_Direction.LEFT
 
     return new_Direction
@@ -254,19 +254,20 @@ def optionsMenu(selectedOption):
                     for j in range(2):
                         axis[j] = joystick.get_axis(j)
 
-                    if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():
+                    if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
                         last_select = pygame.time.get_ticks()
                         s -= 1
                         if s < 0:
                             s = 2
                         selected = selection[s]
-                    elif round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():
+                    elif round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
                         last_select = pygame.time.get_ticks()
                         s += 1
                         if s > 2:
                             s = 0
                         selected = selection[s]
 
+                # PressButton
                 if event.type == JOYBUTTONDOWN:
                     if selected == "RED":
                         pygame.mixer.Sound.play(selectThis_sound)
@@ -357,19 +358,20 @@ def optionsMenu(selectedOption):
                     for j in range(2):
                         axis[j] = joystick.get_axis(j)
 
-                    if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():
+                    if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
                         last_select = pygame.time.get_ticks()
                         s -= 1
                         if s < 0:
                             s = 2
                         selected = selection[s]
-                    elif round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():
+                    elif round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
                         last_select = pygame.time.get_ticks()
                         s += 1
                         if s > 2:
                             s = 0
                         selected = selection[s]
 
+                # PressButton
                 if event.type == JOYBUTTONDOWN:
                     if selected == "EASY":
                         pygame.mixer.Sound.play(selectThis_sound)
@@ -468,19 +470,20 @@ def selectMenu():
                 for j in range(2):
                     axis[j] = joystick.get_axis(j)
 
-                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():
+                if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
                     last_select = pygame.time.get_ticks()
                     s -= 1
                     if s < 0:
                         s = 3
                     selected = selection[s]
-                elif round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():
+                elif round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
                     last_select = pygame.time.get_ticks()
                     s += 1
                     if s > 3:
                         s = 0
                     selected = selection[s]
 
+            # PressButton
             if event.type == JOYBUTTONDOWN:
                 if selected == "Skin":
                     pygame.mixer.Sound.play(selectThis_sound)
@@ -601,10 +604,6 @@ def gameLoop():
         countDown()
         resetGlobals()
         while loop:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
             clock.tick(FPS)
             snake_Direction = keys_Input(snake_Direction)
             snake_Move(snake_Direction)
