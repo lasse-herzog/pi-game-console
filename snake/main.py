@@ -1,12 +1,12 @@
-import json
 import os
-import random
 import sys
 import time
-from enum import Enum
 
 import pygame
+from enum import Enum
 from pygame.locals import *
+import random
+import json
 
 
 def load_asset(asset):
@@ -17,6 +17,10 @@ with open(load_asset('highscore.json')) as config_file:
     HIGHSCORE = json.load(config_file)
 
 pygame.init()
+pygame.joystick.init()
+if pygame.joystick.get_count() > 0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
 
 
 class Snake_Direction(Enum):
@@ -34,6 +38,7 @@ pygame.display.set_caption("Snake")
 SNAKECOLOR = (255, 255, 255)
 scale: int = 20
 appleSize: int = 30
+game = True
 loop = True
 score = 0
 highScore = 1
@@ -70,12 +75,14 @@ font = load_asset('Pixeled.ttf')
 
 # Sounds
 select_sound = pygame.mixer.Sound(load_asset('choose.wav'))
+selectThis_sound = pygame.mixer.Sound(load_asset('chooseThis.wav'))
 
 
 # Methods #
 
 def keys_Input(snake_Direction):
     new_Direction = snake_Direction
+    # Tastatureingabe
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:
         if event.key == pygame.K_UP and snake_Direction != Snake_Direction.DOWN:
             new_Direction = Snake_Direction.UP
@@ -85,6 +92,24 @@ def keys_Input(snake_Direction):
             new_Direction = Snake_Direction.RIGHT
         if event.key == pygame.K_LEFT and snake_Direction != Snake_Direction.RIGHT:
             new_Direction = Snake_Direction.LEFT
+
+    # JoyStickeingabe
+    for event in pygame.event.get():
+        if event.type == JOYAXISMOTION:
+            axis = [0, 0]
+
+            for j in range(2):
+                axis[j] = joystick.get_axis(j)
+
+            if round(axis[0]) == 1 and round(axis[1]) == 0 and snake_Direction != Snake_Direction.DOWN:
+                new_Direction = Snake_Direction.UP
+            if round(axis[0]) == -1 and round(axis[1]) == 0 and snake_Direction != Snake_Direction.UP:
+                new_Direction = Snake_Direction.DOWN
+            if round(axis[0]) == 0 and round(axis[1]) == 1 and snake_Direction != Snake_Direction.LEFT:
+                new_Direction = Snake_Direction.RIGHT
+            if round(axis[0]) == 0 and round(axis[1]) == -1 and snake_Direction != Snake_Direction.RIGHT:
+                new_Direction = Snake_Direction.LEFT
+
     return new_Direction
 
 
@@ -178,6 +203,7 @@ def startWINDOW():
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
+                time.sleep(0.5)
                 return
 
 
@@ -185,6 +211,8 @@ def optionsMenu(selectedOption):
     global SNAKECOLOR
     clock = pygame.time.Clock()
     menu = True
+
+    # Snake Skin
     if selectedOption == 0:
         selection = ["RED", "YELLOW", "BLUE"]
         s: int = 0
@@ -195,6 +223,8 @@ def optionsMenu(selectedOption):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
+
+                # Tastatureingabe
                 if event.type == pygame.KEYDOWN:
                     pygame.mixer.Sound.play(select_sound)
                     if event.key == pygame.K_UP:
@@ -207,13 +237,53 @@ def optionsMenu(selectedOption):
                         if s > 2:
                             s = 0
                         selected = selection[s]
+
+                    # PressEnter
                     elif selected == "RED" and event.key == pygame.K_RETURN:
+                        pygame.mixer.Sound.play(selectThis_sound)
                         SNAKECOLOR = red
                         return
                     elif selected == "YELLOW" and event.key == pygame.K_RETURN:
+                        pygame.mixer.Sound.play(selectThis_sound)
                         SNAKECOLOR = yellow
                         return
                     elif selected == "BLUE" and event.key == pygame.K_RETURN:
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        SNAKECOLOR = blue
+                        return
+
+                # JoyStickeingabe
+                if event.type == JOYAXISMOTION:
+                    axis = [0, 0]
+
+                    for j in range(2):
+                        axis[j] = joystick.get_axis(j)
+
+                    if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
+                        last_select = pygame.time.get_ticks()
+                        s -= 1
+                        if s < 0:
+                            s = 2
+                        selected = selection[s]
+                    elif round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
+                        last_select = pygame.time.get_ticks()
+                        s += 1
+                        if s > 2:
+                            s = 0
+                        selected = selection[s]
+
+                # PressButton
+                if event.type == JOYBUTTONDOWN:
+                    if selected == "RED":
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        SNAKECOLOR = red
+                        return
+                    if selected == "YELLOW":
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        SNAKECOLOR = yellow
+                        return
+                    if selected == "BLUE":
+                        pygame.mixer.Sound.play(selectThis_sound)
                         SNAKECOLOR = blue
                         return
 
@@ -247,6 +317,7 @@ def optionsMenu(selectedOption):
             clock.tick(FPS)
             pygame.display.set_caption("Snake Skin")
 
+    # Difficulty
     if selectedOption == 1:
         global appleSize
         selection = ["EASY", "MEDIUM", "HARD"]
@@ -258,6 +329,8 @@ def optionsMenu(selectedOption):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
+
+                # Tastatureingabe
                 if event.type == pygame.KEYDOWN:
                     pygame.mixer.Sound.play(select_sound)
                     if event.key == pygame.K_UP:
@@ -271,14 +344,53 @@ def optionsMenu(selectedOption):
                             s = 0
                         selected = selection[s]
                     elif selected == "EASY" and event.key == pygame.K_RETURN:
+                        pygame.mixer.Sound.play(selectThis_sound)
                         appleSize = 40
                         return
                     elif selected == "MEDIUM" and event.key == pygame.K_RETURN:
+                        pygame.mixer.Sound.play(selectThis_sound)
                         appleSize = 20
                         return
                     elif selected == "HARD" and event.key == pygame.K_RETURN:
-                        appleSize = 10
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        appleSize = 15
                         return
+
+                # JoyStickeingabe
+                if event.type == JOYAXISMOTION:
+                    axis = [0, 0]
+
+                    for j in range(2):
+                        axis[j] = joystick.get_axis(j)
+
+                    if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
+                        last_select = pygame.time.get_ticks()
+                        s -= 1
+                        if s < 0:
+                            s = 2
+                        selected = selection[s]
+                    elif round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
+                        last_select = pygame.time.get_ticks()
+                        s += 1
+                        if s > 2:
+                            s = 0
+                        selected = selection[s]
+
+                # PressButton
+                if event.type == JOYBUTTONDOWN:
+                    if selected == "EASY":
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        SNAKECOLOR = red
+                        return
+                    if selected == "MEDIUM":
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        SNAKECOLOR = yellow
+                        return
+                    if selected == "HARD":
+                        pygame.mixer.Sound.play(selectThis_sound)
+                        SNAKECOLOR = blue
+                        return
+
 
             WINDOW.fill(black)
             title = text_format("CHOOSE DIFFICULTY", font, 45, white)
@@ -312,36 +424,84 @@ def optionsMenu(selectedOption):
 
 
 def selectMenu():
+    global game
+    global loop
     clock = pygame.time.Clock()
     menu = True
-    selection = ["Skin", "Difficulty", "START"]
+    selection = ["Skin", "Difficulty", "START", "BACK"]
     s: int = 0
     selected = selection[s]
+    last_select = 0
 
     while menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+
+            # Tastatureingabe
             if event.type == pygame.KEYDOWN:
-                pygame.mixer.Sound.play(select_sound)
                 if event.key == pygame.K_UP:
+                    pygame.mixer.Sound.play(select_sound)
                     s -= 1
                     if s < 0:
-                        s = 2
+                        s = 3
                     selected = selection[s]
                 elif event.key == pygame.K_DOWN:
+                    pygame.mixer.Sound.play(select_sound)
                     s += 1
-                    if s > 2:
+                    if s > 3:
                         s = 0
                     selected = selection[s]
-                elif selected == "Skin" and event.key == pygame.K_RETURN:
+
+                # PressEnterOrButton
+                if selected == "Skin" and event.key == pygame.K_RETURN:
+                    pygame.mixer.Sound.play(selectThis_sound)
                     optionsMenu(0)
                 elif selected == "Difficulty" and event.key == pygame.K_RETURN:
+                    pygame.mixer.Sound.play(selectThis_sound)
                     optionsMenu(1)
                 elif selected == "START" and event.key == pygame.K_RETURN:
-                    pygame.mixer.Sound.play(pygame.mixer.Sound(load_asset('chooseThis.wav')))
-                    return
+                    pygame.mixer.Sound.play(selectThis_sound)
+                    return False
+                elif selected == "BACK" and event.key == pygame.K_RETURN:
+                    pygame.mixer.Sound.play(selectThis_sound)
+                    return True
+
+            # JoyStickeingabe
+            if event.type == JOYAXISMOTION:
+                axis = [0, 0]
+
+                for j in range(2):
+                    axis[j] = joystick.get_axis(j)
+
+                if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
+                    last_select = pygame.time.get_ticks()
+                    s -= 1
+                    if s < 0:
+                        s = 3
+                    selected = selection[s]
+                elif round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():
+                    last_select = pygame.time.get_ticks()
+                    s += 1
+                    if s > 3:
+                        s = 0
+                    selected = selection[s]
+
+            # PressButton
+            if event.type == JOYBUTTONDOWN:
+                if selected == "Skin":
+                    pygame.mixer.Sound.play(selectThis_sound)
+                    optionsMenu(0)
+                if selected == "Difficulty":
+                    pygame.mixer.Sound.play(selectThis_sound)
+                    optionsMenu(1)
+                if selected == "START":
+                    pygame.mixer.Sound.play(selectThis_sound)
+                    return False
+                if selected == "BACK":
+                    pygame.mixer.Sound.play(selectThis_sound)
+                    return True
 
         WINDOW.fill(black)
         title = text_format("SNAKE MENU", font, 45, white)
@@ -351,27 +511,35 @@ def selectMenu():
             text_Skin = text_format("Skin", font, 35, gray)
 
         if selected == "Difficulty":
-            text_difficulty = text_format("Difficulty", font, 35, green)
+            text_difficulty = text_format("Difficulty", font, 35, blue)
         else:
             text_difficulty = text_format("Difficulty", font, 35, gray)
 
         if selected == "START":
-            text_START = text_format("START", font, 35, red)
+            text_START = text_format("START", font, 35, green)
         else:
             text_START = text_format("START", font, 35, gray)
+
+        if selected == "BACK":
+            text_BACK = text_format("BACK", font, 35, red)
+        else:
+            text_BACK = text_format("BACK", font, 35, gray)
 
         title_rect = title.get_rect()
         Skin_rect = text_Skin.get_rect()
         difficulty_rect = text_difficulty.get_rect()
         start_rect = text_START.get_rect()
+        back_rect = text_BACK.get_rect()
 
         WINDOW.blit(title, (WIDTH / 2 - (title_rect[2] / 2), 50))
         WINDOW.blit(text_Skin, (WIDTH / 2 - (Skin_rect[2] / 2), 200))
         WINDOW.blit(text_difficulty, (WIDTH / 2 - (difficulty_rect[2] / 2), 260))
         WINDOW.blit(text_START, (WIDTH / 2 - (start_rect[2] / 2), 320))
+        WINDOW.blit(text_BACK, (WIDTH / 2 - (back_rect[2] / 2), 380))
         pygame.display.update()
         clock.tick(FPS)
         pygame.display.set_caption("Snake Menu")
+    return False
 
 
 def countDown():
@@ -432,18 +600,15 @@ def resetGlobals():
 
 
 def gameLoop():
-    while True:
+    while game:
         clock = pygame.time.Clock()
         snake_Direction = Snake_Direction.RIGHT
         startWINDOW()
-        selectMenu()
+        if selectMenu():
+            return
         countDown()
         resetGlobals()
         while loop:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
             clock.tick(FPS)
             snake_Direction = keys_Input(snake_Direction)
             snake_Move(snake_Direction)
@@ -458,3 +623,4 @@ def gameLoop():
 
 if __name__ == "__main__":
     gameLoop()
+
