@@ -62,6 +62,7 @@ loop = True
 def main_menu():
     menu = True
     selected = "start"
+    last_select = 0
 
     while menu:
         for event in pygame.event.get():
