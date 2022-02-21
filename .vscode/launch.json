@@ -8,7 +8,7 @@
             "name": "Python: Aktuelle Datei",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\space_invaders\\main.py",
+            "program": "${workspaceFolder}\\main.py",
             "console": "integratedTerminal"
         }
     ]
