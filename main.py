@@ -106,7 +106,7 @@ def main_menu():
                 start_text = white_start_text if visible else black_start_text
 
                 screen.blit(start_text, (SCREEN_WIDTH / 2 - (start_rect[2] / 2) + 10, 400))
-            elif event.type == pygame.KEYDOWN or event == pygame.JOYBUTTONDOWN:
+            elif event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                 pygame.mixer.Sound.play(change_selection_sound)
                 game_select()
                 init_ui()
