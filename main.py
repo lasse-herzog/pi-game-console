@@ -149,7 +149,7 @@ def game_select():
                 for j in range(2):
                     axis[j] = joystick.get_axis(j)
 
-                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
+                if round(axis[0]) == 1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Up
                     pygame.mixer.Sound.play(select_sound)
                     last_select = pygame.time.get_ticks()
                     s -= 1
@@ -157,7 +157,7 @@ def game_select():
                         s=4
                     selected=selection[s]
                     print(selected)
-                if round(axis[0]) == -1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
+                if round(axis[0]) == -1 and round(axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks(): #Joystick Down
                     pygame.mixer.Sound.play(select_sound)
                     last_select = pygame.time.get_ticks()
                     s+=1
