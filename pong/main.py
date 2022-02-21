@@ -9,7 +9,6 @@ import pong.level_hard as level_hard
 import pong.level_med as level_med
 import pong.level_unf as level_unf
 
-
 pygame.init()
 # Game Initialization
 
@@ -137,6 +136,7 @@ def level_select():
     selection = ["easy", "medium", "hard", "unfair"]
     s: int = 0
     selected = selection[s]
+    last_select = 0
 
     while run:
         for event in pygame.event.get():
@@ -197,15 +197,16 @@ def level_select():
                 for j in range(2):
                     axis[j] = joystick.get_axis(j)
 
-                if round(axis[0]) == 1 and axis[1] == 0 and last_select + 1000 < pygame.time.get_ticks():  # Joystick Up
+                if round(axis[0]) == 1 and round(
+                        axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():  # Joystick Up
                     last_select = pygame.time.get_ticks()
                     s -= 1
                     if (s < 0):
                         s = 4
                     selected = selection[s]
 
-                if round(axis[0]) == -1 and axis[
-                    1] == 0 and last_select + 1000 < pygame.time.get_ticks():  # Joystick Down
+                if round(axis[0]) == -1 and round(
+                        axis[1]) == 0 and last_select + 1000 < pygame.time.get_ticks():  # Joystick Down
                     last_select = pygame.time.get_ticks()
                     s += 1
                     if (s > 4):
