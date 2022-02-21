@@ -184,13 +184,13 @@ def medLoop():
                 for j in range(2):
                     axis[j] = joystick.get_axis(j)
 
-                if round(axis[0]) == 1 and axis[1] == 0: #Joystick Up
+                if round(axis[0]) == 1 and round(axis[1]) == 0: #Joystick Up
                     player_speed -= 6
                    
-                if round(axis[0]) == -1 and axis[1] == 0: #Joystick Down
+                if round(axis[0]) == -1 and round(axis[1]) == 0: #Joystick Down
                     player_speed += 6
                 
-                if round(axis[0]) == -1 and axis[0] == 0: #Joystick neutral
+                if round(axis[0]) == 0 and round(axis[1]) == 0: #Joystick neutral
                     player_speed = 0
         
         #Game Logic
