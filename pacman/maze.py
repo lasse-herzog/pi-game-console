@@ -46,6 +46,12 @@ def load_level(level):
                 case '-' | '|':
                     new_tile = LegalTile(row_counter, column_counter, None)
                     tile_sprites.add(new_tile)
+                case '=':
+                    new_tile = DoorTile(row_counter, column_counter)
+                    tile_sprites.add(new_tile)
+                case '_':
+                    new_tile = FakeDoorTile(row_counter, column_counter)
+                    tile_sprites.add(new_tile)
 
             tiles[(row_counter, column_counter)] = new_tile
             column_counter += 1
@@ -121,6 +127,29 @@ class LegalTile(Tile):
         self.image = pygame.Surface([TILE_SIZE, TILE_SIZE])
         self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
         self.pellet = pellet
+
+
+class DoorTile(LegalTile):
+    def __init__(self, row, column):
+        super().__init__(row, column, None)
+
+        self.image = pygame.image.load(load_asset("door.png"))
+        self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
+
+
+class FakeDoorTile(Tile):
+    def __init__(self, row, column):
+        super().__init__(row, column)
+
+        self.image = pygame.image.load(load_asset("door.png"))
+        self.rect = self.image.get_rect(topleft=(column * TILE_SIZE, row * TILE_SIZE))
+
+
+class TunnelTile(LegalTile):
+    def __init__(self, row, column, exit_tile):
+        super().__init__(row, column, None)
+
+        self.exit_tile = exit_tile
 
 
 class WallTile(Tile):
