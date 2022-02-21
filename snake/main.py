@@ -83,23 +83,20 @@ selectThis_sound = pygame.mixer.Sound(load_asset('chooseThis.wav'))
 def keys_Input(snake_Direction):
     new_Direction = snake_Direction
     # Tastatureingabe
-    for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:
-        if event.key == pygame.K_UP and snake_Direction != Snake_Direction.DOWN:
-            new_Direction = Snake_Direction.UP
-        if event.key == pygame.K_DOWN and snake_Direction != Snake_Direction.UP:
-            new_Direction = Snake_Direction.DOWN
-        if event.key == pygame.K_RIGHT and snake_Direction != Snake_Direction.LEFT:
-            new_Direction = Snake_Direction.RIGHT
-        if event.key == pygame.K_LEFT and snake_Direction != Snake_Direction.RIGHT:
-            new_Direction = Snake_Direction.LEFT
-
-    # JoyStickeingabe
     for event in pygame.event.get():
-        if event.type == JOYAXISMOTION:
-            axis = [0, 0]
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and snake_Direction != Snake_Direction.DOWN:
+                new_Direction = Snake_Direction.UP
+            if event.key == pygame.K_DOWN and snake_Direction != Snake_Direction.UP:
+                new_Direction = Snake_Direction.DOWN
+            if event.key == pygame.K_RIGHT and snake_Direction != Snake_Direction.LEFT:
+                new_Direction = Snake_Direction.RIGHT
+            if event.key == pygame.K_LEFT and snake_Direction != Snake_Direction.RIGHT:
+                new_Direction = Snake_Direction.LEFT
 
-            for j in range(2):
-                axis[j] = joystick.get_axis(j)
+        # JoyStickeingabe
+        if event.type == JOYAXISMOTION:
+            axis = [joystick.get_axis(i) for i in range(2)]
 
             if round(axis[0]) == 1 and round(axis[1]) == 0 and snake_Direction != Snake_Direction.DOWN:
                 new_Direction = Snake_Direction.UP
@@ -391,7 +388,6 @@ def optionsMenu(selectedOption):
                         SNAKECOLOR = blue
                         return
 
-
             WINDOW.fill(black)
             title = text_format("CHOOSE DIFFICULTY", font, 45, white)
             if selected == "EASY":
@@ -623,4 +619,3 @@ def gameLoop():
 
 if __name__ == "__main__":
     gameLoop()
-
