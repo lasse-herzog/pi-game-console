@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
+from math import sqrt
 
 import pygame
 
@@ -137,6 +138,11 @@ class Ghost(Actor):
 
     @property
     @abstractmethod
+    def chase_tile(self):
+        pass
+
+    @property
+    @abstractmethod
     def corner_tile(self):
         pass
 
@@ -183,7 +189,7 @@ class Ghost(Actor):
             case GhostStates.FRIGHT:
                 return GHOST_FRIGHT_SPEED[speed_index]
             case GhostStates.DEAD:
-                return 320
+                return 240
             case _:
                 return GHOST_SPEED[speed_index]
 
@@ -202,7 +208,7 @@ class Ghost(Actor):
             case GhostStates.DEAD:
                 return self.start_tile
             case _:
-                return pacman.tile
+                return self.chase_tile
 
     def go_home(self):
         self.state = GhostStates.DEAD
@@ -285,6 +291,10 @@ class Blinky(Ghost):
         self.pathfind()
 
     @property
+    def chase_tile(self):
+        return pacman.tile
+
+    @property
     def corner_tile(self):
         return maze.tiles[(4, 26)]
 
@@ -316,6 +326,10 @@ class Pinky(Ghost):
         self.next_tile = self.tile
 
     @property
+    def chase_tile(self):
+        return pacman.tile.get_neighbour(pacman.direction, 4)
+
+    @property
     def corner_tile(self):
         return maze.tiles[(4, 1)]
 
@@ -345,6 +359,18 @@ class Inky(Ghost):
         self.direction = Directions.UP
         self.new_tile = self.start_tile.get_neighbour(self.direction)
         self.next_tile = self.tile
+
+    @property
+    def chase_tile(self):
+        tile_ahead = pacman.tile.get_neighbour(pacman.direction, 2)
+
+        row_diff = tile_ahead.row - blinky.tile.row
+        column_diff = tile_ahead.column - blinky.tile.column
+
+        row_direction = Directions.UP if row_diff < 0 else Directions.DOWN
+        column_direction = Directions.LEFT if column_diff < 0 else Directions.RIGHT
+
+        return tile_ahead.get_neighbour(row_direction, abs(row_diff)).get_neighbour(column_direction, abs(column_diff))
 
     @property
     def corner_tile(self):
@@ -379,6 +405,10 @@ class Clyde(Ghost):
         self.direction = Directions.UP
         self.new_tile = self.start_tile.get_neighbour(self.direction)
         self.next_tile = self.tile
+
+    @property
+    def chase_tile(self):
+        return self.corner_tile if sqrt(self.tile.distance(pacman.tile)) < 8 else pacman.tile
 
     @property
     def corner_tile(self):

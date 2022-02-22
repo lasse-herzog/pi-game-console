@@ -1,7 +1,7 @@
 X X X X X X X X X X X X X X X X X X X X X X X X X X X X
 X X X X X X X X X X X X X X X X X X X X X X X X X X X X
 X X X X X X X X X X X X X X X X X X X X X X X X X X X X
-B b b b b b b b b b b b b 7 8 b b b b b b b b b b b b B
+B b b b b b b b b b b b b b b b b b b b b b b b b b b B
 b . . . . . . . . . . . . w w . . . . . . . . . . . . b
 b . W w w W . W w w w W . w w . W w w w W . W w w W . b
 b * w X X w . w X X X w . w w . w X X X w . w X X w * b
@@ -25,8 +25,8 @@ b . . . . . . . . . . . . w w . . . . . . . . . . . . b
 b . W w w W . W w w w W . w w . W w w w W . W w w W . b
 b . W w W w . W w w w W . W W . W w w w W . w W w W . b
 b * . . w w . . . . . . . - - . . . . . . . w w . . * b
-8 w W . w w . W W . W w w w w w w W . W W . w w . W w 7
-7 w W . W W . w w . W w w W W w w W . w w . W W . W w 8
+b w W . w w . W W . W w w w w w w W . W W . w w . W w b
+b w W . W W . w w . W w w W W w w W . w w . W W . W w b
 b . . . . . . w w . . . . w w . . . . w w . . . . . . b
 b . W w w w w W W w w W . w w . W w w W W w w w w W . b
 b . W w w w w w w w w W . W W . W w w w w w w w w W . b
