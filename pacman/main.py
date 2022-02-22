@@ -1,43 +1,65 @@
 import sys
 
 import pygame
-from pygame.locals import *
 
 import pacman.actors as actors
 import pacman.maze as maze
 from pacman.utils import Directions, TILE_SIZE, GHOST_PHASES_0, GHOST_PHASES_1, GHOST_PHASES_2, FPS
+from utils import FONT, BLACK, WHITE
 
-pygame.init()
 level = 1
 last_phase_change = 0
-font = pygame.freetype.SysFont("Pixeled", TILE_SIZE)
-window = pygame.display.set_mode((448, 576))
+
+pygame.init()
+pygame.display.set_mode((448, 576))
 pygame.display.set_caption('Pacman')
 screen = pygame.display.get_surface()
-background = screen.convert().fill((0, 0, 0))
+
+font = pygame.freetype.Font(FONT, TILE_SIZE)
 clock = pygame.time.Clock()
+
 actor_sprites = pygame.sprite.RenderPlain(actors.pacman, actors.ghosts)
+if pygame.joystick.get_count() > 0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
 
 
 def input(events):
     for event in events:
-        if event.type == QUIT:
-            sys.exit(0)
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT or event.key == ord('a'):
-                return Directions.LEFT
-            if event.key == pygame.K_RIGHT or event.key == ord('d'):
-                return Directions.RIGHT
-            if event.key == pygame.K_UP or event.key == ord('w'):
-                return Directions.UP
-            if event.key == pygame.K_DOWN or event.key == ord('s'):
-                return Directions.DOWN
+        match event.type:
+            case pygame.QUIT:
+                sys.exit(0)
+            case pygame.KEYDOWN:
+                if event.key == pygame.K_UP or event.key == ord('w'):
+                    return Directions.UP
+                if event.key == pygame.K_LEFT or event.key == ord('a'):
+                    return Directions.LEFT
+                if event.key == pygame.K_DOWN or event.key == ord('s'):
+                    return Directions.DOWN
+                if event.key == pygame.K_RIGHT or event.key == ord('d'):
+                    return Directions.RIGHT
+            case pygame.JOYAXISMOTION:
+                axis = [joystick.get_axis(i) for i in range(2)]
+
+                if round(axis[0]) == 1 and round(axis[1]) == 0:
+                    return Directions.UP
+                if round(axis[0]) == 0 and round(axis[1]) == -1:
+                    return Directions.LEFT
+                if round(axis[0]) == -1 and round(axis[1]) == 0:
+                    return Directions.DOWN
+                if round(axis[0]) == 0 and round(axis[1]) == 1:
+                    return Directions.RIGHT
 
 
 def start_level():
     global last_phase_change
     phase = 1
     last_phase_change = pygame.time.get_ticks()
+
+    screen.fill(BLACK)
+    maze.tile_sprites.draw(screen)
+    maze.pellet_sprites.draw(screen)
+    pygame.display.flip()
 
     match level:
         case 1:
@@ -68,22 +90,17 @@ def start_level():
             actors.pacman.input = pacman_input
         actor_sprites.update()
 
-        screen.fill([0, 0, 0])
         font.render_to(screen, (TILE_SIZE * 7 - font.get_rect(str(actors.pacman.score)).width, TILE_SIZE),
-                       str(actors.pacman.score), (255, 255, 255))
+                       str(actors.pacman.score), WHITE)
+
+        screen.fill(BLACK)
         maze.tile_sprites.draw(screen)
         maze.pellet_sprites.draw(screen)
         actor_sprites.draw(screen)
-        pygame.display.flip()
+
+        # pygame.display.update([sprite.rect for sprite in maze.tile_sprites])
+        pygame.display.update([sprite.rect for sprite in actor_sprites])
 
 
 if __name__ == '__main__':
-    pygame.init()
-    font = pygame.freetype.SysFont("Pixeled", TILE_SIZE)
-    window = pygame.display.set_mode((448, 576))
-    pygame.display.set_caption('Pacman')
-    screen = pygame.display.get_surface()
-    background = screen.convert().fill((0, 0, 0))
-    clock = pygame.time.Clock()
-    actor_sprites = pygame.sprite.RenderPlain(actors.pacman, actors.ghosts)
     start_level()

@@ -13,7 +13,7 @@ def load_level(level):
     for line in open(load_asset(level)):
         column_counter = 0
 
-        for char in line.replace(" ", ""):
+        for char in line.replace(" ", "").strip():
             new_tile = None
             match char:
                 case 'X':
@@ -46,6 +46,8 @@ def load_level(level):
                 case '-' | '|':
                     new_tile = LegalTile(row_counter, column_counter, None)
                     tile_sprites.add(new_tile)
+                case 't':
+                    new_tile = EmptyTile(row_counter, column_counter)
                 case '=':
                     new_tile = DoorTile(row_counter, column_counter)
                     tile_sprites.add(new_tile)
@@ -91,16 +93,20 @@ class Tile(pygame.sprite.Sprite):
     def get_direction(self, other_tile):
         return Directions((other_tile.column - self.column, other_tile.row - self.row))
 
-    def get_neighbour(self, direction):
-        return tiles[(self.row + direction.value[1], self.column + direction.value[0])]
+    def get_neighbour(self, direction, distance=1):
+        while distance >= 0:
+            try:
+                return tiles[(self.row + direction.value[1] * distance, self.column + direction.value[0] * distance)]
+            except KeyError:
+                distance -= 1
 
     def get_legal_neighbours(self):
         return [self.get_neighbour(direction) for direction in Directions if
                 direction is not Directions.NONE and self.has_legal_neighbour(direction)]
 
-    def has_legal_neighbour(self, direction):
+    def has_legal_neighbour(self, direction, distance=1):
         try:
-            if isinstance(self.get_neighbour(direction), LegalTile):
+            if isinstance(self.get_neighbour(direction, distance), LegalTile):
                 return True
         except KeyError:
             return False
