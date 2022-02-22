@@ -169,6 +169,8 @@ def game_select():
             case MainMenuOptions.SPACE_INVADERS:
                 space_invaders.main.main()
 
+        redraw()
+
     def redraw():
         pong_text = pong_unselected_text
         snake_text = snake_unselected_text
