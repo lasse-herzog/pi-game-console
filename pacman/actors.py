@@ -262,7 +262,7 @@ class Ghost(Actor):
                     elif self.state is GhostStates.DEAD:
                         self.state = GhostStates.HOME
                 if self.state is GhostStates.HOME:
-                    if self.personal_dot_limit < 244 - len(maze.pellet_sprites):
+                    if self.personal_dot_limit < 248 - len(maze.pellet_sprites):
                         self.exit_home()
                     elif self.tile is self.start_tile:
                         self.new_tile = self.tile.get_neighbour(self.direction)

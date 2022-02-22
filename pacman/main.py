@@ -55,10 +55,12 @@ def start_level():
     global last_phase_change
     phase = 1
     last_phase_change = pygame.time.get_ticks()
+    score_text, score_text_rect = font.render(str(actors.pacman.score), WHITE)
 
     screen.fill(BLACK)
     maze.tile_sprites.draw(screen)
     maze.pellet_sprites.draw(screen)
+    screen.blit(score_text, (TILE_SIZE * 7 - score_text_rect.width, TILE_SIZE))
     pygame.display.flip()
 
     match level:
@@ -70,6 +72,8 @@ def start_level():
             next_phase = GHOST_PHASES_2[0] * 1000
 
     while True:
+        clock.tick(FPS)
+
         if phase < 8 and pygame.time.get_ticks() - last_phase_change > next_phase:
             if phase != 7:
                 match level:
@@ -84,22 +88,24 @@ def start_level():
             phase += 1
             last_phase_change = pygame.time.get_ticks()
 
-        clock.tick(FPS)
         pacman_input = input(pygame.event.get())
         if isinstance(pacman_input, Directions):
             actors.pacman.input = pacman_input
+
         actor_sprites.update()
 
-        font.render_to(screen, (TILE_SIZE * 7 - font.get_rect(str(actors.pacman.score)).width, TILE_SIZE),
-                       str(actors.pacman.score), WHITE)
+        score_text, score_text_rect = font.render(str(actors.pacman.score), WHITE)
 
         screen.fill(BLACK)
         maze.tile_sprites.draw(screen)
         maze.pellet_sprites.draw(screen)
         actor_sprites.draw(screen)
+        screen.blit(score_text, (TILE_SIZE * 7 - score_text_rect.width, TILE_SIZE))
 
         # pygame.display.update([sprite.rect for sprite in maze.tile_sprites])
         pygame.display.update([sprite.rect for sprite in actor_sprites])
+        pygame.display.update(pygame.Rect(TILE_SIZE * 7 - score_text_rect.width, TILE_SIZE, score_text_rect.width,
+                                          score_text_rect.height))
 
 
 if __name__ == '__main__':
