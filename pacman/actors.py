@@ -20,9 +20,9 @@ class Actor(pygame.sprite.Sprite, metaclass=ABCMeta):
     def position_in_tile(self):
         match self.direction:
             case Directions.UP:
-                return 15 - (self.rect.centery - self.tile.row * TILE_SIZE)
+                return TILE_SIZE - (self.rect.centery + 1 - self.tile.row * TILE_SIZE)
             case Directions.LEFT:
-                return 15 - (self.rect.centerx - self.tile.column * TILE_SIZE)
+                return TILE_SIZE - (self.rect.centerx + 1 - self.tile.column * TILE_SIZE)
             case Directions.DOWN:
                 return self.rect.centery - self.tile.row * TILE_SIZE
             case Directions.RIGHT:
@@ -46,7 +46,6 @@ class Pacman(Actor):
         super().__init__()
         self.rest_pixels = 0
         self.score = 0
-        self.is_cornering = False
         self.input = Directions.NONE
 
         self.image = pygame.image.load(load_asset("pacman_01.png"))
