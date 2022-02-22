@@ -59,13 +59,13 @@ SHOW_TITLE_EVENT = pygame.USEREVENT + 1
 
 
 def main_menu():
-    pygame.display.set_caption("PiG-C Main Menu")
+    pygame.display.set_caption("Main Menu")
 
     pygame.time.set_timer(SHOW_TITLE_EVENT, 500)
 
     visible = True
 
-    title_text, title_rect = text_format("RETRO PiG", HEADER_FONT, 100, WHITE)
+    title_text, title_rect = text_format("PYCO", HEADER_FONT, 100, WHITE)
     white_start_text, start_rect = text_format("Press any button", FONT, 20, WHITE)
     black_start_text, start_rect = text_format("Press any button", FONT, 20, BLACK)
 
