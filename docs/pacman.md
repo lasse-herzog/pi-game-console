@@ -71,6 +71,7 @@ Als erstes legen wir eine neue Klasse `Tile` an welche als Überklasse für alle
 class Tile:
     def __init__(self, row, column):
         super().__init__()
+        
         self.row = row
         self.column = column
 ```
@@ -196,6 +197,7 @@ class Actor(pygame.sprite.Sprite, metaclass=ABCMeta):
     @abstractmethod
     def __init__(self):
         super().__init__()
+        
         self.direction = Directions.NONE
         
     @property
@@ -253,20 +255,23 @@ class Actors(pygame.sprite.Sprite, metaclass=ABCMeta):
     def position_in_tile(self):
         match self.direction:
             case Directions.UP:
-                return TILE_SIZE - (self.rect.centery + 1 - self.tile.row * TILE_SIZE)
+                return TILE_SIZE - (self.rect.centery - self.tile.row * TILE_SIZE)
             case Directions.LEFT:
                 return TILE_SIZE - (self.rect.centerx + 1 - self.tile.column * TILE_SIZE)
             case Directions.DOWN:
-                return self.rect.centery - self.tile.row * TILE_SIZE
+                return self.rect.centery + 1 - self.tile.row * TILE_SIZE
             case Directions.RIGHT:
                 return self.rect.centerx - self.tile.column * TILE_SIZE
+            case Directions.NONE:
+                return TILE_SIZE // 2
 ###############################################################################
 ```
 
-Ich empfehle das obige code snippet ein zweites mal durchzulesen, um sicherzugehen dass Sie seine Funktionsweise verstanden haben.
-Praktischerweise gibt uns `pygame` schon eine `Sprite.update()` Methode vor,
-mit welcher wir nachher über hooks ohne viel Aufwand mehrere `Sprites` gleichzeitig updaten können. 
-Wir fangen an damit uns zu überlegen, was passieren muss, wenn Pacman aus der Ruhe beschleunigt werden muss:
+Ich empfehle das obige code snippet ein zweites mal durchzulesen,
+um sicherzugehen dass Sie seine Funktionsweise verstanden haben.
+
+Wir fangen an damit uns zu überlegen, was passieren muss, 
+wenn  der Nutzer Pacman in eine bestimmte Richtung bewegen möchte:
 Zuerst sollten wir die Eingabe des Nutzers validieren, was wenn er pacman in eine Wand hineinbewegen will?
 Dazu erweitern wir unsere `Tiles` Klasse um einige Hilfsmethoden:
 
@@ -285,12 +290,21 @@ class Tile():
 ###############################################################################
 ```
 
-`has_legal_neighbour(direction)` akzeptiert als Parameter eine `direction aus `utils.Directions` und gibt wahr zurück,
+`has_legal_neighbour(direction)` akzeptiert als Parameter eine `direction` aus `utils.Directions` und gibt wahr zurück,
 wenn das Feld in diese Richtung als Typ `LegalTile` hat, sonst falsch.
 
 `has_legal_neighbour(direction)` ruft `get_neighbour(direction)` auf, welche den Eintrag aus `tiles` zurückgibt,
 der dem benachbarten `Tile` in Richtung von `direction` liegt.
-``
+
+Praktischerweise gibt uns `pygame` schon eine `Sprite.update()` Methode vor,
+mit welcher wir nachher über hooks ohne viel Aufwand mehrere `Sprite`'s gleichzeitig updaten können.
+
+Nun wollen wir aber das korrekte "Cornering" Verhalten des Pacmans implementieren.
+Befinden wir uns in den "pre-turn" Pixeln,
+also `self.position_in_tile < TILE_SIZE // 2` so müssen wir den User input validieren,
+dann unterscheiden ob der Nutzer eine Kurve nehmen will,
+sich weiter gerade aus oder in die entgegengesetzte Richtung bewegen will und 
+eventuell schon die Bewegung in die neue Richtung einleiten.
 
 ```python
 # actors.py
@@ -300,10 +314,79 @@ class Pacman(Actor):
 # Add
 ###############################################################################
     def update(self):
-        if self.direction is Directions.NONE:
-            if self.input is not Directions.NONE and self.tile.has_legal_neighbour(self.input):
-                self.direction = self.input
-            else:
-                return
+        if self.position_in_tile < TILE_SIZE // 2:
+            if self.tile.has_legal_neighbour(self.input):
+                if self.direction is self.input or are_opposite_directions(self.direction, self.input):
+                    self.direction = self.input
+                else:
+                    self.rect.move_ip(self.input.value)
+
+            self.rect.move_ip(self.direction.value)
 ###############################################################################
 ```
+
+Befinden wir uns in der Mitte des Tiles, so gibt es drei Möglichkeiten:
+- Pacman hat gerade eine Kurve gemacht und muss sich nun in die neue Richtung weiter bewegen.
+- Der User hat keinen validen input gegeben,
+in dem Fall bewegt sich Pacman so lange in seine jetzige Richtung, bis er auf eine Wand trifft.
+- Pacman befindet sich gerade in der Ruhe und soll beschleunigt werden.
+
+All diese Fälle lassen sich folgendermaßen abdecken:
+
+```python
+# actors.py
+
+class Pacman(Actor):
+
+    def update(self):
+        if self.position_in_tile < TILE_SIZE // 2: ...
+        
+# Add
+###############################################################################
+        elif self.position_in_tile == TILE_SIZE // 2:
+            if self.tile.has_legal_neighbour(self.input):
+                self.direction = self.input
+
+            elif not self.tile.has_legal_neighbour(self.direction):
+                self.direction = Directions.NONE
+
+            self.rect.move_ip(self.direction.value)
+###############################################################################
+```
+
+Bleibt nur noch eine Option übrig, befindet sich Pacman in den "post-turn Pixeln",
+so muss wieder unterschieden werden, ob  `input` eine orthogonale oder eine geradlinige Bewegunsänderung herbeiführt,
+nur dass im Gegensatz zu den "pre-turn Pixeln" Pacman sich entgegen seiner eigentlichen Richtung bewegt,
+wenn er um eine Ecke geht:
+
+```python
+# actors.py
+
+class Pacman(Actor):
+
+    def update(self):
+        if self.position_in_tile < TILE_SIZE // 2: ...
+        elif self.position_in_tile == TILE_SIZE // 2: ...
+        
+# Add
+###############################################################################
+        else:
+            if self.tile.has_legal_neighbour(self.input):
+                if are_opposite_directions(self.direction, self.input):
+                    self.direction = self.input
+
+                if self.direction is self.input:
+                    self.rect = self.rect.move(self.direction.value)
+                else:
+                    self.rect = self.rect.move(self.input.value)
+                    self.rect = self.rect.move(opposite_direction(self.direction).value)
+
+            else:
+                self.rect = self.rect.move(self.direction.value)
+###############################################################################
+```
+
+Damit wäre die Bewegung des Pacman erstmal abgeschlossen, kommen wir nun zu seinen Verfolgern, den Geistern.
+
+## Geister
+
