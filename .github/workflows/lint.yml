@@ -33,7 +33,7 @@ jobs:
         uses: wearerequired/lint-action@v1
         with:
           eslint: true
-          eslint_dir: website
+          eslint_dir: website/
           
           prettier: true
-          prettier_dir: website
+          prettier_dir: website/
