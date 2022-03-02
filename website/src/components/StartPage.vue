@@ -73,7 +73,7 @@ export default {
       gltf.scene.traverse(this.initInteractiveObjects);
       this.scene.add(gltf.scene);
     },
-    onClick() {
+    onClick(event) {
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
