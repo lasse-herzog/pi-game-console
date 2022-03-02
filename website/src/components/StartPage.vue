@@ -8,7 +8,6 @@ import * as TWEEN from '@tweenjs/tween.js';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 
 export default {
   data() {
@@ -27,7 +26,12 @@ export default {
     init() {
       this.arcades = [];
       this.waypoints = [];
+
+      this.intersectsArcade = [];
+      this.intersectsWaypoint = [];
+
       this.container = this.$refs.container;
+      this.drag = false;
 
       this.camera = new THREE.PerspectiveCamera(
         50,
@@ -63,6 +67,7 @@ export default {
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.renderer.setAnimationLoop(this.animation);
+
       this.container.appendChild(this.renderer.domElement);
 
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -79,7 +84,23 @@ export default {
 
       this.controls.update();
 
-      this.renderer.domElement.addEventListener('click', this.onClick, false);
+      this.renderer.domElement.addEventListener(
+        'mousedown',
+        () => (this.drag = false),
+        false
+      );
+
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onMouseMove,
+        false
+      );
+
+      this.renderer.domElement.addEventListener(
+        'mouseup',
+        this.onMouseUp,
+        false
+      );
     },
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
@@ -92,26 +113,20 @@ export default {
       gltf.scene.traverse(this.initInteractiveObjects);
       this.scene.add(gltf.scene);
     },
-    onClick(event) {
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    onMouseUp() {
+      if (this.drag) {
+        return;
+      }
 
-      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-      const intersectsArcade = this.raycaster.intersectObjects(this.arcades);
-      const intersectsWaypoint = this.raycaster.intersectObjects(
-        this.waypoints
-      );
-
-      if (intersectsArcade.length > 0) {
+      if (this.intersectsArcade.length > 0) {
         this.$router.push('test');
-      } else if (intersectsWaypoint.length > 0) {
+      } else if (this.intersectsWaypoint.length > 0) {
         const coords = { x: this.camera.position.x, z: this.camera.position.z };
 
         new TWEEN.Tween(coords)
           .to({
-            x: intersectsWaypoint[0].object.position.x,
-            z: intersectsWaypoint[0].object.position.z,
+            x: this.intersectsWaypoint[0].object.position.x,
+            z: this.intersectsWaypoint[0].object.position.z,
           })
           .easing(TWEEN.Easing.Quadratic.Out)
           .onUpdate(() =>
@@ -125,6 +140,25 @@ export default {
             );
           })
           .start();
+      }
+    },
+    onMouseMove(event) {
+      this.drag = true;
+
+      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+      this.intersectsArcade = this.raycaster.intersectObjects(this.arcades);
+      this.intersectsWaypoint = this.raycaster.intersectObjects(this.waypoints);
+
+      if (this.intersectsArcade.length > 0) {
+        this.intersectsArcade[0].object.parent.children[2].material.emissive.set(
+          0xbf40bf
+        );
+      } else if (this.intersectsWaypoint.length > 0) {
+        this.intersectsWaypoint[0].object.material.color.set(0xbf40bf);
       }
     },
   },
