@@ -6,6 +6,10 @@ defineProps({})
 
 <template>
 
+  <img src="../assets/logo.png" />
+  <img src="../assets/logo.png" />
+  <img src="../assets/logo.png" />
+
   <p>
     Recommended IDE setup:
     <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
@@ -13,8 +17,9 @@ defineProps({})
     <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
   </p>
 
+    <div style="height: 100rem;"></div>
   <p>
-    <a href="https://vitejs.dev/guide/features.html" target="_blank">
+    <a href="https://vitejs.dev/guide/features.html"  target="_blank">
       Vite Documentation
     </a>
     |
