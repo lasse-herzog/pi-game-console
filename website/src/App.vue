@@ -7,8 +7,8 @@ import GameConsole from './components/GameConsole.vue';
 </script>
 
 <template>
-  <NavigationBar/>
-  <GameConsole/>
+  <NavigationBar />
+  <GameConsole />
   <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
   <!-- <HelloWorld msg="Moin" /> -->
 </template>
@@ -20,6 +20,12 @@ import GameConsole from './components/GameConsole.vue';
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+html,
+body {
+  margin: 0px !important;
+  padding: 0px !important;
+  background-color: #1d1d1f;
 }
 </style>
