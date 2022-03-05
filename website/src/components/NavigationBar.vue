@@ -27,9 +27,6 @@ defineProps({})
 </template>
 
 <style scoped>
-img {
-  height: 2rem;
-}
 .navbar {
   z-index: 1;
   background-color: #1d1d1fb8;
