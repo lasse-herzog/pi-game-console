@@ -2,15 +2,11 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import HelloWorld from './components/HelloWorld.vue'
-import NavigationBar from './components/NavigationBar.vue';
-import GameConsole from './components/GameConsole.vue';
 </script>
 
 <template>
-  <NavigationBar />
-  <GameConsole />
-  <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
-  <!-- <HelloWorld msg="Moin" /> -->
+  <img alt="Vue logo" src="./assets/logo.png" />
+  <HelloWorld msg="Moin" />
 </template>
 
 <style>
@@ -20,12 +16,6 @@ import GameConsole from './components/GameConsole.vue';
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-html,
-body {
-  margin: 0px !important;
-  padding: 0px !important;
-  background-color: #1d1d1f;
+  margin-top: 60px;
 }
 </style>
