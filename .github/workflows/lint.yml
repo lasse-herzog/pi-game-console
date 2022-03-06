@@ -37,4 +37,6 @@ jobs:
           
           prettier: true
           prettier_dir: website/
+          
+          github_token: ${{ secrets.ADMIN_TOKEN }}
           auto_fix: true
