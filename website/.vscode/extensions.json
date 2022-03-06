@@ -1,3 +1,8 @@
 {
-  "recommendations": ["Catppuccin.catppuccin-vsc", "dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "johnsoncodehk.volar"]
+  "recommendations": [
+    "Catppuccin.catppuccin-vsc",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "johnsoncodehk.volar"
+  ]
 }
