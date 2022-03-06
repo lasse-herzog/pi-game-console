@@ -1,11 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-defineProps({})
+defineProps({});
 </script>
 
 <template>
-
   <img src="../assets/logo.png" />
   <img src="../assets/logo.png" />
   <img src="../assets/logo.png" />
@@ -17,9 +16,9 @@ defineProps({})
     <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
   </p>
 
-    <div style="height: 100rem;"></div>
+  <div style="height: 100rem"></div>
   <p>
-    <a href="https://vitejs.dev/guide/features.html"  target="_blank">
+    <a href="https://vitejs.dev/guide/features.html" target="_blank">
       Vite Documentation
     </a>
     |
