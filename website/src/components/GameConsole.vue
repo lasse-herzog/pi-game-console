@@ -8,18 +8,18 @@ defineProps({})
         <section class="section-title">
             <div class="text-neon">PigCo</div>
             <div class="container-index">
-                <div>
-                    <a id="img_hardware" href="#hardware">
+                <div class="card img">
+                    <a href="#hardware">
                         <img src="../assets/motherboard.jpg" />
                     </a>
                 </div>
-                <div>
-                    <a id="img_games" href="#games">
+                <div class="card img">
+                    <a href="#games">
                         <img src="../assets/playstation_controller.jpg" />
                     </a>
                 </div>
-                <div>
-                    <a id="img_design" href="#design">
+                <div class="card img">
+                    <a href="#design">
                         <img src="../assets/architecture.jpg" />
                     </a>
                 </div>
@@ -27,6 +27,33 @@ defineProps({})
         </section>
         <section class="section-hardware" id="hardware">
             <div class="container-hardware">
+                <div class="card left stretch">
+                    <h1>Hardware</h1>
+                    <p>New CPU performance and efficiency cores power through complex tasks and preserve power while doing so.</p>
+                    <p>With such advancements come new possibilities:</p>
+                    <ul>
+                        <li>16x the details</li>
+                        <li>4x the size</li>
+                        <li>completely new rendering and lighting</li>
+                    </ul>
+                </div>
+                <div class="card right stretch"></div>
+            </div>
+        </section>
+        <section class="section-games" id="games">
+            <div class="container-games-main">
+                <div class="card">
+                    <h1>Games</h1>
+                    <p>New CPU performance and efficiency cores power through complex tasks and preserve power while doing so.</p>
+                    <p>With such advancements come new possibilities:</p>
+                    <ul>
+                        <li>16x the details</li>
+                        <li>4x the size</li>
+                        <li>completely new rendering and lighting</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="container-games-index">
                 <div>
                     <h1>Hardware</h1>
                     <p>New CPU performance and efficiency cores power through complex tasks and preserve power while doing so.</p>
@@ -40,7 +67,6 @@ defineProps({})
                 <div></div>
             </div>
         </section>
-        <section class="section-games" id="games"></section>
         <section class="section-design" id="design"></section>
     </div>
 </template>
@@ -68,30 +94,74 @@ section {
     font-family: "Roboto", sans-serif;
 }
 
-h1 {
+.card {
+    max-height: 80vh;
+    height: auto;
+    margin: auto;
+    padding: 0 0.5rem;
+    text-align: left;
+    color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 0.5rem;
+}
+
+.card.stretch {
+    height: 100%;
+}
+
+.card.left {
+    width: 50%;
+    background: #009694;
+    margin: auto;
+    border-radius: 1rem 0rem 0rem 1rem;
+}
+
+.card.right {
+    width: 50%;
+    background-image: url(../assets/cpu.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: auto;
+    border-radius: 0rem 1rem 1rem 0rem;
+}
+
+.card.left > * {
+    margin: 1rem;
+}
+
+.card.img {
+    padding: 0;
+    box-shadow: #000000 0px 8px 24px;
+}
+
+.card.img img {
+    border-radius: 0.5rem;
+}
+
+.card h1 {
     font-weight: 700;
     font-size: 4em;
 }
 
-p {
+.card p {
     font-weight: 300;
     font-size: 1.5em;
 }
 
-ul {
+.card ul {
     padding-left: 0;
     font-weight: 500;
     font-size: 2em;
 }
 
-li {
+.card li {
     padding: 0.1rem 0;
     padding-left: 1rem;
     list-style-type: none;
     position: relative;
 }
 
-li:before {
+.card li:before {
     content: "-";
     font-size: 1em;
     position: absolute;
@@ -99,7 +169,7 @@ li:before {
     left: 0rem;
 }
 
-img {
+.card img {
     display: block;
     max-width: 100%;
     width: auto;
@@ -131,34 +201,6 @@ img {
     padding: 0 0.5rem;
 }
 
-.container-hardware > div {
-    max-height: 80vh;
-    height: 100%;
-    width: 50%;
-    margin: auto;
-    text-align: left;
-    color: #fff;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-}
-
-.container-hardware > div:nth-child(1) {
-    background: #009694;
-    margin: auto;
-    border-radius: 1rem 0rem 0rem 1rem;
-}
-
-.container-hardware > div:nth-child(1) > * {
-    margin: 1rem;
-}
-
-.container-hardware > div:nth-child(2) {
-    background-image: url(../assets/cpu.jpg);
-    background-repeat: no-repeat;
-    background-position: center center;
-    margin: auto;
-    border-radius: 0rem 1rem 1rem 0rem;
-}
-
 .container-index {
     display: flex;
     flex-wrap: nowrap;
@@ -172,11 +214,6 @@ img {
 
 .container-index > div {
     margin: 1rem;
-}
-
-.container-index > div > a > img {
-    border-radius: 0.5rem;
-    box-shadow: #000000 0px 8px 24px;
 }
 
 .text-neon {
