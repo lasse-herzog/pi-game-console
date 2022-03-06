@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     animation(time) {
-      //this.controls.update();
+      this.controls.update();
       TWEEN.update(time);
 
       this.renderer.render(this.scene, this.camera);
@@ -39,7 +39,7 @@ export default {
         1,
         50
       );
-      this.camera.position.set(0, 3, 1);
+      this.camera.position.set(15, 5, 15);
 
       this.scene = new THREE.Scene();
 
