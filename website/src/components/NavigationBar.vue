@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-defineProps({})
+defineProps({});
 </script>
 
 <template>
@@ -40,7 +40,7 @@ defineProps({})
 }
 
 .navbar::after {
-  content: "";
+  content: '';
   display: block;
   position: absolute;
   top: 100%;
@@ -66,7 +66,7 @@ defineProps({})
 
 .navlogo {
   font-size: 1.5em;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   margin: 0.9rem 0px;
   margin-right: auto;
@@ -74,7 +74,7 @@ defineProps({})
 
 .navelement {
   font-size: 0.9em;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 300;
   line-height: 1.4rem;
   width: auto;
@@ -82,13 +82,13 @@ defineProps({})
   cursor: pointer;
 }
 
-.navelement:hover{
-  color: #2996FD;
+.navelement:hover {
+  color: #2996fd;
 }
 
 .shoplink {
   font-size: 0.9em;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 300;
   line-height: 1.4rem;
   cursor: pointer;
