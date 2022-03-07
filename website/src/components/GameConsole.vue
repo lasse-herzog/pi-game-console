@@ -6,7 +6,7 @@ defineProps({})
 <template>
     <div id="parrent_div">
         <section class="section-title">
-            <div class="text-neon">PigCo</div>
+            <div class="text-neon">PYCO</div>
             <div class="container index">
                 <div class="card img">
                     <a href="#hardware">
@@ -27,7 +27,7 @@ defineProps({})
         </section>
         <section class="section-hardware" id="hardware">
             <div class="container hardware">
-                <div class="card left font-white back-aqua stretch">
+                <div class="card left font-white back-hardware stretch">
                     <h1>Hardware</h1>
                     <p>New CPU performance and efficiency cores power through complex tasks and preserve power while doing so.</p>
                     <p>With such advancements come new possibilities:</p>
@@ -42,32 +42,30 @@ defineProps({})
         </section>
         <section class="section-games" id="games">
             <div class="container games">
-                <div class="card font-white back-aqua">
+                <div class="card left font-white back-games stretch">
                     <h1>Games</h1>
-                    <p>New CPU performance and efficiency cores power through complex tasks and preserve power while doing so.</p>
-                    <p>With such advancements come new possibilities:</p>
+                    <p>The Console comes with the remakes of four classic arcade titles preinstalled.</p>
+                    <p>Included titles are:</p>
+                    <ul>
+                        <li>
+                            <a href>Pong</a>
+                        </li>
+                        <li>
+                            <a href>Snake</a>
+                        </li>
+                        <li>
+                            <a href>Pac-Man</a>
+                        </li>
+                        <li>
+                            <a href>Space Invaders</a>
+                        </li>
+                    </ul>
                 </div>
-                <div>
-                    <div class="card img">
-                        <a href>
-                            <img src="../assets/architecture.jpg" />
-                        </a>
-                    </div>
-                    <div class="card img">
-                        <a href>
-                            <img src="../assets/architecture.jpg" />
-                        </a>
-                    </div>
-                    <div class="card img">
-                        <a href>
-                            <img src="../assets/architecture.jpg" />
-                        </a>
-                    </div>
-                    <div class="card img">
-                        <a href>
-                            <img src="../assets/architecture.jpg" />
-                        </a>
-                    </div>
+                <div class="container card games right stretch">
+                    <a href class="card back-pong stretch"></a>
+                    <a href class="card back-snake stretch"></a>
+                    <a href class="card back-pac stretch"></a>
+                    <a href class="card back-space stretch"></a>
                 </div>
             </div>
         </section>
@@ -98,6 +96,40 @@ section {
     font-family: "Roboto", sans-serif;
 }
 
+.container {
+    max-width: 64rem;
+    width: auto;
+    height: 100vh;
+    margin: auto;
+    padding: 0;
+}
+
+.container.games {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.container.hardware {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.container.index {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+.container.index > div {
+    margin: 1rem;
+}
+
 .card {
     max-height: 80vh;
     height: auto;
@@ -106,6 +138,27 @@ section {
     text-align: left;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     border-radius: 0.5rem;
+}
+
+.card.games {
+    flex-direction: column;
+    padding: 0;
+}
+
+.card.games > * {
+    flex-direction: column;
+    max-height: 25%;
+    width: 100%;
+    border-radius: 0;
+    background-size: cover;
+}
+
+.card.games > *:first-child {
+    border-radius: 0rem 1rem 0rem 0rem;
+}
+
+.card.games > *:last-child {
+    border-radius: 0rem 0rem 1rem 0rem;
 }
 
 .card.stretch {
@@ -135,6 +188,10 @@ section {
     width: auto;
     height: auto;
     border-radius: 0.5rem;
+}
+
+.card a {
+    color: unset;
 }
 
 .card h1 {
@@ -191,51 +248,6 @@ section {
     background-position: center center;
 }
 
-.container {
-    max-width: 64rem;
-    width: auto;
-    height: 100vh;
-    margin: auto;
-    padding: 0;
-}
-
-.container.games {
-    height: 100vh;
-}
-
-.container.games > *:first-child {
-    width: auto;
-    text-align: center;
-}
-
-.container.games > *:not(:first-child) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    flex: 1 1;
-    align-content: center;
-    max-width: 25vw;
-}
-
-.container.hardware {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-.container.index {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-    height: 50vh;
-}
-
-.container.index > div {
-    margin: 1rem;
-}
-
 .text-neon {
     max-width: 64rem;
     width: auto;
@@ -253,12 +265,40 @@ section {
     color: #ffffff;
 }
 
-.back-aqua {
+.back-hardware {
     background-color: #0090ae;
+}
+
+.back-games {
+    background-color: #272e39;
 }
 
 .back-cpu {
     background-image: url(../assets/cpu.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.back-pong {
+    background-image: url(../assets/gc_pong.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.back-snake {
+    background-image: url(../assets/gc_snake.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.back-pac {
+    background-image: url(../assets/gc_pacman.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.back-space {
+    background-image: url(../assets/gc_space.png);
     background-repeat: no-repeat;
     background-position: center center;
 }
