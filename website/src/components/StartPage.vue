@@ -1,5 +1,15 @@
 <template>
-  <div id="container" ref="container"></div>
+  <div id="container" ref="container">
+    <div id="blocker" ref="blocker">
+      <div id="instructions" ref="instructions" @click="lockControls()">
+        <p style="font-size: 36px">Click to play</p>
+        <p>
+          Move: WASD<br />
+          Look: MOUSE
+        </p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -7,7 +17,6 @@ import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -34,6 +43,8 @@ export default {
       this.intersectsWaypoint = [];
 
       this.container = this.$refs.container;
+      const blocker = this.$refs.blocker;
+      const instructions = this.$refs.instructions;
       this.drag = false;
 
       this.camera = new THREE.PerspectiveCamera(
@@ -90,29 +101,39 @@ export default {
         this.camera.position.y,
         this.camera.position.z - 0.01
       );
-      
-      this.controls.update();*/
-      /*
-      this.controls.addEventListener('lock', function () {
-        instructions.style.display = 'none';
-        blocker.style.display = 'none';
-      });
 
-      controls.addEventListener('unlock', function () {
-        blocker.style.display = 'block';
-        instructions.style.display = '';
-      });*/
+      this.controls.update();*/
+
+      this.controls.getObject().position.set(12, 6, 12);
+
+      //instructions.addEventListener('click', () => this.controls.lock(), false);
+
+      this.controls.addEventListener(
+        'lock',
+        () => {
+          blocker.style.display = 'none';
+          instructions.style.display = 'none';
+        },
+        false
+      );
+
+      this.controls.addEventListener(
+        'unlock',
+        () => {
+          blocker.style.display = 'block';
+          instructions.style.display = '';
+        },
+        false
+      );
 
       this.scene.add(this.controls.getObject());
-      this.controls.getObject().position.set(12, 6, 12);
 
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
 
       this.renderer.domElement.addEventListener(
         'mousedown',
-        () => (this.drag = false),
-        false
+        () => (this.drag = false)
       );
 
       this.renderer.domElement.addEventListener(
@@ -134,6 +155,7 @@ export default {
       // TWEEN.update(time);
 
       if (this.controls.isLocked === true) {
+        console.log('lol');
         const delta = (time - prevTime) / 1000;
 
         this.velocity.x -= this.velocity.x * 125.0 * delta;
@@ -164,6 +186,9 @@ export default {
     loadGltf(gltf) {
       gltf.scene.traverse(this.initInteractiveObjects);
       this.scene.add(gltf.scene);
+    },
+    lockControls() {
+      this.controls.lock();
     },
     onKeyDown(event) {
       switch (event.code) {
@@ -212,8 +237,6 @@ export default {
       }
     },
     onMouseUp() {
-      this.controls.lock();
-
       if (this.drag) {
         return;
       }
@@ -264,3 +287,26 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#blocker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 255, 255);
+}
+
+#instructions {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+</style>
