@@ -39,7 +39,7 @@ export default {
 }
 
 body {
-    background: #6b0099;
+    background: #2b2a26;
     height: 100vh;
 }
 
@@ -91,7 +91,7 @@ body {
 
 .buttons button {
     padding: 10px 20px;
-    background: #6b0099;
+    background: #A243C2;
     border: none;
     outline: none;
     font-size: 17px;
@@ -103,6 +103,6 @@ body {
 
 .buttons a {
     font-size: 17px;
-    color: #6b0099;
+    color: #A243C2;
 }
 </style>
