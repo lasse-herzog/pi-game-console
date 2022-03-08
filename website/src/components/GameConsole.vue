@@ -69,7 +69,34 @@ defineProps({})
                 </div>
             </div>
         </section>
-        <section class="section-design" id="design"></section>
+        <section class="section-design" id="design">
+            <div class="container design top">
+                <div class="card font-white back-black stretch center">
+                    <h1>Design</h1>
+                    <p>To arrive at our final product, we went through many design iterations and material types. In the end, we decided on a handmade wooden case combined with a distinctive retro look.</p>
+                </div>
+            </div>
+            <div class="container design">
+                <div class="container">
+                    <div class="card img">
+                        <img src="../assets/arcade_0.png" />
+                    </div>
+                    <p class="font-white">An early render with external controls.</p>
+                </div>
+                <div class="container">
+                    <div class="card img">
+                        <img src="../assets/arcade_1.png" />
+                    </div>
+                    <p class="font-white">The first all in one render.</p>
+                </div>
+                <div class="container">
+                    <div class="card img">
+                        <img src="../assets/arcade_2.png" />
+                    </div>
+                    <p class="font-white">The first wooden prototype.</p>
+                </div>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -102,6 +129,24 @@ section {
     height: 100vh;
     margin: auto;
     padding: 0;
+}
+
+.container.design {
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.container.design > .container {
+    flex: 1 1 200px;
+    max-width: 33%;
+}
+
+.container.design.top {
+    padding-top: 6rem;
 }
 
 .container.games {
@@ -165,6 +210,10 @@ section {
     height: 100%;
 }
 
+.card.center {
+    text-align: center;
+}
+
 .card.left {
     width: 50%;
     margin: auto;
@@ -180,6 +229,7 @@ section {
 .card.img {
     padding: 0;
     box-shadow: #000000 0px 8px 24px;
+    margin: 1rem;
 }
 
 .card.img img {
@@ -263,6 +313,10 @@ section {
 
 .font-white {
     color: #ffffff;
+}
+
+.back-black {
+    background-color: #000000;
 }
 
 .back-hardware {
