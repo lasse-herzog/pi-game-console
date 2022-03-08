@@ -4,7 +4,7 @@
 
 
 <template>
-    <section>
+    <body>
         <div class="text">
             <h1>Impressum</h1>
 
@@ -60,15 +60,15 @@
 
             <h2>Verbraucher&shy;streit&shy;beilegung/Universal&shy;schlichtungs&shy;stelle</h2>
         </div>
-    </section>
+    </body>
 </template>
 
 
-<style>
-section {
+<style scoped>
+body {
     width: 100%;
     height: 100%;
-    background-color: #6b0099;
+    background: #282A36;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -77,10 +77,11 @@ section {
 }
 
 .text{
-    color: aliceblue;
-    background-color: #283042;
+    color: #F8F8F2;
+    background: #A243C2;
     padding: 2rem;
     margin: 3rem;
+    border-radius: 15px;
 }
 
 .text h1{
@@ -89,7 +90,7 @@ section {
 
 .text h2{
     font-size: 3rem;
-    color: grey;
+    color: #282A36;
 }
 
 .text p{
