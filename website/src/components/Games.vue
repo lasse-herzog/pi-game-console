@@ -366,6 +366,7 @@ export default {
   
 
 	}/*Ende Media Query*/
+
   #pong-info{
     box-shadow: 2px 2px 18px rgb(43, 43, 43);
   }
@@ -462,26 +463,7 @@ details[close] summary ~ *{
 .active, .dot:hover {
   background-color: #717171;
 }
-
-/* Fading animation */
-.fade {
-  -webkit-animation-name: fade;
-  -webkit-animation-duration: 1.5s;
-  animation-name: fade;
-  animation-duration: 1.5s;
-}
-
-@-webkit-keyframes fade {
-  from {opacity: .4}
-  to {opacity: 1}
-}
-
-@keyframes fade {
-  from {opacity: .4}
-  to {opacity: 1}
-}
-
-  
+ 
 }
 </style>
 
