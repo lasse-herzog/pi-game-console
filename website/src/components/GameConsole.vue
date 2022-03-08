@@ -116,7 +116,7 @@ body {
   height: 100vh;
   overflow: hidden;
   scroll-behavior: smooth;
-  background-color: #282A36;
+  background-color: #282a36;
 }
 
 #parrent_div {
@@ -125,14 +125,14 @@ body {
   height: 100vh;
   scroll-snap-points-y: repeat(100vh);
   scroll-snap-type: y proximity;
-  background-color: #282A36;
+  background-color: #282a36;
 }
 
 section {
   height: 100vh;
   scroll-snap-align: start;
   position: relative;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .container {
@@ -292,7 +292,7 @@ section {
 }
 
 .card li:before {
-  content: "-";
+  content: '-';
   font-size: 1em;
   position: absolute;
   top: 0rem;
@@ -324,7 +324,7 @@ section {
   width: auto;
   margin: auto;
   padding-top: 7.2rem;
-  font-family: "Liberty";
+  font-family: 'Liberty';
   font-size: 14em;
   letter-spacing: -0.05em;
   color: #e5a8ff;
@@ -337,15 +337,15 @@ section {
 }
 
 .back-black {
-  background-color: #282A36;
+  background-color: #282a36;
 }
 
 .back-hardware {
-  background-color: #282A36;
+  background-color: #282a36;
 }
 
 .back-games {
-  background-color: #282A36;
+  background-color: #282a36;
 }
 
 .back-cpu {
