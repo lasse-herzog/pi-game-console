@@ -505,11 +505,12 @@ body {
 }
 
 .text {
-    color: aliceblue;
-    background-color: #A243C2;
+    color: #f8f8f2;
+    background-color: #282A36;
     padding: 2rem;
     margin: 3rem;
     border-radius: 15px;
+    text-align: justify;
 }
 
 .text h1 {
@@ -518,19 +519,24 @@ body {
 
 .text h2 {
     font-size: 4rem;
-    color: #282A36;
+    color: #f8f8f2;
 }
 
 .text h3{
     font-size: 3rem;
-    color: #0FFF50;
+    color: #f8f8f2;
 }
 
 .text h4 {
   font-size: 3rem;
+  color: #f8f8f2;
 }
 
 .text p {
   font-size: 2rem;
+}
+
+.text a{
+    color: #A243C2;
 }
 </style>
