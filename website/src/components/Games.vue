@@ -290,13 +290,13 @@ export default {
 	@media screen and (min-width: 940px){
 		.game-infobox{
 			text-align: center;
-			background-color: white;
+			background-color: #2c3e50;
 			padding: 1rem;
 			margin: 1rem 0;
 			display: grid;
       grid-template-columns: 4fr 4fr;
       grid-gap: 1rem;
-			border: 0.5rem solid white;
+			border: 0.5rem solid #2c3e50;
 			border-radius: 18px;
       
 		}
@@ -333,12 +333,12 @@ export default {
 	@media screen and (max-width: 940px){
 		.game-infobox{
 			text-align: center;
-			background-color: white;
+			background-color: #2c3e50;
 			padding: 1rem;
 			margin: 1rem 0;
 			display: flex;
 			flex-flow: column;
-			border: 0.5rem solid white;
+			border: 0.5rem solid  #2c3e50;
 			border-radius: 18px;
 		}
     .title-headings{
