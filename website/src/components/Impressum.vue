@@ -1,7 +1,4 @@
-<script>
-
-</script>
-
+<script></script>
 
 <template>
     <body>
@@ -84,8 +81,8 @@ body {
     border-radius: 15px;
 }
 
-.text h1{
-    font-size: 5rem;
+.text h1 {
+  font-size: 5rem;
 }
 
 .text h2{
@@ -93,7 +90,7 @@ body {
     color: #282A36;
 }
 
-.text p{
-    font-size: 2rem;
+.text p {
+  font-size: 2rem;
 }
 </style>

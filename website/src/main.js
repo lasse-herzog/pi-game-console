@@ -16,11 +16,26 @@ import {
   faEthereum,
   faDhl,
   faUps,
-  faFedex
+  faFedex,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'vue-material-design-icons/styles.css';
 
-library.add(faInstagram, faFacebook, faTwitter, faYoutube, faBtc, faPaypal, faApplePay, faAmazonPay, faCcVisa, faCcMastercard, faEthereum, faDhl, faUps, faFedex);
+library.add(
+  faInstagram,
+  faFacebook,
+  faTwitter,
+  faYoutube,
+  faBtc,
+  faPaypal,
+  faApplePay,
+  faAmazonPay,
+  faCcVisa,
+  faCcMastercard,
+  faEthereum,
+  faDhl,
+  faUps,
+  faFedex
+);
 
 createApp(App).component('font-awesome-icon', FontAwesomeIcon).mount('#app');
