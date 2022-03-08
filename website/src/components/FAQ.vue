@@ -246,7 +246,7 @@ h1 {
 section {
     width: 100%;
     height: 100%;
-    background-color: #6b0099;
+    background: #6b0099;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -275,7 +275,7 @@ section {
 
 .accordion-item {
     background-color: #283042;
-    border-radius: 0.4rem;
+    border-radius: 15px;
     margin-bottom: 1rem;
     padding: 1rem;
     box-shadow: 0.5rem 2px 0.5rem rgba(0, 0, 0, 0.1);
