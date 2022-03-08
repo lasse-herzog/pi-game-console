@@ -4,7 +4,7 @@
 
 
 <template>
-    <section>
+    <body>
         <div class="text">
             <h1>Datenschutz&shy;erkl&auml;rung</h1>
             <h2>1. Datenschutz auf einen Blick</h2>
@@ -486,15 +486,15 @@
                 <a href="https://www.e-recht24.de">https://www.e-recht24.de</a>
             </p>
         </div>
-    </section>
+    </body>
 </template>
 
 
-<style>
-section {
+<style scoped>
+body {
     width: 100%;
     height: 100%;
-    background-color: #6b0099;
+    background: #282A36;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -504,9 +504,10 @@ section {
 
 .text {
     color: aliceblue;
-    background-color: #283042;
+    background-color: #A243C2;
     padding: 2rem;
     margin: 3rem;
+    border-radius: 15px;
 }
 
 .text h1 {
@@ -515,12 +516,12 @@ section {
 
 .text h2 {
     font-size: 4rem;
-    color: grey;
+    color: #282A36;
 }
 
 .text h3{
     font-size: 3rem;
-    color: #8fc460;
+    color: #0FFF50;
 }
 
 .text h4{
