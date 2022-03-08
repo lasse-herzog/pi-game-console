@@ -5,7 +5,7 @@ import Add from 'vue-material-design-icons/ChevronDown.vue'
 
 
 <template>
-    <section>
+    <body>
         <div class="headline">
             <a>Any Questions?</a>
         </div>
@@ -218,7 +218,7 @@ import Add from 'vue-material-design-icons/ChevronDown.vue'
                 </div>
             </div>
         </div>
-    </section>
+    </body>
 </template>
 
 
@@ -239,14 +239,14 @@ h1 {
 
 .headline {
     font-size: 5rem;
-    color: aliceblue;
+    color: #F8F8F2;
     padding: 5rem;
 }
 
-section {
+body {
     width: 100%;
     height: 100%;
-    background: #6b0099;
+    background: #2b2a26;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -256,14 +256,13 @@ section {
 .container {
     width: 100%;
     max-width: 80rem;
-    margin: 0 auto;
-    padding: 0 1.5rem;
+    margin: 0 1.5rem;
 }
 
 .symbols {
   text-align: center;
   padding: 1rem;
-  color: aliceblue;
+  color: #F8F8F2;
 }
 .symbols a{
   font-size: 5rem;
@@ -274,9 +273,11 @@ section {
 }
 
 .accordion-item {
-    background-color: #283042;
+    background-color: #A243C2;
     border-radius: 15px;
     margin-bottom: 1rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
     padding: 1rem;
     box-shadow: 0.5rem 2px 0.5rem rgba(0, 0, 0, 0.1);
 }
@@ -285,7 +286,7 @@ section {
     font-size: 2rem;
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
-    background-color: #283042;
+    background-color: #A243C2;
     width: 100%;
     display: flex;
     align-items: center;
@@ -301,7 +302,7 @@ section {
     max-height: 0;
     overflow: hidden;
     position: relative;
-    background-color: #212838;
+    background-color: #2b2a26;
     transition: max-height 850ms;
 }
 
@@ -310,14 +311,14 @@ section {
     position: absolute;
     width: 0.6rem;
     height: 100%;
-    background-color: #8fc460;
+    background-color: #0FFF50;
     top: 50%;
     left: 0;
     transform: translateY(-50%);
 }
 
 .answer p {
-    color: rgba(255, 255, 255, 0.6);
+    color: #F8F8F2;
     font-size: 1.7rem;
     padding: 2rem;
 }
