@@ -11,7 +11,7 @@ defineProps({});
         <a>PYCO</a>
       </div>
       <div class="navelement">
-        <a>PigCo</a>
+        <a>PYCO</a>
       </div>
       <div class="navelement">
         <a>Games</a>
