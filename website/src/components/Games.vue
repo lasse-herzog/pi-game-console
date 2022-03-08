@@ -109,10 +109,11 @@
           </div>
         </section>
         <section class="comment-section">
-          <div class="comments-heading">
+          
+          <div class="comments wrapper">
+            <div class="comments-heading">
             <h2>Das sagen die Spieler:</h2>
           </div>
-          <div class="comments wrapper">
             <blockquote class="comment">
               <h3>Gute Spieleauswahl</h3>
               <p>PYCO überzeugt vor allem durch die exzellent gewählten Spiele, die auf der Konsole verfügbar sind. Hier ist wirklich für jeden was dabei!</p>
@@ -211,11 +212,12 @@ export default {
 	.site-title{
 		width:100%;
 		height: 100vh;
-		background-image: url('../assets/violet_bg.jpg');
+		/*background-image: url('../assets/violet_bg.jpg');
 		background-repeat: repeat-y;
 		background-blend-mode: hard-light;
     background-size: cover;
-    background-position: center;
+    background-position: center;*/
+    background-color: #282A36;
 		
     left: 0;
     right: 0;
@@ -226,14 +228,14 @@ export default {
 	}
   
 	.title-txt{
-		color: floralwhite;
+		color: #FF10F0;
 		margin: auto;
 		
 	}
 	/*Unterüberschriften stylings */
   .title-headings a{
     text-decoration: none;
-    color: floralwhite;   
+    color: #F8F8F2;   
     margin: auto; 
   }
   .title-headings h2:hover{
@@ -242,18 +244,18 @@ export default {
     animation-duration: 1s;
   }
   #pong-hd a{
-    text-shadow: 2px 2px 18px rgb(43, 43, 43)
+    text-shadow: 1px 1px 9px rgb(43, 43, 43)
     
   }
   #snake-hd{
-    text-shadow: 2px 2px 18px rgb(0, 199, 0)
+    text-shadow: 1px 1px 9px rgb(0, 199, 0)
   }
   #pacman-hd{
-    text-shadow: 2px 2px 18px rgb(251, 255, 0);
+    text-shadow: 1px 1px 9px rgb(251, 255, 0);
     white-space: nowrap;
   }
   #space-hd{
-    text-shadow: 2px 2px 18px rgb(0, 66, 207)
+    text-shadow: 1px 1px 9px rgb(0, 66, 207)
   }
  
 	/*Content styles*/
@@ -277,26 +279,23 @@ export default {
 		grid-gap: 1rem;
 	}
 	.infoboxen{
-		background-color: #eee;
+		background-color: #282A36;
 		padding: 1rem 0;
 		margin-bottom: 0;
-    background-image: url('../assets/space_bg.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    
 	}
 
   /*Spezielle Styles für große Bildschirme */
 	@media screen and (min-width: 940px){
 		.game-infobox{
 			text-align: center;
-			background-color: #2c3e50;
+			background-color: #A243C2;
 			padding: 1rem;
 			margin: 1rem 0;
 			display: grid;
       grid-template-columns: 4fr 4fr;
       grid-gap: 1rem;
-			border: 0.5rem solid #2c3e50;
+			border: 0.5rem solid #A243C2;
 			border-radius: 18px;
       
 		}
@@ -304,11 +303,11 @@ export default {
     margin-top: 46%;
     margin-bottom: 0;
     font-size: 7em;
-		text-shadow: 2px 2px 18px #ac00a3;
+		text-shadow: 1px 1px 9px #FF10F0;
   }
   .site-content{
-    background-color: #2c3e50;
-    color: floralwhite;
+    background-color: #282A36;
+    color: #F8F8F2;
   }
 	.title-headings{
     display: flex;
@@ -320,12 +319,13 @@ export default {
   .title-headings>.title-heading{
     margin: auto;
     font-size: 1.5em;
-    color: floralwhite;    
+    color: #F8F8F2;    
   }
   
   
   .content-intro{
     font-size: 2rem;
+    color: #FF10F0
   }
 	}/*Ende Media Query*/
 
@@ -333,12 +333,12 @@ export default {
 	@media screen and (max-width: 940px){
 		.game-infobox{
 			text-align: center;
-			background-color: #2c3e50;
+			background-color: #A243C2;
 			padding: 1rem;
 			margin: 1rem 0;
 			display: flex;
 			flex-flow: column;
-			border: 0.5rem solid  #2c3e50;
+			border: 0.5rem solid  #A243C2;
 			border-radius: 18px;
 		}
     .title-headings{
@@ -351,13 +351,13 @@ export default {
     .title-headings>.title-heading{
       margin: auto;
       font-size: 1em;
-      color: floralwhite;    
+      color: #F8F8F2;    
     }
     .site-title h1{
       margin-top: 46%;
       margin-bottom: 0;
       font-size: 5em;
-      text-shadow: 2px 2px 18px #ac00a3;
+      text-shadow: 1px 1px 9px #FF10F0;
     }
 
   .content-intro{
@@ -366,7 +366,7 @@ export default {
   
 
 	}/*Ende Media Query*/
-
+  /*
   #pong-info{
     box-shadow: 2px 2px 18px rgb(43, 43, 43);
   }
@@ -379,7 +379,7 @@ export default {
   #invaders-info{
     box-shadow: 2px 2px 18px rgb(0, 66, 207);
   }
-
+  */
   .infotext{
     margin: auto;
   }
@@ -394,6 +394,7 @@ export default {
     width: 100%;
     height: auto;
     margin: auto;
+    border-radius: 18px;
   }
 
   /*Aufklappbarer Text */
@@ -405,7 +406,7 @@ export default {
   }
   summary:hover{
     cursor: pointer;
-    color:#ac00a3;
+    color:#0FFF50;
   }
 details{
   transition: all 1s ease;
@@ -420,11 +421,22 @@ details[close] summary ~ *{
 }
 
 /*Kommentare */
+.comments{
+  border: 5px solid #A243C2;
+  border-radius: 18px;
+}
+.comments-heading{
+  font-size: 1.5em;
+}
 .comment{
-  background-color: #bd93f9;
+  background-color: #282A36;
   text-align: center;
   padding: 1em;
   margin: 0 0 1em 0;
+  border-radius: 18px;
+}
+.comment-section{
+  padding: 2rem;
 }
 #lastComment {
   margin-bottom: 0;
@@ -442,7 +454,7 @@ details[close] summary ~ *{
 	.img-slideshow img{
     max-width:100%;
 		height: auto;
-    
+    border-radius: 18px;
 	}
 .dots{
   display: flex;
