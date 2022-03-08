@@ -77,7 +77,7 @@ defineProps({});
     </section>
     <section class="section-design" id="design">
       <div class="container design top">
-        <div class="card font-white back-black stretch center">
+        <div class="card font-white back-black stretch center noshadow">
           <h1>Design</h1>
           <p>
             To arrive at our final product, we went through many design
@@ -88,19 +88,19 @@ defineProps({});
       </div>
       <div class="container design">
         <div class="container">
-          <div class="card img">
+          <div class="card img noshadow">
             <img src="../assets/arcade_0.png" />
           </div>
           <p class="font-white">An early render with external controls.</p>
         </div>
         <div class="container">
-          <div class="card img">
+          <div class="card img noshadow">
             <img src="../assets/arcade_1.png" />
           </div>
           <p class="font-white">The first all in one render.</p>
         </div>
         <div class="container">
-          <div class="card img">
+          <div class="card img noshadow">
             <img src="../assets/arcade_2.png" />
           </div>
           <p class="font-white">The first wooden prototype.</p>
@@ -116,6 +116,7 @@ body {
   height: 100vh;
   overflow: hidden;
   scroll-behavior: smooth;
+  background-color: #282A36;
 }
 
 #parrent_div {
@@ -124,13 +125,14 @@ body {
   height: 100vh;
   scroll-snap-points-y: repeat(100vh);
   scroll-snap-type: y proximity;
+  background-color: #282A36;
 }
 
 section {
   height: 100vh;
   scroll-snap-align: start;
   position: relative;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .container {
@@ -195,6 +197,11 @@ section {
   border-radius: 0.5rem;
 }
 
+.card.noshadow {
+  box-shadow: none;
+  text-shadow: none;
+}
+
 .card.games {
   flex-direction: column;
   padding: 0;
@@ -242,6 +249,10 @@ section {
   margin: 1rem;
 }
 
+.card.img.noshadow {
+  box-shadow: none;
+}
+
 .card.img img {
   display: block;
   max-width: 100%;
@@ -281,7 +292,7 @@ section {
 }
 
 .card li:before {
-  content: '-';
+  content: "-";
   font-size: 1em;
   position: absolute;
   top: 0rem;
@@ -313,7 +324,7 @@ section {
   width: auto;
   margin: auto;
   padding-top: 7.2rem;
-  font-family: 'Liberty';
+  font-family: "Liberty";
   font-size: 14em;
   letter-spacing: -0.05em;
   color: #e5a8ff;
@@ -326,15 +337,15 @@ section {
 }
 
 .back-black {
-  background-color: #000000;
+  background-color: #282A36;
 }
 
 .back-hardware {
-  background-color: #0090ae;
+  background-color: #282A36;
 }
 
 .back-games {
-  background-color: #272e39;
+  background-color: #282A36;
 }
 
 .back-cpu {
