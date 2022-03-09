@@ -23,12 +23,15 @@ jobs:
           node-version: 16
 
       - name: Install Node.js dependencies
-        run: cd website && npm install
+        run: |
+          cd website
+          npm install
 
       - name: Build Website
         run: |
           npm run build
           cd ..
-          git add website/dist && git commit -m 'adding dist subtree'
-          git subtree push --rejoin --prefix website/dist origin gh-pages
+          git add website/dist
+          git commit -m 'adding dist subtree'
+          git subtree push --prefix website/dist origin gh-pages
           
