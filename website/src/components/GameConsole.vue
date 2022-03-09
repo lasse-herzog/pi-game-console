@@ -29,7 +29,10 @@ defineProps({});
       <div class="container hardware">
         <div class="card left font-white back-hardware stretch">
           <h1>Hardware</h1>
-          <p>Die neuen CPU-Leistungs- und Effizienzkerne erledigen komplexe Aufgaben und sparen dabei Energie.</p>
+          <p>
+            Die neuen CPU-Leistungs- und Effizienzkerne erledigen komplexe
+            Aufgaben und sparen dabei Energie.
+          </p>
           <p>Mit solchen Fortschritten kommen neue Möglichkeiten:</p>
           <ul>
             <li>16x die Details</li>
@@ -44,7 +47,10 @@ defineProps({});
       <div class="container games">
         <div class="card left font-white back-games stretch">
           <h1>Games</h1>
-          <p>Auf der Konsole sind die Remakes von vier klassischen Arcade-Titeln vorinstalliert.</p>
+          <p>
+            Auf der Konsole sind die Remakes von vier klassischen Arcade-Titeln
+            vorinstalliert.
+          </p>
           <p>Enthaltene Titel sind:</p>
           <ul>
             <li>
@@ -74,7 +80,10 @@ defineProps({});
         <div class="card font-white back-black stretch center noshadow">
           <h1>Design</h1>
           <p>
-            Um zu unserem Endprodukt zu gelangen, haben wir viele Design Iterationen und Materialtypen. Am Ende haben wir uns für ein handgefertigtes Holzgehäuse in Kombination mit einem unverwechselbaren Retro-Look.
+            Um zu unserem Endprodukt zu gelangen, haben wir viele Design
+            Iterationen und Materialtypen. Am Ende haben wir uns für ein
+            handgefertigtes Holzgehäuse in Kombination mit einem
+            unverwechselbaren Retro-Look.
           </p>
         </div>
       </div>
@@ -83,7 +92,9 @@ defineProps({});
           <div class="card img noshadow">
             <img src="../assets/arcade_0.png" />
           </div>
-          <p class="font-white">Ein frühes Rendering mit externen Eingabegeräten.</p>
+          <p class="font-white">
+            Ein frühes Rendering mit externen Eingabegeräten.
+          </p>
         </div>
         <div class="container">
           <div class="card img noshadow">
@@ -124,7 +135,7 @@ section {
   height: 100vh;
   scroll-snap-align: start;
   position: relative;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .container {
@@ -284,7 +295,7 @@ section {
 }
 
 .card li:before {
-  content: "-";
+  content: '-';
   font-size: 1em;
   position: absolute;
   top: 0rem;
@@ -316,7 +327,7 @@ section {
   width: auto;
   margin: auto;
   padding-top: 7.2rem;
-  font-family: "Liberty";
+  font-family: 'Liberty';
   font-size: 14em;
   letter-spacing: -0.05em;
   color: #e5a8ff;
