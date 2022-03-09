@@ -20,18 +20,22 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'vue-material-design-icons/styles.css';
 import App from './App.vue';
+import Datenschutz from './components/Datenschutz.vue';
+import FAQ from './components/FAQ.vue';
 import GameConsole from './components/GameConsole.vue';
 import Games from './components/Games.vue';
+import Impressum from './components/Impressum.vue';
+// import Shop from
 import Start from './components/StartPage.vue';
 
 const routes = [
   { path: '/', component: Start },
   { path: '/console', component: GameConsole },
-  //{ path: '/datenschutz', component: Datenschutz },
-  //{ path: '/faq', component: FAQ },
+  { path: '/datenschutz', component: Datenschutz },
+  { path: '/faq', component: FAQ },
   { path: '/games', component: Games },
-  //{ path: '/impressum', component: Impressum },
-  //{ path: '/shop', component: Shop },
+  { path: '/impressum', component: Impressum },
+  //  { path: '/shop', component: Shop },
 ];
 
 library.add(
