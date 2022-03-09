@@ -36,7 +36,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add website/dist
+          git add -f website/dist
           git commit -m 'adding dist subtree'
           git subtree push --prefix website/dist origin gh-pages
           
