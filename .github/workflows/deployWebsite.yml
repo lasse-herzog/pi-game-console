@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -31,7 +31,11 @@ jobs:
         run: |
           cd website
           npm run build
-          cd ..
+          
+      - name: Push to gh-pages branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git add website/dist
           git commit -m 'adding dist subtree'
           git subtree push --prefix website/dist origin gh-pages
