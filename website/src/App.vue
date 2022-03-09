@@ -1,5 +1,14 @@
+<script setup>
+import NavBar from './components/NavigationBar.vue';
+import Footer from './components/Footer.vue';
+</script>
+
 <template>
-  <router-view />
+  <div>
+    <NavBar />
+    <router-view />
+    <Footer />
+  </div>
 </template>
 
 <style>
@@ -22,7 +31,6 @@ body {
   background-color: #000;
   margin: 0 !important;
   padding: 0 !important;
-  overflow: hidden;
   scroll-behavior: smooth;
 }
 </style>
