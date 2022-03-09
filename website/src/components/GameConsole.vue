@@ -29,15 +29,12 @@ defineProps({});
       <div class="container hardware">
         <div class="card left font-white back-hardware stretch">
           <h1>Hardware</h1>
-          <p>
-            New CPU performance and efficiency cores power through complex tasks
-            and preserve power while doing so.
-          </p>
-          <p>With such advancements come new possibilities:</p>
+          <p>Die neuen CPU-Leistungs- und Effizienzkerne erledigen komplexe Aufgaben und sparen dabei Energie.</p>
+          <p>Mit solchen Fortschritten kommen neue Möglichkeiten:</p>
           <ul>
-            <li>16x the details</li>
-            <li>4x the size</li>
-            <li>completely new rendering and lighting</li>
+            <li>16x die Details</li>
+            <li>4x die Größe</li>
+            <li>komplett neues Rendering und Beleuchtung</li>
           </ul>
         </div>
         <div class="card right back-cpu stretch"></div>
@@ -47,11 +44,8 @@ defineProps({});
       <div class="container games">
         <div class="card left font-white back-games stretch">
           <h1>Games</h1>
-          <p>
-            The Console comes with the remakes of four classic arcade titles
-            preinstalled.
-          </p>
-          <p>Included titles are:</p>
+          <p>Auf der Konsole sind die Remakes von vier klassischen Arcade-Titeln vorinstalliert.</p>
+          <p>Enthaltene Titel sind:</p>
           <ul>
             <li>
               <a href>Pong</a>
@@ -80,9 +74,7 @@ defineProps({});
         <div class="card font-white back-black stretch center noshadow">
           <h1>Design</h1>
           <p>
-            To arrive at our final product, we went through many design
-            iterations and material types. In the end, we decided on a handmade
-            wooden case combined with a distinctive retro look.
+            Um zu unserem Endprodukt zu gelangen, haben wir viele Design Iterationen und Materialtypen. Am Ende haben wir uns für ein handgefertigtes Holzgehäuse in Kombination mit einem unverwechselbaren Retro-Look.
           </p>
         </div>
       </div>
@@ -91,19 +83,19 @@ defineProps({});
           <div class="card img noshadow">
             <img src="../assets/arcade_0.png" />
           </div>
-          <p class="font-white">An early render with external controls.</p>
+          <p class="font-white">Ein frühes Rendering mit externen Eingabegeräten.</p>
         </div>
         <div class="container">
           <div class="card img noshadow">
             <img src="../assets/arcade_1.png" />
           </div>
-          <p class="font-white">The first all in one render.</p>
+          <p class="font-white">Der erste Alles-in-Einem-Renderer.</p>
         </div>
         <div class="container">
           <div class="card img noshadow">
             <img src="../assets/arcade_2.png" />
           </div>
-          <p class="font-white">The first wooden prototype.</p>
+          <p class="font-white">Der erste Prototyp aus Holz.</p>
         </div>
       </div>
     </section>
@@ -132,7 +124,7 @@ section {
   height: 100vh;
   scroll-snap-align: start;
   position: relative;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .container {
@@ -292,7 +284,7 @@ section {
 }
 
 .card li:before {
-  content: '-';
+  content: "-";
   font-size: 1em;
   position: absolute;
   top: 0rem;
@@ -324,7 +316,7 @@ section {
   width: auto;
   margin: auto;
   padding-top: 7.2rem;
-  font-family: 'Liberty';
+  font-family: "Liberty";
   font-size: 14em;
   letter-spacing: -0.05em;
   color: #e5a8ff;
