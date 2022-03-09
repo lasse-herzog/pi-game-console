@@ -21,9 +21,8 @@
       </div>
     </div>
       <main class="site-content">
-        <header class="content-intro wrapper">
+        <header class="content-intro wrapper" ref="intro">
           <h2>Die größten Arcade-Klassiker aller Zeiten in einer Konsole!</h2>
-          <!--<p>Erlebe die vier größten Meilensteine der Arcade-Geschichte jetzt in neuem Glanz in einer einzigen Konsole! <br>Mit PYCO hast du die Kontrolle.</p>-->
         </header>
         <section class="infoboxen">
           <div class="wrapper">
@@ -39,7 +38,7 @@
               
               <div class="infotext">
                 <details>
-                  <summary><h3>Pong</h3></summary>
+                  <summary><h3 ref="headings">Pong</h3></summary>
                   <section>
                   Teste dein Können in diesem klassischen Arcade-Spiel gegen den Computer! Steuere deinen Schläger schnell und präzise und lasse den Ball nicht aus dem Spielfeld entkommen.<br>
                   Jetzt nur in der PYCO-Version das Spiel in vier einzigartigen Spielmodi mit steigender Schwierigkeitsgraden erleben. Reicht dein Reaktionsvermögen für aus um den Gegener zu besiegen?  
@@ -50,7 +49,7 @@
             <div class="game-infobox" id="snake-info">
               <div class="infotext">
                 <details>
-                <summary><h3>Snake</h3></summary>
+                <summary><h3 ref="headings">Snake</h3></summary>
                   <section>
                   Du bist die Schlange! Esse Äpfel um Punkte zu erhalten und größer zu werden. Doch Vorsicht: Berührst du den spielfeldrand oder dich selbst ist das Spiel vorbei!<br>
                   Wähle zwischen einzigartigen Skins und knacke alle Highscores! 
@@ -78,7 +77,7 @@
               </div>
               <div class="infotext">
                 <details>
-                  <summary><h3>Pac-Man</h3></summary>
+                  <summary><h3 ref="headings">Pac-Man</h3></summary>
                     <section>
                     Waka Waka!<br>
                     Der gelbe runde Held ist zurück und er ist hungrig!<br>Friss alle Pillen und erreiche das nächste Level. Aber Pac-Man ist nicht allein: Inky, Pinky, Blinky und Clyde haben es auf ihn abgesehen und verfolgen ihn durch das Labyrinth.
@@ -90,7 +89,7 @@
             <div class="game-infobox" id="invaders-info">
               <div class="infotext">
                 <details>
-                <summary><h3>Space Invaders</h3></summary>
+                <summary><h3 ref="headings">Space Invaders</h3></summary>
                   <section>
                   Die Aliens greifen an! Das Ende naht! Die Welt braucht einen Beschützer!<br>
                   Setz' dich ins Raumschiff und stürze dich in die Schlacht gegen die Horden von Weltraummonstern. Wirst du es schaffen, die Außerirdischen zu eliminieren? Das Schicksal der Menschheit liegt in deinen Händen!
@@ -160,6 +159,10 @@ export default {
 
   mounted: function() {
     //this.startSlide();
+    let element = this.$refs.intro;
+    element.addEventListener('click', () => {
+      element.classList.add('animate__animated', 'animate__flash');
+    })
   },
 
   methods: {
@@ -212,11 +215,6 @@ export default {
 	.site-title{
 		width:100%;
 		height: 100vh;
-		/*background-image: url('../assets/violet_bg.jpg');
-		background-repeat: repeat-y;
-		background-blend-mode: hard-light;
-    background-size: cover;
-    background-position: center;*/
     background-color: #282A36;
 		
     left: 0;
@@ -264,7 +262,14 @@ export default {
 		padding-top: 1rem;
 		margin-bottom: 0;
 		flex: 1 auto;
+    background-color: #282A36;
+    color: #F8F8F2;
 	}
+  .content-intro{
+    font-size: 2rem;
+    color: #FF10F0
+  }
+  
 	.wrapper{
 		min-width: 320px;
 		max-width: 1024px;
@@ -305,10 +310,7 @@ export default {
     font-size: 7em;
 		text-shadow: 1px 1px 9px #FF10F0;
   }
-  .site-content{
-    background-color: #282A36;
-    color: #F8F8F2;
-  }
+  
 	.title-headings{
     display: flex;
     padding-bottom: 27rem;
@@ -322,13 +324,8 @@ export default {
     color: #F8F8F2;    
   }
   
-  
-  .content-intro{
-    font-size: 2rem;
-    color: #FF10F0
-  }
 	}/*Ende Media Query*/
-
+ 
   /*Spezielle Styles für kleinere Bildschirme */
 	@media screen and (max-width: 940px){
 		.game-infobox{
@@ -366,20 +363,7 @@ export default {
   
 
 	}/*Ende Media Query*/
-  /*
-  #pong-info{
-    box-shadow: 2px 2px 18px rgb(43, 43, 43);
-  }
-  #snake-info{
-    box-shadow: 2px 2px 18px rgb(0, 199, 0);
-  }
-  #pacman-info{
-    box-shadow: 2px 2px 18px rgb(251, 255, 0);
-  }
-  #invaders-info{
-    box-shadow: 2px 2px 18px rgb(0, 66, 207);
-  }
-  */
+  
   .infotext{
     margin: auto;
   }
