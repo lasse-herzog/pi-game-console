@@ -29,6 +29,7 @@ jobs:
 
       - name: Build Website
         run: |
+          cd website
           npm run build
           cd ..
           git add website/dist
