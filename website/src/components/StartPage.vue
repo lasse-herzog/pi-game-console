@@ -2,9 +2,9 @@
   <div id="container" ref="container">
     <div id="blocker" ref="blocker">
       <div id="instructions" ref="instructions" @click="lockControls()">
-        <p style="font-size: 36px">Click to play</p>
         <p>
-          Move: WASD<br />
+          Click Me! <br />
+          Move: WASD <br />
           Look: MOUSE
         </p>
       </div>
@@ -14,11 +14,13 @@
 
 <script>
 import * as THREE from 'three';
-import * as TWEEN from '@tweenjs/tween.js';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+THREE.Cache.enabled = true;
 
 export default {
   data() {
@@ -29,6 +31,12 @@ export default {
   },
   methods: {
     init() {
+      // UI Elements
+      this.container = this.$refs.container;
+      const blocker = this.$refs.blocker;
+      const instructions = this.$refs.instructions;
+
+      // Regarding Movement
       this.moveForward = false;
       this.moveBackward = false;
       this.moveLeft = false;
@@ -36,16 +44,23 @@ export default {
 
       this.velocity = new THREE.Vector3();
 
+      // Regarding Interactivity
       this.arcades = [];
-      this.waypoints = [];
-
       this.intersectsArcade = [];
-      this.intersectsWaypoint = [];
-
-      this.container = this.$refs.container;
-      const blocker = this.$refs.blocker;
-      const instructions = this.$refs.instructions;
       this.drag = false;
+      this.mouse = new THREE.Vector2();
+      this.raycaster = new THREE.Raycaster();
+
+      // Scene
+      this.scene = new THREE.Scene();
+      this.arcade;
+
+      // Cameras
+      // Implement for reflective Floor
+      /*const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, {
+        generateMipmaps: true,
+        minFilter: THREE.LinearMipmapLinearFilter,
+      });*/
 
       this.camera = new THREE.PerspectiveCamera(
         50,
@@ -54,16 +69,14 @@ export default {
         50
       );
       this.camera.position.set(12, 5, 12);
+      //this.cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
+      this.scene.add(this.cubeCamera);
 
-      this.scene = new THREE.Scene();
-
-      this.raycaster = new THREE.Raycaster();
-      this.mouse = new THREE.Vector2();
-
+      // loading Blender Model
       const loader = new GLTFLoader();
 
       loader.load(
-        './src/assets/Arcade.gltf',
+        './src/assets/Arcade.glb',
         this.loadGltf,
         // called while loading is progressing
         function (xhr) {
@@ -75,14 +88,17 @@ export default {
         }
       );
 
-      const ambientLight = new THREE.AmbientLight(0xffffff);
-      this.scene.add(ambientLight);
+      this.addLights();
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
+      this.renderer.physicallyCorrectLights = true;
+      this.renderer.outputEncoding = THREE.sRGBEncoding;
+      this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.renderer.setAnimationLoop(this.animation);
 
-      this.container.appendChild(this.renderer.domElement);
+      this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+      this.pmremGenerator.fromScene(this.scene);
 
       this.controls = new PointerLockControls(
         this.camera,
@@ -106,8 +122,6 @@ export default {
 
       this.controls.getObject().position.set(12, 6, 12);
 
-      //instructions.addEventListener('click', () => this.controls.lock(), false);
-
       this.controls.addEventListener(
         'lock',
         () => {
@@ -127,14 +141,16 @@ export default {
       );
 
       this.scene.add(this.controls.getObject());
+      this.container.appendChild(this.renderer.domElement);
 
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
 
-      this.renderer.domElement.addEventListener(
-        'mousedown',
-        () => (this.drag = false)
-      );
+      this.renderer.domElement.addEventListener('click', () => {
+        if (this.intersectsArcade.length > 0) {
+          this.$router.push('test');
+        }
+      });
 
       this.renderer.domElement.addEventListener(
         'mousemove',
@@ -142,50 +158,71 @@ export default {
         false
       );
 
-      this.renderer.domElement.addEventListener(
-        'mouseup',
-        this.onMouseUp,
-        false
-      );
+      // this.updateEnvironment();
+    },
+    addLights() {
+      const light1 = new THREE.AmbientLight(0xffffff, 0.0);
+      light1.name = 'ambient_light';
+      this.camera.add(light1);
+
+      const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
+      light2.position.set(0.5, 0, 0.866); // ~60º
+      light2.name = 'main_light';
+      this.camera.add(light2);
     },
     animation(prevTime) {
-      const time = performance.now();
       const direction = new THREE.Vector3();
+      const time = performance.now();
       // this.controls.update(time);
-      // TWEEN.update(time);
 
       if (this.controls.isLocked === true) {
-        console.log('lol');
         const delta = (time - prevTime) / 1000;
 
-        this.velocity.x -= this.velocity.x * 125.0 * delta;
-        this.velocity.z -= this.velocity.z * 125.0 * delta;
+        this.velocity.z -= this.velocity.z * 10.0 * delta;
+        this.velocity.x -= this.velocity.x * 10.0 * delta;
 
         direction.z = Number(this.moveForward) - Number(this.moveBackward);
         direction.x = Number(this.moveRight) - Number(this.moveLeft);
         direction.normalize(); // this ensures consistent movements in all directions
 
         if (this.moveForward || this.moveBackward)
-          this.velocity.z -= direction.z * 5000.0 * delta;
+          this.velocity.z -= direction.z * 400.0 * delta;
         if (this.moveLeft || this.moveRight)
-          this.velocity.x -= direction.x * 5000.0 * delta;
+          this.velocity.x -= direction.x * 400.0 * delta;
 
-        this.controls.moveRight(-this.velocity.x * delta);
         this.controls.moveForward(-this.velocity.z * delta);
+        this.controls.moveRight(-this.velocity.x * delta);
       }
 
+      //this.cubeCamera.update(this.renderer, this.scene);
       this.renderer.render(this.scene, this.camera);
+    },
+    getCubeMapTexture(environment) {
+      return new Promise((resolve, reject) => {
+        new RGBELoader().load(
+          environment,
+          (texture) => {
+            const envMap =
+              this.pmremGenerator.fromEquirectangular(texture).texture;
+            this.pmremGenerator.dispose();
+
+            resolve({ envMap });
+          },
+          undefined,
+          reject
+        );
+      });
     },
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
         this.arcades.push(child);
-      } else if (/^Waypoint/.test(child.name)) {
-        this.waypoints.push(child);
       }
     },
     loadGltf(gltf) {
-      gltf.scene.traverse(this.initInteractiveObjects);
-      this.scene.add(gltf.scene);
+      this.arcade = gltf.scene;
+      this.arcade.traverse(this.initInteractiveObjects);
+
+      this.scene.add(this.arcade);
     },
     lockControls() {
       this.controls.lock();
@@ -236,59 +273,52 @@ export default {
           break;
       }
     },
-    onMouseUp() {
-      if (this.drag) {
-        return;
-      }
-
-      if (this.intersectsArcade.length > 0) {
-        this.$router.push('test');
-      } else if (this.intersectsWaypoint.length > 0) {
-        const coords = { x: this.camera.position.x, z: this.camera.position.z };
-
-        new TWEEN.Tween(coords)
-          .to({
-            x: this.intersectsWaypoint[0].object.position.x,
-            z: this.intersectsWaypoint[0].object.position.z,
-          })
-          .easing(TWEEN.Easing.Quadratic.Out)
-          .onUpdate(() =>
-            this.camera.position.set(coords.x, this.camera.position.y, coords.z)
-          )
-          .onComplete(() => {
-            this.controls.target.set(
-              this.camera.position.x,
-              this.camera.position.y,
-              this.camera.position.z - 0.01
-            );
-          })
-          .start();
-      }
-    },
     onMouseMove(event) {
-      this.drag = true;
-
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
 
       this.intersectsArcade = this.raycaster.intersectObjects(this.arcades);
-      this.intersectsWaypoint = this.raycaster.intersectObjects(this.waypoints);
 
       if (this.intersectsArcade.length > 0) {
         this.intersectsArcade[0].object.parent.children[2].material.emissive.set(
           0xbf40bf
         );
-      } else if (this.intersectsWaypoint.length > 0) {
-        this.intersectsWaypoint[0].object.material.color.set(0xbf40bf);
       }
+    },
+    traverseMaterials(object, callback) {
+      object.traverse((node) => {
+        if (!node.isMesh) return;
+        const materials = Array.isArray(node.material)
+          ? node.material
+          : [node.material];
+        materials.forEach(callback);
+      });
+    },
+    updateEnvironment() {
+      const environment = './src/assets/footprint_court_2k.hdr';
+
+      this.getCubeMapTexture(environment).then(({ envMap }) => {
+        this.scene.environment = envMap;
+      });
+
+      this.traverseMaterials(this.arcade, (material) => {
+        if (material.map) material.map.encoding = THREE.sRGBEncoding;
+        if (material.emissiveMap)
+          material.emissiveMap.encoding = THREE.sRGBEncoding;
+        if (material.map || material.emissiveMap) material.needsUpdate = true;
+      });
     },
   },
 };
 </script>
 
 <style scoped>
+#container {
+  width: 50%;
+}
+
 #blocker {
   position: absolute;
   width: 100%;
