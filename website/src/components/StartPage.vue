@@ -77,7 +77,7 @@ export default {
       const loader = new GLTFLoader();
 
       loader.load(
-        './public/Arcade.glb',
+        './Arcade.glb',
         this.loadGltf,
         // called while loading is progressing
         function (xhr) {
