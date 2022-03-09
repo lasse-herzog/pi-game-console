@@ -42,6 +42,7 @@ export default {
       this.moveLeft = false;
       this.moveRight = false;
 
+      this.prevTime = performance.now();
       this.velocity = new THREE.Vector3();
 
       // Regarding Interactivity
@@ -148,7 +149,9 @@ export default {
 
       this.renderer.domElement.addEventListener('click', () => {
         if (this.intersectsArcade.length > 0) {
-          this.$router.push('test');
+          this.$router.push(
+            this.intersectsArcade[0].object.parent.name.replace('Arcade', '')
+          );
         }
       });
 
@@ -161,12 +164,12 @@ export default {
       // this.updateEnvironment();
     },
     addLights() {
-      const light1 = new THREE.AmbientLight(0xffffff, 0.0);
+      const light1 = new THREE.AmbientLight(0xffffff, 0.1);
       light1.name = 'ambient_light';
       this.camera.add(light1);
 
-      const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
-      light2.position.set(0.5, 0, 0.866); // ~60º
+      const light2 = new THREE.DirectionalLight(0xffffff, 0.1);
+      light2.position.set(0, 7, 0); // ~60º
       light2.name = 'main_light';
       this.camera.add(light2);
     },
@@ -176,7 +179,7 @@ export default {
       // this.controls.update(time);
 
       if (this.controls.isLocked === true) {
-        const delta = (time - prevTime) / 1000;
+        const delta = (time - this.prevTime) / 1000;
 
         this.velocity.z -= this.velocity.z * 10.0 * delta;
         this.velocity.x -= this.velocity.x * 10.0 * delta;
@@ -186,15 +189,16 @@ export default {
         direction.normalize(); // this ensures consistent movements in all directions
 
         if (this.moveForward || this.moveBackward)
-          this.velocity.z -= direction.z * 400.0 * delta;
+          this.velocity.z -= direction.z * 200.0 * delta;
         if (this.moveLeft || this.moveRight)
-          this.velocity.x -= direction.x * 400.0 * delta;
+          this.velocity.x -= direction.x * 200.0 * delta;
 
         this.controls.moveForward(-this.velocity.z * delta);
         this.controls.moveRight(-this.velocity.x * delta);
       }
 
       //this.cubeCamera.update(this.renderer, this.scene);
+      this.prevTime = time;
       this.renderer.render(this.scene, this.camera);
     },
     getCubeMapTexture(environment) {
