@@ -38,8 +38,8 @@ export default {
 }
 
 body {
-  background: #6b0099;
-  height: 100vh;
+    background: #2b2a26;
+    height: 100vh;
 }
 
 .wrapper {
@@ -89,19 +89,19 @@ body {
 }
 
 .buttons button {
-  padding: 10px 20px;
-  background: #6b0099;
-  border: none;
-  outline: none;
-  font-size: 17px;
-  font-weight: 500;
-  color: #fff;
-  cursor: pointer;
-  border-radius: 5px;
+    padding: 10px 20px;
+    background: #A243C2;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 .buttons a {
-  font-size: 17px;
-  color: #6b0099;
+    font-size: 17px;
+    color: #A243C2;
 }
 </style>
