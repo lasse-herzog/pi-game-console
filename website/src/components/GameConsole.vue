@@ -120,18 +120,14 @@
 <style scoped>
 html,
 body {
-  height: 100vh;
+  /* height: 100vh; */
   overflow: hidden;
   scroll-behavior: smooth;
   background-color: #282a36;
 }
 
 #parrent_div {
-  overflow: scroll;
-  overflow-x: hidden;
-  height: 100vh;
-  scroll-snap-points-y: repeat(100vh);
-  scroll-snap-type: y proximity;
+  overflow: hidden;
   background-color: #282a36;
 }
 
@@ -165,7 +161,7 @@ section {
 }
 
 .container.design.top {
-  padding-top: 6rem;
+  padding-top: 50vh;
 }
 
 .container.games {
