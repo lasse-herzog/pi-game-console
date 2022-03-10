@@ -83,7 +83,7 @@
   margin-bottom: 0;
 }
 
-@media screen and (max-width: 460px){
+@media screen and (max-width: 460px) {
   .site-footer li {
     padding: 0 0.5rem;
     display: block;
