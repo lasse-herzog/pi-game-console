@@ -1,0 +1,57 @@
+name: Deploy Website
+
+on:
+  push
+
+jobs:
+  code_style:
+    name: Enforce Code Style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Node.js dependencies
+        run: |
+          cd website
+          npm install
+          
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          eslint: true
+          eslint_dir: website/
+          
+          prettier: true
+          prettier_dir: website/
+          
+          auto_fix: true
+          
+  validate_build:
+    name: Build Site
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+         node-version: 16
+
+      - name: Install Node.js dependencies
+        run: |
+          cd website
+          npm install
+          
+      - name: Vite Build
+        run: |
+          cd website
+          npm run build     
