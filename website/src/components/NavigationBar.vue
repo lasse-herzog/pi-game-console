@@ -21,6 +21,11 @@
 </template>
 
 <style scoped>
+a {
+  color: unset;
+  text-decoration: none;
+}
+
 .navbar {
   z-index: 1;
   background-color: #1d1d1fb8;
