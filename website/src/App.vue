@@ -1,12 +1,14 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import NavBar from './components/NavigationBar.vue';
+import Footer from './components/Footer.vue';
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Moin" />
+  <div>
+    <NavBar />
+    <router-view />
+    <Footer />
+  </div>
 </template>
 
 <style>
@@ -16,6 +18,19 @@ import HelloWorld from './components/HelloWorld.vue'
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0;
+}
+
+@font-face {
+  font-family: 'Liberty';
+  src: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/907368/liberty.otf');
+}
+
+html,
+body {
+  background-color: #000;
+  margin: 0 !important;
+  padding: 0 !important;
+  scroll-behavior: smooth;
 }
 </style>
