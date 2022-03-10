@@ -340,6 +340,7 @@ body {
 
 .accordion-item:target .answer {
     max-height: 100rem;
+    transition: max-height 850ms;
 }
 
 .accordion-item:target .accordion-link .add {
@@ -348,6 +349,6 @@ body {
 
 .accordion-item:target .accordion-link .remove {
     display: block;
-    padding: 2rem;
+    padding: 1rem;
 }
 </style>
