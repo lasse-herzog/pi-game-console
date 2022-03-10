@@ -1,26 +1,20 @@
-<script setup>
-import { ref } from 'vue';
-
-defineProps({});
-</script>
-
 <template>
   <div class="navbar">
     <div class="navcontent">
       <div class="navlogo">
-        <a>PYCO</a>
+        <router-link to="/">PYCO</router-link>
       </div>
       <div class="navelement">
-        <a>PYCO</a>
+        <router-link to="console">PYCO</router-link>
       </div>
       <div class="navelement">
-        <a>Games</a>
+        <router-link to="games">Games</router-link>
       </div>
       <div class="navelement">
-        <a>FAQ</a>
+        <router-link to="faq">FAQ</router-link>
       </div>
       <div class="navelement shoplink">
-        <a>Buy now</a>
+        <router-link to="shop">Buy now</router-link>
       </div>
     </div>
   </div>
