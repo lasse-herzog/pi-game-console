@@ -53,7 +53,7 @@
             <div class="infotext">
               <details>
                 <summary><h3 ref="headings">Pong</h3></summary>
-                <section>
+                <section class="details-txt">
                   Teste dein Können in diesem klassischen Arcade-Spiel gegen den
                   Computer! Steuere deinen Schläger schnell und präzise und
                   lasse den Ball nicht aus dem Spielfeld entkommen.<br />
@@ -68,7 +68,7 @@
             <div class="infotext">
               <details>
                 <summary><h3 ref="headings">Snake</h3></summary>
-                <section>
+                <section class="details-txt">
                   Du bist die Schlange! Esse Äpfel um Punkte zu erhalten und
                   größer zu werden. Doch Vorsicht: Berührst du den spielfeldrand
                   oder dich selbst ist das Spiel vorbei!<br />
@@ -103,7 +103,7 @@
             <div class="infotext">
               <details>
                 <summary><h3 ref="headings">Pac-Man</h3></summary>
-                <section>
+                <section class="details-txt">
                   Waka Waka!<br />
                   Der gelbe runde Held ist zurück und er ist hungrig!<br />Friss
                   alle Pillen und erreiche das nächste Level. Aber Pac-Man ist
@@ -119,7 +119,7 @@
             <div class="infotext">
               <details>
                 <summary><h3 ref="headings">Space Invaders</h3></summary>
-                <section>
+                <section class="details-txt">
                   Die Aliens greifen an! Das Ende naht! Die Welt braucht einen
                   Beschützer!<br />
                   Setz' dich ins Raumschiff und stürze dich in die Schlacht
@@ -448,6 +448,11 @@ export default {
   details[close] summary ~ * {
     animation: fadeOut;
     animation-duration: 1s;
+  }
+  .details-txt{
+    background-color:#a243c2;
+    box-shadow: none;
+    padding-bottom: 1rem;
   }
 
   /*Kommentare */
