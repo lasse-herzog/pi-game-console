@@ -144,7 +144,7 @@
         </div>
       </section>
       <section class="comment-section">
-        <div class="comments wrapper">
+        <div class="wrapper comments">
           <div class="comments-heading">
             <h2>Das sagen die Spieler:</h2>
           </div>
@@ -454,6 +454,7 @@ export default {
   .comments {
     border: 5px solid #a243c2;
     border-radius: 18px;
+    margin: 2rem;
   }
   .comments-heading {
     font-size: 1.5em;
@@ -464,9 +465,6 @@ export default {
     padding: 1em;
     margin: 0 0 1em 0;
     border-radius: 18px;
-  }
-  .comment-section {
-    padding: 2rem;
   }
   #lastComment {
     margin-bottom: 0;
