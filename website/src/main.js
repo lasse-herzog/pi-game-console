@@ -18,8 +18,8 @@ import {
   faFedex,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { plugin, defaultConfig } from '@formkit/vue'
-import './style/formkit-style.css'
+import { plugin, defaultConfig } from '@formkit/vue';
+import './style/formkit-style.css';
 import { TroisJSVuePlugin } from 'troisjs';
 import 'vue-material-design-icons/styles.css';
 import App from './App.vue';
