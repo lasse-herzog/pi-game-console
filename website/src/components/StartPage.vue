@@ -18,7 +18,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+// post-processing
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 THREE.Cache.enabled = true;
 
@@ -91,12 +95,9 @@ export default {
 
       this.addLights();
 
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.physicallyCorrectLights = true;
-      this.renderer.outputEncoding = THREE.sRGBEncoding;
-      this.renderer.setPixelRatio(window.devicePixelRatio);
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.renderer.setAnimationLoop(this.animation);
+      this.initRenderer();
+
+      this.initPostProcessing();
 
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
       this.pmremGenerator.fromScene(this.scene);
@@ -105,21 +106,6 @@ export default {
         this.camera,
         this.renderer.domElement
       );
-
-      /*
-      For Orbitcontrols:
-      this.controls.enableZoom = false;
-      this.controls.enablePan = false;
-      this.controls.enableDamping = true;
-      this.controls.rotateSpeed = -0.25;
-
-      this.controls.target.set(
-        this.camera.position.x,
-        this.camera.position.y,
-        this.camera.position.z - 0.01
-      );
-
-      this.controls.update();*/
 
       this.controls.getObject().position.set(12, 6, 12);
 
@@ -142,7 +128,6 @@ export default {
       );
 
       this.scene.add(this.controls.getObject());
-      this.container.appendChild(this.renderer.domElement);
 
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
@@ -161,7 +146,37 @@ export default {
         false
       );
 
+      window.addEventListener('resize', this.onWindowResize);
       // this.updateEnvironment();
+    },
+    initRenderer() {
+      this.renderer = new THREE.WebGLRenderer({ antialias: true });
+
+      this.renderer.physicallyCorrectLights = true;
+      this.renderer.outputEncoding = THREE.sRGBEncoding;
+      this.renderer.toneMapping = THREE.ReinhardToneMapping;
+
+      this.renderer.setAnimationLoop(this.animation);
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+      this.container.appendChild(this.renderer.domElement);
+    },
+    initPostProcessing() {
+      const renderScene = new RenderPass(this.scene, this.camera);
+      const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        1.5,
+        0.4,
+        0.85
+      );
+      bloomPass.threshold = 0;
+      bloomPass.strength = 1.5;
+      bloomPass.radius = 0;
+
+      this.composer = new EffectComposer(this.renderer);
+      this.composer.addPass(renderScene);
+      this.composer.addPass(bloomPass);
     },
     addLights() {
       const light1 = new THREE.AmbientLight(0xffffff, 0.1);
@@ -199,7 +214,8 @@ export default {
 
       //this.cubeCamera.update(this.renderer, this.scene);
       this.prevTime = time;
-      this.renderer.render(this.scene, this.camera);
+      //this.renderer.render(this.scene, this.camera);
+      this.composer.render();
     },
     getCubeMapTexture(environment) {
       return new Promise((resolve, reject) => {
@@ -290,6 +306,15 @@ export default {
           0xbf40bf
         );
       }
+    },
+    onWindowResize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      this.camera.updateProjectionMatrix();
+
+      this.renderer.setSize(width, height);
+      this.composer.setSize(width, height);
     },
     traverseMaterials(object, callback) {
       object.traverse((node) => {
