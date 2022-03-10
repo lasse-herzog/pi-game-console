@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import { plugin, defaultConfig } from '@formkit/vue'
-import '@formkit/themes/genesis'
+import './style/formkit-style.css'
+import { TroisJSVuePlugin } from 'troisjs';
 
-createApp(App).use(plugin, defaultConfig).mount('#app')
+createApp(App).use(plugin, defaultConfig).use(TroisJSVuePlugin).mount('#app')
