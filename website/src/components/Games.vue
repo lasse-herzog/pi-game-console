@@ -42,9 +42,6 @@
               <img
                 :src="currentImgPong"
                 alt="Szene aus dem Spiel Space Invaders"
-                class="fade"
-                width="1022"
-                height="598"
               />
               <div class="dots">
                 <span class="dot" @click="setIndex(1, 0)"></span>
@@ -83,8 +80,6 @@
               <img
                 :src="currentImgSnake"
                 alt="Szene aus dem Spiel Space Invaders"
-                width="1022"
-                height="598"
               />
               <div class="dots">
                 <span class="dot" @click="setIndex(2, 0)"></span>
@@ -98,8 +93,6 @@
               <img
                 :src="currentImgPac"
                 alt="Szene aus dem Spiel Space Invaders"
-                width="1022"
-                height="598"
               />
               <div class="dots">
                 <span class="dot" @click="setIndex(3, 0)"></span>
@@ -140,8 +133,6 @@
               <img
                 :src="currentImgInvaders"
                 alt="Szene aus dem Spiel Space Invaders"
-                width="1022"
-                height="598"
               />
               <div class="dots">
                 <span class="dot" @click="setIndex(4, 0)"></span>
@@ -200,26 +191,10 @@ export default {
   name: 'image-slider',
   data() {
     return {
-      pongImages: [
-        '/src/assets/pong_alt1.png',
-        '/src/assets/pong_alt0.png',
-        '/src/assets/pong0.png',
-      ],
-      snakeImages: [
-        '/src/assets/snake0.png',
-        '/src/assets/snake1.png',
-        '/src/assets/snake2.png',
-      ],
-      pacImages: [
-        '/src/assets/pacman0.png',
-        '/src/assets/pacman1.png',
-        '/src/assets/pacman2.png',
-      ],
-      invadersImages: [
-        '/src/assets/space0.png',
-        '/src/assets/space1.png',
-        '/src/assets/space2.png',
-      ],
+      pongImages: ['./pong_alt1.png', './pong_alt0.png', './pong0.png'],
+      snakeImages: ['./snake0.png', './snake1.png', './snake2.png'],
+      pacImages: ['./pacman0.png', './pacman1.png', './pacman2.png'],
+      invadersImages: ['./space0.png', './space1.png', './space2.png'],
       currentIndex: 0,
       currentIndex02: 0,
       currentIndex03: 0,
