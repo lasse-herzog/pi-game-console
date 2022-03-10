@@ -9,25 +9,25 @@
           class="title-heading animate__animated animate__bounceIn"
           id="pong-hd"
         >
-          <h2><a href="#pong-info">Pong</a></h2>
+          <h2><router-link to="#pong-info">Pong</router-link></h2>
         </div>
         <div
           class="title-heading animate__animated animate__bounceIn"
           id="snake-hd"
         >
-          <h2><a href="#snake-info">Snake</a></h2>
+          <h2><router-link to="#snake-info">Snake</router-link></h2>
         </div>
         <div
           class="title-heading animate__animated animate__bounceIn"
           id="pacman-hd"
         >
-          <h2><a href="#pacman-info">Pac-Man</a></h2>
+          <h2><router-link to="#pacman-info">Pac-Man</router-link></h2>
         </div>
         <div
           class="title-heading animate__animated animate__bounceIn"
           id="space-hd"
         >
-          <h2><a href="#invaders-info">Space Invaders</a></h2>
+          <h2><router-link to="#invaders-info">Space Invaders</router-link></h2>
         </div>
       </div>
     </div>
@@ -308,7 +308,7 @@ export default {
     margin: auto;
   }
   /*Unterüberschriften stylings */
-  .title-headings a {
+  .title-heading a {
     text-decoration: none;
     color: #f8f8f2;
     margin: auto;
