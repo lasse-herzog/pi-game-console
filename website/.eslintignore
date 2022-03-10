@@ -1,0 +1,3 @@
+# ignore node modules and built files
+dist/*
+node_modules/*
