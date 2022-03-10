@@ -1,0 +1,41 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Node.js dependencies
+        run: |
+          cd website
+          npm install
+
+      - name: Build Website
+        run: |
+          cd website
+          npm run build
+          
+      - name: Push to gh-pages branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -f website/dist
+          git commit -m 'adding dist subtree'
+          git push origin `git subtree split --prefix website/dist dev`:gh-pages --force          
