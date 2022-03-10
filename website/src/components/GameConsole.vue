@@ -1,27 +1,22 @@
-<script setup>
-import { ref } from 'vue';
-defineProps({});
-</script>
-
 <template>
   <div id="parrent_div">
     <section class="section-title">
       <div class="text-neon">PYCO</div>
       <div class="container index">
         <div class="card img">
-          <a href="#hardware">
+          <router-link to="#hardware">
             <img src="../assets/motherboard.jpg" />
-          </a>
+          </router-link>
         </div>
         <div class="card img">
-          <a href="#games">
+          <router-link to="#games">
             <img src="../assets/playstation_controller.jpg" />
-          </a>
+          </router-link>
         </div>
         <div class="card img">
-          <a href="#design">
+          <router-link to="#design">
             <img src="../assets/architecture.jpg" />
-          </a>
+          </router-link>
         </div>
       </div>
     </section>
@@ -54,24 +49,36 @@ defineProps({});
           <p>Included titles are:</p>
           <ul>
             <li>
-              <a href>Pong</a>
+              <router-link to="games#pong-info">Pong</router-link>
             </li>
             <li>
-              <a href>Snake</a>
+              <router-link to="games#snake-info">Snake</router-link>
             </li>
             <li>
-              <a href>Pac-Man</a>
+              <router-link to="games#pacman-info">Pac-Man</router-link>
             </li>
             <li>
-              <a href>Space Invaders</a>
+              <router-link to="games#invaders-info">Space Invaders</router-link>
             </li>
           </ul>
         </div>
         <div class="container card games right stretch">
-          <a href class="card back-pong stretch"></a>
-          <a href class="card back-snake stretch"></a>
-          <a href class="card back-pac stretch"></a>
-          <a href class="card back-space stretch"></a>
+          <router-link
+            to="games#pong-info"
+            class="card back-pong stretch"
+          ></router-link>
+          <router-link
+            to="games#snake-info"
+            class="card back-snake stretch"
+          ></router-link>
+          <router-link
+            to="games#pacman-info"
+            class="card back-pac stretch"
+          ></router-link>
+          <router-link
+            to="games#invaders-info"
+            class="card back-space stretch"
+          ></router-link>
         </div>
       </div>
     </section>
