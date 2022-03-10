@@ -17,13 +17,17 @@
       </div>
       <div class="site-links">
         <ul class="inline-list">
-          <li class="list-item"><a href="#">Home</a></li>
-          <li class="list-item"><a href="#">Console</a></li>
-          <li class="list-item"><a href="#">Games</a></li>
-          <li class="list-item"><a href="#">Team</a></li>
-          <li class="list-item"><a href="#">Shop</a></li>
-          <li class="list-item"><a href="#">FAQ</a></li>
-          <li class="list-item"><a href="#">Impressum</a></li>
+          <li class="list-item"><router-link to="/">Home</router-link></li>
+          <li class="list-item">
+            <router-link to="console">Console</router-link>
+          </li>
+          <li class="list-item"><router-link to="games">Games</router-link></li>
+          <li class="list-item"><router-link to="#">Team</router-link></li>
+          <li class="list-item"><router-link to="shop">Shop</router-link></li>
+          <li class="list-item"><router-link to="faq">FAQ</router-link></li>
+          <li class="list-item">
+            <router-link to="impressum">Impressum</router-link>
+          </li>
         </ul>
         <p class="copyright">PYCO AG &copy; 2022</p>
       </div>
