@@ -52,6 +52,6 @@ jobs:
           npm install
           
       - name: Vite Build
-         run: |
-            cd website
-            npm run build     
+        run: |
+          cd website
+          npm run build     
