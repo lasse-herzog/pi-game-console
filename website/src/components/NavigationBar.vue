@@ -8,25 +8,30 @@ defineProps({});
   <div class="navbar">
     <div class="navcontent">
       <div class="navlogo">
-        <a>PYCO</a>
+        <a href="/#/">PYCO</a>
       </div>
       <div class="navelement">
-        <a>PYCO</a>
+        <a href="/#/console">PYCO</a>
       </div>
       <div class="navelement">
-        <a>Games</a>
+        <a href="/#/games">Games</a>
       </div>
       <div class="navelement">
-        <a>FAQ</a>
+        <a href="/#/faq">FAQ</a>
       </div>
       <div class="navelement shoplink">
-        <a>Buy now</a>
+        <a href="/#/shop">Buy now</a>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+a {
+  color: unset;
+  text-decoration: none;
+}
+
 .navbar {
   z-index: 1;
   background-color: #1d1d1fb8;
@@ -40,7 +45,7 @@ defineProps({});
 }
 
 .navbar::after {
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   top: 100%;
@@ -66,7 +71,7 @@ defineProps({});
 
 .navlogo {
   font-size: 1.5em;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
   margin: 0.9rem 0px;
   margin-right: auto;
@@ -74,7 +79,7 @@ defineProps({});
 
 .navelement {
   font-size: 0.9em;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 300;
   line-height: 1.4rem;
   width: auto;
@@ -88,7 +93,7 @@ defineProps({});
 
 .shoplink {
   font-size: 0.9em;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 300;
   line-height: 1.4rem;
   cursor: pointer;
