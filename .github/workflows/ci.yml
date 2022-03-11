@@ -1,4 +1,4 @@
-name: Deploy Website
+name: CI-Pipeline
 
 on:
   push
