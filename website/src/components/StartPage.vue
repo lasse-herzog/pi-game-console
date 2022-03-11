@@ -17,6 +17,8 @@ import * as THREE from 'three';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
+import { MeshReflectorMaterial } from '../MeshReflectorMaterial';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 // post-processing
@@ -61,12 +63,6 @@ export default {
       this.arcade;
 
       // Cameras
-      // Implement for reflective Floor
-      /*const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, {
-        generateMipmaps: true,
-        minFilter: THREE.LinearMipmapLinearFilter,
-      });*/
-
       this.camera = new THREE.PerspectiveCamera(
         50,
         window.innerWidth / window.innerHeight,
@@ -74,8 +70,6 @@ export default {
         50
       );
       this.camera.position.set(12, 5, 12);
-      //this.cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
-      this.scene.add(this.cubeCamera);
 
       // loading Blender Model
       const loader = new GLTFLoader();
@@ -93,9 +87,44 @@ export default {
         }
       );
 
+      /*const geometry = new THREE.CircleGeometry(40, 64);
+      const groundMirror = new Reflector(geometry, {
+        clipBias: 0.003,
+        textureWidth: window.innerWidth * window.devicePixelRatio,
+        textureHeight: window.innerHeight * window.devicePixelRatio,
+        color: 0x000000,
+      });
+      console.log(groundMirror.material);
+      groundMirror.material.blending = THREE.AdditiveBlending;
+      */
+
       this.addLights();
 
       this.initRenderer();
+
+      const geo = new THREE.PlaneGeometry(35, 35);
+      const mat = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0.9,
+      });
+
+      const floor = new THREE.Mesh(geo, mat);
+      floor.rotateX(-Math.PI / 2);
+      floor.position.y = 0.5;
+
+      this.floorReflector = new THREE.Mesh(geo, mat);
+      this.floorReflector.rotateX(-Math.PI / 2);
+      this.floorReflector.position.y = 0.45;
+
+      this.floorReflector.material = new MeshReflectorMaterial(
+        this.renderer,
+        this.camera,
+        this.scene,
+        this.floorReflector
+      );
+
+      this.scene.add(floor, this.floorReflector);
 
       this.initPostProcessing();
 
@@ -154,7 +183,7 @@ export default {
 
       this.renderer.physicallyCorrectLights = true;
       this.renderer.outputEncoding = THREE.sRGBEncoding;
-      this.renderer.toneMapping = THREE.ReinhardToneMapping;
+      //this.renderer.toneMapping = THREE.ReinhardToneMapping;
 
       this.renderer.setAnimationLoop(this.animation);
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -166,13 +195,10 @@ export default {
       const renderScene = new RenderPass(this.scene, this.camera);
       const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        1.5,
-        0.4,
-        0.85
+        1,
+        0.1,
+        0.1
       );
-      bloomPass.threshold = 0;
-      bloomPass.strength = 1.5;
-      bloomPass.radius = 0;
 
       this.composer = new EffectComposer(this.renderer);
       this.composer.addPass(renderScene);
@@ -183,15 +209,14 @@ export default {
       light1.name = 'ambient_light';
       this.camera.add(light1);
 
-      const light2 = new THREE.DirectionalLight(0xffffff, 0.1);
-      light2.position.set(0, 7, 0); // ~60º
+      const light2 = new THREE.DirectionalLight(0xffffff, 0.4);
+      light2.position.set(0.5, 0, 0.866); // ~60º
       light2.name = 'main_light';
       this.camera.add(light2);
     },
     animation(prevTime) {
       const direction = new THREE.Vector3();
       const time = performance.now();
-      // this.controls.update(time);
 
       if (this.controls.isLocked === true) {
         const delta = (time - this.prevTime) / 1000;
@@ -212,9 +237,9 @@ export default {
         this.controls.moveRight(-this.velocity.x * delta);
       }
 
-      //this.cubeCamera.update(this.renderer, this.scene);
       this.prevTime = time;
-      //this.renderer.render(this.scene, this.camera);
+
+      this.floorReflector.material.update();
       this.composer.render();
     },
     getCubeMapTexture(environment) {
@@ -236,6 +261,10 @@ export default {
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
         this.arcades.push(child);
+      } else if (/^Floor/.test(child.name)) {
+        console.log(child);
+        child.material.envMap = this.cubeRenderTarget.texture;
+        this.cubeCamera.position.copy(child.position);
       }
     },
     loadGltf(gltf) {
@@ -303,7 +332,7 @@ export default {
 
       if (this.intersectsArcade.length > 0) {
         this.intersectsArcade[0].object.parent.children[2].material.emissive.set(
-          0xbf40bf
+          0xff10f0
         );
       }
     },
