@@ -105,7 +105,7 @@ export default {
       const mat = new THREE.MeshBasicMaterial({
         color: 0x000000,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.95,
       });
 
       const floor = new THREE.Mesh(geo, mat);
