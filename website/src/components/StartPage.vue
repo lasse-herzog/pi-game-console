@@ -17,7 +17,6 @@ import * as THREE from 'three';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 import { MeshReflectorMaterial } from '../MeshReflectorMaterial';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
@@ -214,7 +213,7 @@ export default {
       light2.name = 'main_light';
       this.camera.add(light2);
     },
-    animation(prevTime) {
+    animation() {
       const direction = new THREE.Vector3();
       const time = performance.now();
 
