@@ -459,7 +459,10 @@ export default {
   .comments {
     border: 5px solid #a243c2;
     border-radius: 18px;
-    margin: 2rem;
+    margin: auto;
+  }
+  .comment-section{
+    padding: 1rem;
   }
   .comments-heading {
     font-size: 1.5em;
