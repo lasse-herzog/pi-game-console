@@ -1,7 +1,12 @@
 <template>
   <div id="container" ref="container">
     <div id="blocker" ref="blocker">
-      <div id="instructions" ref="instructions" @click="lockControls()">
+      <div
+        id="instructions"
+        ref="instructions"
+        @click="lockControls()"
+        @touchend="lockControls()"
+      >
         <p>
           Click Me! <br />
           Move: WASD <br />
@@ -22,7 +27,9 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 // post-processing
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 THREE.Cache.enabled = true;
@@ -70,60 +77,11 @@ export default {
       );
       this.camera.position.set(12, 5, 12);
 
-      // loading Blender Model
-      const loader = new GLTFLoader();
+      this.renderer = new THREE.WebGLRenderer();
 
-      loader.load(
-        './Arcade.glb',
-        this.loadGltf,
-        // called while loading is progressing
-        function (xhr) {
-          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-        },
-        // called when loading has errors
-        function (error) {
-          console.log(error.message);
-        }
-      );
-
-      /*const geometry = new THREE.CircleGeometry(40, 64);
-      const groundMirror = new Reflector(geometry, {
-        clipBias: 0.003,
-        textureWidth: window.innerWidth * window.devicePixelRatio,
-        textureHeight: window.innerHeight * window.devicePixelRatio,
-        color: 0x000000,
-      });
-      console.log(groundMirror.material);
-      groundMirror.material.blending = THREE.AdditiveBlending;
-      */
-
-      this.addLights();
+      this.initScene();
 
       this.initRenderer();
-
-      const geo = new THREE.PlaneGeometry(35, 35);
-      const mat = new THREE.MeshBasicMaterial({
-        color: 0x000000,
-        transparent: true,
-        opacity: 0.95,
-      });
-
-      const floor = new THREE.Mesh(geo, mat);
-      floor.rotateX(-Math.PI / 2);
-      floor.position.y = 0.5;
-
-      this.floorReflector = new THREE.Mesh(geo, mat);
-      this.floorReflector.rotateX(-Math.PI / 2);
-      this.floorReflector.position.y = 0.45;
-
-      this.floorReflector.material = new MeshReflectorMaterial(
-        this.renderer,
-        this.camera,
-        this.scene,
-        this.floorReflector
-      );
-
-      this.scene.add(floor, this.floorReflector);
 
       this.initPostProcessing();
 
@@ -177,9 +135,50 @@ export default {
       window.addEventListener('resize', this.onWindowResize);
       // this.updateEnvironment();
     },
-    initRenderer() {
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    initScene() {
+      // Loading Blender Model
+      let loader = new GLTFLoader();
 
+      loader.load(
+        './Arcade.glb',
+        this.loadGltf,
+        // called while loading is progressing
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        // called when loading has errors
+        (error) => {
+          console.log(error.message);
+        }
+      );
+
+      const floorGeometry = new THREE.PlaneGeometry(35, 35);
+      const floorMaterial = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0.95,
+      });
+
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotateX(-Math.PI / 2);
+      floor.position.y = 0.5;
+
+      this.floorReflector = new THREE.Mesh(floorGeometry, floorMaterial);
+      this.floorReflector.rotateX(-Math.PI / 2);
+      this.floorReflector.position.y = 0.45;
+
+      this.floorReflector.material = new MeshReflectorMaterial(
+        this.renderer,
+        this.camera,
+        this.scene,
+        this.floorReflector
+      );
+
+      this.scene.add(floor, this.floorReflector);
+
+      this.addLights();
+    },
+    initRenderer() {
       this.renderer.physicallyCorrectLights = true;
       this.renderer.outputEncoding = THREE.sRGBEncoding;
       //this.renderer.toneMapping = THREE.ReinhardToneMapping;
@@ -191,16 +190,25 @@ export default {
       this.container.appendChild(this.renderer.domElement);
     },
     initPostProcessing() {
+      const pixelRatio = this.renderer.getPixelRatio();
+
       const renderScene = new RenderPass(this.scene, this.camera);
-      const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight),
-        1,
-        0.1,
-        0.1
-      );
+      this.fxaaPass = new ShaderPass(FXAAShader);
+      const bloomPass = new UnrealBloomPass({
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        strength: 0.7,
+        radius: 0.1,
+        threshhold: 0.1,
+      });
+
+      this.fxaaPass.material.uniforms['resolution'].value.x =
+        1 / (this.container.offsetWidth * pixelRatio);
+      this.fxaaPass.material.uniforms['resolution'].value.y =
+        1 / (this.container.offsetHeight * pixelRatio);
 
       this.composer = new EffectComposer(this.renderer);
       this.composer.addPass(renderScene);
+      this.composer.addPass(this.fxaaPass);
       this.composer.addPass(bloomPass);
     },
     addLights() {
@@ -260,10 +268,6 @@ export default {
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
         this.arcades.push(child);
-      } else if (/^Floor/.test(child.name)) {
-        console.log(child);
-        child.material.envMap = this.cubeRenderTarget.texture;
-        this.cubeCamera.position.copy(child.position);
       }
     },
     loadGltf(gltf) {
@@ -343,6 +347,13 @@ export default {
 
       this.renderer.setSize(width, height);
       this.composer.setSize(width, height);
+
+      const pixelRatio = this.renderer.getPixelRatio();
+
+      this.fxaaPass.material.uniforms['resolution'].value.x =
+        1 / (this.container.offsetWidth * pixelRatio);
+      this.fxaaPass.material.uniforms['resolution'].value.y =
+        1 / (this.container.offsetHeight * pixelRatio);
     },
     traverseMaterials(object, callback) {
       object.traverse((node) => {
