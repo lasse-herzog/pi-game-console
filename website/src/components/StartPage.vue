@@ -23,7 +23,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { MeshReflectorMaterial } from '../MeshReflectorMaterial';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 // post-processing
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -133,7 +132,6 @@ export default {
       );
 
       window.addEventListener('resize', this.onWindowResize);
-      // this.updateEnvironment();
     },
     initScene() {
       // Loading Blender Model
@@ -249,22 +247,6 @@ export default {
       this.floorReflector.material.update();
       this.composer.render();
     },
-    getCubeMapTexture(environment) {
-      return new Promise((resolve, reject) => {
-        new RGBELoader().load(
-          environment,
-          (texture) => {
-            const envMap =
-              this.pmremGenerator.fromEquirectangular(texture).texture;
-            this.pmremGenerator.dispose();
-
-            resolve({ envMap });
-          },
-          undefined,
-          reject
-        );
-      });
-    },
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
         this.arcades.push(child);
@@ -354,29 +336,6 @@ export default {
         1 / (this.container.offsetWidth * pixelRatio);
       this.fxaaPass.material.uniforms['resolution'].value.y =
         1 / (this.container.offsetHeight * pixelRatio);
-    },
-    traverseMaterials(object, callback) {
-      object.traverse((node) => {
-        if (!node.isMesh) return;
-        const materials = Array.isArray(node.material)
-          ? node.material
-          : [node.material];
-        materials.forEach(callback);
-      });
-    },
-    updateEnvironment() {
-      const environment = './src/assets/footprint_court_2k.hdr';
-
-      this.getCubeMapTexture(environment).then(({ envMap }) => {
-        this.scene.environment = envMap;
-      });
-
-      this.traverseMaterials(this.arcade, (material) => {
-        if (material.map) material.map.encoding = THREE.sRGBEncoding;
-        if (material.emissiveMap)
-          material.emissiveMap.encoding = THREE.sRGBEncoding;
-        if (material.map || material.emissiveMap) material.needsUpdate = true;
-      });
     },
   },
 };
