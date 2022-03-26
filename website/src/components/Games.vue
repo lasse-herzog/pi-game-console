@@ -41,7 +41,6 @@
             <div class="img-slideshow">
               <img
                 :src="currentImgPong"
-                alt="Szene aus dem Spiel Space Invaders"
               />
               <div class="dots">
                 <span class="dot" @click="setIndex(1, 0)"></span>
