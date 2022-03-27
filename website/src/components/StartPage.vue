@@ -1,12 +1,7 @@
 <template>
   <div id="container" ref="container">
     <div id="blocker" ref="blocker">
-      <div
-        id="instructions"
-        ref="instructions"
-        @click="lockControls()"
-        @touchend="lockControls()"
-      >
+      <div id="instructions" ref="instructions" @click="lockControls()">
         <p>
           Click Me! <br />
           Move: WASD <br />
@@ -18,10 +13,11 @@
 </template>
 
 <script>
+import nipplejs from 'nipplejs';
 import * as THREE from 'three';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { PointerLockControls } from '../PointerLockControls';
 import { MeshReflectorMaterial } from '../MeshReflectorMaterial';
 
 // post-processing
@@ -42,6 +38,12 @@ export default {
   },
   methods: {
     init() {
+      const joystickOptions = {
+        mode: 'static',
+        position: { left: '10%', bottom: '10%' },
+        zone: this.$refs.container,
+      };
+
       // UI Elements
       this.container = this.$refs.container;
       const blocker = this.$refs.blocker;
@@ -52,7 +54,6 @@ export default {
       this.moveBackward = false;
       this.moveLeft = false;
       this.moveRight = false;
-
       this.prevTime = performance.now();
       this.velocity = new THREE.Vector3();
 
@@ -79,9 +80,7 @@ export default {
       this.renderer = new THREE.WebGLRenderer();
 
       this.initScene();
-
       this.initRenderer();
-
       this.initPostProcessing();
 
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
@@ -91,7 +90,6 @@ export default {
         this.camera,
         this.renderer.domElement
       );
-
       this.controls.getObject().position.set(12, 6, 12);
 
       this.controls.addEventListener(
@@ -99,6 +97,10 @@ export default {
         () => {
           blocker.style.display = 'none';
           instructions.style.display = 'none';
+          this.joystick = nipplejs.create(joystickOptions);
+          this.joystick.on('move', (event, joystick) =>
+            this.onJoystickMovement(event, joystick)
+          );
         },
         false
       );
@@ -108,6 +110,7 @@ export default {
         () => {
           blocker.style.display = 'block';
           instructions.style.display = '';
+          this.joystick.destroy();
         },
         false
       );
@@ -136,7 +139,6 @@ export default {
     initScene() {
       // Loading Blender Model
       let loader = new GLTFLoader();
-
       loader.load(
         './Arcade.glb',
         this.loadGltf,
@@ -149,47 +151,38 @@ export default {
           console.log(error.message);
         }
       );
-
       const floorGeometry = new THREE.PlaneGeometry(35, 35);
       const floorMaterial = new THREE.MeshBasicMaterial({
-        color: 0x000000,
+        color: 0,
         transparent: true,
         opacity: 0.95,
       });
-
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.rotateX(-Math.PI / 2);
       floor.position.y = 0.5;
-
       this.floorReflector = new THREE.Mesh(floorGeometry, floorMaterial);
       this.floorReflector.rotateX(-Math.PI / 2);
       this.floorReflector.position.y = 0.45;
-
       this.floorReflector.material = new MeshReflectorMaterial(
         this.renderer,
         this.camera,
         this.scene,
         this.floorReflector
       );
-
       this.scene.add(floor, this.floorReflector);
-
       this.addLights();
     },
     initRenderer() {
       this.renderer.physicallyCorrectLights = true;
       this.renderer.outputEncoding = THREE.sRGBEncoding;
       //this.renderer.toneMapping = THREE.ReinhardToneMapping;
-
       this.renderer.setAnimationLoop(this.animation);
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(window.innerWidth, window.innerHeight);
-
       this.container.appendChild(this.renderer.domElement);
     },
     initPostProcessing() {
       const pixelRatio = this.renderer.getPixelRatio();
-
       const renderScene = new RenderPass(this.scene, this.camera);
       this.fxaaPass = new ShaderPass(FXAAShader);
       const bloomPass = new UnrealBloomPass({
@@ -198,52 +191,43 @@ export default {
         radius: 0.1,
         threshhold: 0.1,
       });
-
       this.fxaaPass.material.uniforms['resolution'].value.x =
         1 / (this.container.offsetWidth * pixelRatio);
       this.fxaaPass.material.uniforms['resolution'].value.y =
         1 / (this.container.offsetHeight * pixelRatio);
-
       this.composer = new EffectComposer(this.renderer);
       this.composer.addPass(renderScene);
       this.composer.addPass(this.fxaaPass);
       this.composer.addPass(bloomPass);
     },
     addLights() {
-      const light1 = new THREE.AmbientLight(0xffffff, 0.1);
+      const light1 = new THREE.AmbientLight(16777215, 0.1);
       light1.name = 'ambient_light';
       this.camera.add(light1);
 
-      const light2 = new THREE.DirectionalLight(0xffffff, 0.4);
-      light2.position.set(0.5, 0, 0.866); // ~60º
+      const light2 = new THREE.DirectionalLight(16777215, 0.4);
+      light2.position.set(0, 10, 20); // ~60º
       light2.name = 'main_light';
-      this.camera.add(light2);
+      this.scene.add(light2);
     },
     animation() {
       const direction = new THREE.Vector3();
       const time = performance.now();
-
       if (this.controls.isLocked === true) {
         const delta = (time - this.prevTime) / 1000;
-
-        this.velocity.z -= this.velocity.z * 10.0 * delta;
-        this.velocity.x -= this.velocity.x * 10.0 * delta;
-
+        this.velocity.z -= this.velocity.z * 10 * delta;
+        this.velocity.x -= this.velocity.x * 10 * delta;
         direction.z = Number(this.moveForward) - Number(this.moveBackward);
         direction.x = Number(this.moveRight) - Number(this.moveLeft);
         direction.normalize(); // this ensures consistent movements in all directions
-
         if (this.moveForward || this.moveBackward)
-          this.velocity.z -= direction.z * 200.0 * delta;
+          this.velocity.z -= direction.z * 200 * delta;
         if (this.moveLeft || this.moveRight)
-          this.velocity.x -= direction.x * 200.0 * delta;
-
+          this.velocity.x -= direction.x * 200 * delta;
         this.controls.moveForward(-this.velocity.z * delta);
         this.controls.moveRight(-this.velocity.x * delta);
       }
-
       this.prevTime = time;
-
       this.floorReflector.material.update();
       this.composer.render();
     },
@@ -255,11 +239,28 @@ export default {
     loadGltf(gltf) {
       this.arcade = gltf.scene;
       this.arcade.traverse(this.initInteractiveObjects);
-
       this.scene.add(this.arcade);
     },
     lockControls() {
       this.controls.lock();
+    },
+    onJoystickMovement(event, joystick) {
+      console.log(joystick);
+      if (joystick.direction.x == 'left') {
+        this.moveLeft = true;
+        this.moveRight = false;
+      } else if (joystick.direction.x == 'right') {
+        this.moveLeft = false;
+        this.moveRight = true;
+      }
+
+      if (joystick.direction.y == 'up') {
+        this.moveForward = true;
+        this.moveBackward = false;
+      } else if (joystick.direction.x == 'down') {
+        this.moveForward = false;
+        this.moveBackward = true;
+      }
     },
     onKeyDown(event) {
       switch (event.code) {
@@ -267,17 +268,14 @@ export default {
         case 'KeyW':
           this.moveForward = true;
           break;
-
         case 'ArrowLeft':
         case 'KeyA':
           this.moveLeft = true;
           break;
-
         case 'ArrowDown':
         case 'KeyS':
           this.moveBackward = true;
           break;
-
         case 'ArrowRight':
         case 'KeyD':
           this.moveRight = true;
@@ -290,17 +288,14 @@ export default {
         case 'KeyW':
           this.moveForward = false;
           break;
-
         case 'ArrowLeft':
         case 'KeyA':
           this.moveLeft = false;
           break;
-
         case 'ArrowDown':
         case 'KeyS':
           this.moveBackward = false;
           break;
-
         case 'ArrowRight':
         case 'KeyD':
           this.moveRight = false;
@@ -310,28 +305,22 @@ export default {
     onMouseMove(event) {
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
       this.raycaster.setFromCamera(this.mouse, this.camera);
-
       this.intersectsArcade = this.raycaster.intersectObjects(this.arcades);
-
       if (this.intersectsArcade.length > 0) {
         this.intersectsArcade[0].object.parent.children[2].material.emissive.set(
-          0xff10f0
+          16716016
         );
       }
     },
     onWindowResize() {
       const width = window.innerWidth;
       const height = window.innerHeight;
-
+      this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
-
       this.renderer.setSize(width, height);
       this.composer.setSize(width, height);
-
       const pixelRatio = this.renderer.getPixelRatio();
-
       this.fxaaPass.material.uniforms['resolution'].value.x =
         1 / (this.container.offsetWidth * pixelRatio);
       this.fxaaPass.material.uniforms['resolution'].value.y =
@@ -342,10 +331,6 @@ export default {
 </script>
 
 <style scoped>
-#container {
-  width: 50%;
-}
-
 #blocker {
   position: absolute;
   width: 100%;
