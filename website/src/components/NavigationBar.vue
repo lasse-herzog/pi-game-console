@@ -4,6 +4,15 @@ export default {
   name: 'NavigationBar',
   mounted: function () {
     var checkbox = document.getElementById("navToggle");
+    var links = document.getElementsByTagName("a");
+
+    for (let link of links) {
+        link.addEventListener("click", function () {
+            checkbox.checked = false;
+            checkbox.dispatchEvent(new Event("change"));
+        });
+      };
+
     checkbox.addEventListener('change', function () {
       var elements = document.getElementsByClassName('navelement');
 
@@ -51,9 +60,19 @@ export default {
 </template>
 
 <style scoped>
-a {
-  color: unset;
+a,
+a:link,
+a:visited {
+  color: #fff;
   text-decoration: none;
+}
+
+a:hover {
+  color: #71bbff;
+}
+
+a:active {
+  color: #2996fd;
 }
 
 .navbar {
@@ -114,10 +133,6 @@ a {
   width: auto;
   margin: 0 1rem;
   cursor: pointer;
-}
-
-.navelement:hover {
-  color: #2996fd;
 }
 
 .shoplink {
