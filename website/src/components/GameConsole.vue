@@ -25,14 +25,14 @@
         <div class="card left font-white back-hardware stretch">
           <h1>Hardware</h1>
           <p>
-            New CPU performance and efficiency cores power through complex tasks
-            and preserve power while doing so.
+            Die neuen CPU-Leistungs- und Effizienzkerne erledigen komplexe Aufgaben
+            und sparen dabei Energie.
           </p>
-          <p>With such advancements come new possibilities:</p>
+          <p>Mit solchen Fortschritten kommen neue Möglichkeiten:</p>
           <ul>
-            <li>16x the details</li>
-            <li>4x the size</li>
-            <li>completely new rendering and lighting</li>
+            <li>16-facher Detailgrad</li>
+            <li>4-fache gr&Ouml;&szlig;e</li>
+            <li>komplett neues Rendering und Beleuchtung</li>
           </ul>
         </div>
         <div class="card right back-cpu stretch"></div>
@@ -43,10 +43,10 @@
         <div class="card left font-white back-games stretch">
           <h1>Games</h1>
           <p>
-            The Console comes with the remakes of four classic arcade titles
-            preinstalled.
+            Auf der Konsole sind die Remakes von vier klassischen Arcade-Titeln
+            vorinstalliert.
           </p>
-          <p>Included titles are:</p>
+          <p>Installierte Spiele:</p>
           <ul>
             <li>
               <router-link to="games#pong-info">Pong</router-link>
@@ -75,9 +75,9 @@
         <div class="card font-white back-black stretch center noshadow">
           <h1>Design</h1>
           <p>
-            To arrive at our final product, we went through many design
-            iterations and material types. In the end, we decided on a handmade
-            wooden case combined with a distinctive retro look.
+            Um zu unserem Endprodukt zu gelangen, haben wir viele Design
+            Iterationen und Materialtypen. Am Ende haben wir uns für ein handgefertigtes
+            Holzgehäuse in Kombination mit einem unverwechselbaren Retro-Look.
           </p>
         </div>
       </div>
@@ -86,19 +86,19 @@
           <div class="card img noshadow">
             <img src="../assets/arcade_0.png" />
           </div>
-          <p class="font-white">An early render with external controls.</p>
+          <p class="font-white">Ein frühes Rendering mit externen Kontrollen.</p>
         </div>
         <div class="container">
           <div class="card img noshadow">
             <img src="../assets/arcade_1.png" />
           </div>
-          <p class="font-white">The first all in one render.</p>
+          <p class="font-white">Das erste all in one Rendering.</p>
         </div>
         <div class="container">
           <div class="card img noshadow">
             <img src="../assets/arcade_2.png" />
           </div>
-          <p class="font-white">The first wooden prototype.</p>
+          <p class="font-white">Der erste Prototyp aus Holz.</p>
         </div>
       </div>
     </section>
