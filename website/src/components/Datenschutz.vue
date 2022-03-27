@@ -1,7 +1,7 @@
 <script></script>
 
 <template>
-    <body>
+    <div class="body">
         <div class="text">
             <h1>Datenschutz&shy;erkl&auml;rung</h1>
             <h2>1. Datenschutz auf einen Blick</h2>
@@ -488,19 +488,13 @@
                 <a href="https://www.e-recht24.de">https://www.e-recht24.de</a>
             </p>
         </div>
-    </body>
+    </div>
 </template>
 
 
 <style scoped>
-body {
-    width: 100%;
-    height: 100%;
+.body {
     background: #282A36;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
     box-shadow: 1rem 5px 1rem rgba(0, 0, 0, 0.1);
 }
 
@@ -508,35 +502,12 @@ body {
     color: #f8f8f2;
     background-color: #282A36;
     padding: 2rem;
-    margin: 3rem;
     border-radius: 15px;
     text-align: justify;
 }
 
-.text h1 {
-  font-size: 6rem;
-}
-
-.text h2 {
-    font-size: 4rem;
-    color: #f8f8f2;
-}
-
-.text h3{
-    font-size: 3rem;
-    color: #f8f8f2;
-}
-
-.text h4 {
-  font-size: 3rem;
-  color: #f8f8f2;
-}
-
-.text p {
-  font-size: 2rem;
-}
-
 .text a{
     color: #A243C2;
+    font-size: 0.5rem;
 }
 </style>
