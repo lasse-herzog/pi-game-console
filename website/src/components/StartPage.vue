@@ -1,7 +1,12 @@
 <template>
   <div id="container" ref="container">
     <div id="blocker" ref="blocker">
-      <div id="instructions" ref="instructions" @click="lockControls()">
+      <div
+        id="instructions"
+        ref="instructions"
+        @click="lockControls()"
+        @touchend="lockControls()"
+      >
         <p>
           Click Me! <br />
           Move: WASD <br />
