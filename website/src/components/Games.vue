@@ -144,7 +144,7 @@
         </div>
       </section>
       <section class="comment-section">
-        <div class="wrapper comments">
+        <div class="comments">
           <div class="comments-heading">
             <h2>Das sagen die Spieler:</h2>
           </div>
@@ -366,12 +366,19 @@ export default {
       margin: 1rem 10rem;
       text-decoration: none;
     }
-
+    
     .title-headings > .title-heading {
       margin: auto;
       font-size: 1.5em;
       color: #f8f8f2;
     }
+    
+    .comment-section{
+      padding: 2rem;
+      margin:auto;
+      
+    }
+    
   } /*Ende Media Query*/
 
   /*Spezielle Styles für kleinere Bildschirme */
@@ -390,7 +397,7 @@ export default {
       display: flex;
       flex-flow: column;
       padding-bottom: 27rem;
-      margin: 1rem 10rem;
+      margin: auto;
       text-decoration: none;
     }
     .title-headings > .title-heading {
@@ -407,6 +414,9 @@ export default {
 
     .content-intro {
       font-size: 1rem;
+    }
+    .comment-section{
+      padding: 1rem;
     }
   } /*Ende Media Query*/
 
@@ -459,7 +469,7 @@ export default {
   .comments {
     border: 5px solid #a243c2;
     border-radius: 18px;
-    margin: 2rem;
+    
   }
   .comments-heading {
     font-size: 1.5em;
@@ -471,6 +481,7 @@ export default {
     margin: 0 0 1em 0;
     border-radius: 18px;
   }
+  
   #lastComment {
     margin-bottom: 0;
   }
