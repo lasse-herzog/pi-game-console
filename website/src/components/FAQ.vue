@@ -4,7 +4,7 @@ import Add from 'vue-material-design-icons/ChevronDown.vue';
 </script>
 
 <template>
-<body>
+<div class="body">
     <div class="headline">
         <a>Any Questions?</a>
     </div>
@@ -234,7 +234,7 @@ import Add from 'vue-material-design-icons/ChevronDown.vue';
             </div>
         </div>
     </div>
-</body>
+</div>
 </template>
 
 <style scoped>
@@ -258,7 +258,7 @@ h1 {
     padding: 5rem;
 }
 
-body {
+.body {
     width: 100%;
     height: 100%;
     background: #2b2a26;
