@@ -15,13 +15,6 @@ class TouchControls extends EventDispatcher {
   constructor(camera, domElement) {
     super();
 
-    if (domElement === undefined) {
-      console.warn(
-        'THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'
-      );
-      domElement = document.body;
-    }
-
     this.domElement = domElement;
     this.isLocked = false;
 
@@ -90,12 +83,6 @@ class TouchControls extends EventDispatcher {
 
     this.dispose = function () {
       this.disconnect();
-    };
-
-    this.getObject = function () {
-      // retaining this method for backward compatibility
-
-      return camera;
     };
 
     this.getDirection = (function () {
