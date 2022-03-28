@@ -9,7 +9,7 @@ const _unlockEvent = { type: 'unlock' };
 
 const _PI_2 = Math.PI / 2;
 
-var startPoint, endPoint;
+let startPoint, endPoint;
 
 class TouchControls extends EventDispatcher {
   constructor(camera, domElement) {
