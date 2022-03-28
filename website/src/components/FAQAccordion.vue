@@ -38,9 +38,13 @@ export default {
 
 .accordion-title {
   border-radius: 15px;
+  border-width: 0;
+  min-height: 6rem;
+  max-width: 65rem;
   color: #f8f8f2;
   background-color: #a243c2;
   width: 100%;
+  cursor: pointer;
 }
 
 .accordion-content {
