@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "Catppuccin.catppuccin-vsc",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "johnsoncodehk.volar"
+  ]
+}

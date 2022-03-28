@@ -1,0 +1,8 @@
+# node.js modules
+node_modules
+
+# generated site
+dist
+
+# Editor directories and files
+.vscode
