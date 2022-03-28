@@ -11,7 +11,7 @@ const _PI_2 = Math.PI / 2;
 
 var startPoint, endPoint;
 
-class PointerLockControls extends EventDispatcher {
+class TouchControls extends EventDispatcher {
   constructor(camera, domElement) {
     super();
 
@@ -33,29 +33,6 @@ class PointerLockControls extends EventDispatcher {
     this.pointerSpeed = 1.0;
 
     const scope = this;
-
-    function onMouseMove(event) {
-      if (scope.isLocked === false) return;
-
-      const movementX =
-        event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-      const movementY =
-        event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-      _euler.setFromQuaternion(camera.quaternion);
-
-      _euler.y -= movementX * 0.002 * scope.pointerSpeed;
-      _euler.x -= movementY * 0.002 * scope.pointerSpeed;
-
-      _euler.x = Math.max(
-        _PI_2 - scope.maxPolarAngle,
-        Math.min(_PI_2 - scope.minPolarAngle, _euler.x)
-      );
-
-      camera.quaternion.setFromEuler(_euler);
-
-      scope.dispatchEvent(_changeEvent);
-    }
 
     function onTouchStart(event) {
       startPoint = {
@@ -92,48 +69,11 @@ class PointerLockControls extends EventDispatcher {
       scope.dispatchEvent(_changeEvent);
     }
 
-    function onPointerlockChange() {
-      if (
-        scope.domElement.ownerDocument.pointerLockElement === scope.domElement
-      ) {
-        scope.dispatchEvent(_lockEvent);
-
-        scope.isLocked = true;
-      } else {
-        scope.dispatchEvent(_unlockEvent);
-
-        scope.isLocked = false;
-      }
-    }
-
-    function onPointerlockError() {
-      console.error(
-        'THREE.PointerLockControls: Unable to use Pointer Lock API'
-      );
-    }
-
     this.connect = function () {
-      scope.domElement.ownerDocument.addEventListener('mousemove', onMouseMove);
-      scope.domElement.ownerDocument.addEventListener(
-        'touchstart',
-        onTouchStart
-      );
       scope.domElement.ownerDocument.addEventListener('touchmove', onTouchMove);
-      scope.domElement.ownerDocument.addEventListener(
-        'pointerlockchange',
-        onPointerlockChange
-      );
-      scope.domElement.ownerDocument.addEventListener(
-        'pointerlockerror',
-        onPointerlockError
-      );
     };
 
     this.disconnect = function () {
-      scope.domElement.ownerDocument.removeEventListener(
-        'mousemove',
-        onMouseMove
-      );
       scope.domElement.ownerDocument.removeEventListener(
         'touchstart',
         onTouchStart
@@ -141,14 +81,6 @@ class PointerLockControls extends EventDispatcher {
       scope.domElement.ownerDocument.removeEventListener(
         'touchmove',
         onTouchMove
-      );
-      scope.domElement.ownerDocument.removeEventListener(
-        'pointerlockchange',
-        onPointerlockChange
-      );
-      scope.domElement.ownerDocument.removeEventListener(
-        'pointerlockerror',
-        onPointerlockError
       );
     };
 
@@ -188,15 +120,17 @@ class PointerLockControls extends EventDispatcher {
     };
 
     this.lock = function () {
-      this.domElement.requestPointerLock();
+      this.isLocked = true;
+      scope.dispatchEvent(_lockEvent);
     };
 
     this.unlock = function () {
-      scope.domElement.ownerDocument.exitPointerLock();
+      this.isLocked = false;
+      scope.dispatchEvent(_unlockEvent);
     };
 
     this.connect();
   }
 }
 
-export { PointerLockControls };
+export { TouchControls };
