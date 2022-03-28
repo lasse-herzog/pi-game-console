@@ -1,25 +1,24 @@
-<script setup>
-import Customizer from './Customizer.vue';
-import { plugin, defaultConfig, FormKit } from '@formkit/vue';
-import { ref } from 'vue';
-
-const submitted = ref(false);
-const submitHandler = async () => {
-  // Lets pretend this is an ajax request:
-  await new Promise((r) => setTimeout(r, 1000));
-  submitted.value = true;
-};
-</script>
-
 <template>
   <section>
     <Renderer ref="renderer" antialias :orbit-ctrl="{}" resize>
       <Camera ref="camera" :position="{ x: -10, y: 2, z: 0 }" />
       <Scene ref="scene" background="#282A36">
         <AmbientLight></AmbientLight>
-        <GltfModel src="./Pyco1.glb" ref="model" v-if="versionSelection === 'Standard'"/>
-        <GltfModel src="./Pyco3.glb" ref="model" v-if="versionSelection === 'OLED-Bildschirm'"/>
-        <GltfModel src="./Pyco2.glb" ref="model" v-if="versionSelection === 'Limited Edition \'Traube-Minze\''"/>
+        <GltfModel
+          src="./Pyco1.glb"
+          ref="model"
+          v-if="versionSelection === 'Standard'"
+        />
+        <GltfModel
+          src="./Pyco3.glb"
+          ref="model"
+          v-if="versionSelection === 'OLED-Bildschirm'"
+        />
+        <GltfModel
+          src="./Pyco2.glb"
+          ref="model"
+          v-if="versionSelection === 'Limited Edition \'Traube-Minze\''"
+        />
       </Scene>
     </Renderer>
     <div class="container">
@@ -130,7 +129,9 @@ const submitHandler = async () => {
 </template>
 
 <script>
+import { ref } from 'vue';
 import { AmbientLight, Camera, GltfModel, Renderer, Scene } from 'troisjs';
+
 export default {
   components: {
     AmbientLight,
@@ -139,16 +140,24 @@ export default {
     Renderer,
     Scene,
   },
+  setup() {
+    const submitted = ref(false);
+    const submitHandler = async () => {
+      await new Promise((r) => setTimeout(r, 1000));
+      submitted.value = true;
+    };
+  },
   mounted() {
-    var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
-    var height = window.innerHeight > 0 ? window.innerHeight * 0.5 : screen.height * 0.5;
+    let width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+    let height =
+      window.innerHeight > 0 ? window.innerHeight * 0.5 : screen.height * 0.5;
     this.$refs.renderer.three.setSize(width, height);
   },
   data() {
     return {
-      versionSelection: "Standard"
-    }
-  }
+      versionSelection: 'Standard',
+    };
+  },
 };
 </script>
 
@@ -178,7 +187,7 @@ Renderer {
 }
 
 section {
-  background-color: #282A36;
+  background-color: #282a36;
   color: #f8f8f2;
 }
 
