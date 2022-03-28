@@ -1,7 +1,12 @@
 <template>
   <div id="container" ref="container">
     <div id="blocker" ref="blocker">
-      <div id="instructions" ref="instructions" @click="lockControls()">
+      <div
+        id="instructions"
+        ref="instructions"
+        @mouseup="initControls()"
+        @touchend="initTouchControls()"
+      >
         <p>
           Click Me! <br />
           Move: WASD <br />
@@ -61,7 +66,6 @@ export default {
 
       // Scene
       this.scene = new THREE.Scene();
-      this.arcade;
 
       // Camera
       this.camera = new THREE.PerspectiveCamera(
@@ -77,15 +81,11 @@ export default {
       this.initScene();
       this.initRenderer();
       this.initPostProcessing();
-      this.initControls();
 
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
       this.pmremGenerator.fromScene(this.scene);
 
       // Registering Event Listeners
-      document.addEventListener('keydown', this.onKeyDown, false);
-      document.addEventListener('keyup', this.onKeyUp, false);
-
       this.renderer.domElement.addEventListener('click', () => {
         if (this.intersectsArcade.length > 0) {
           this.$router.push(
@@ -94,34 +94,21 @@ export default {
         }
       });
 
-      this.renderer.domElement.addEventListener(
-        'mousemove',
-        this.onMouseMove,
-        false
-      );
-
       window.addEventListener('resize', this.onWindowResize);
     },
     initControls() {
+      if (this.controls instanceof PointerLockControls) {
+        this.controls.lock();
+        return;
+      }
+
       const blocker = this.$refs.blocker;
       const instructions = this.$refs.instructions;
-      const joystickOptions = {
-        mode: 'static',
-        position: { left: '10%', bottom: '10%' },
-        zone: this.$refs.container,
-      };
 
-      if (this.isTouchEnabled === true) {
-        this.controls = new TouchControls(
-          this.camera,
-          this.renderer.domElement
-        );
-      } else {
-        this.controls = new PointerLockControls(
-          this.camera,
-          this.renderer.domElement
-        );
-      }
+      this.controls = new PointerLockControls(
+        this.camera,
+        this.renderer.domElement
+      );
 
       this.controls.getObject().position.set(12, 6, 12);
 
@@ -130,13 +117,58 @@ export default {
         () => {
           blocker.style.display = 'none';
           instructions.style.display = 'none';
+        },
+        false
+      );
 
-          if (this.isTouchEnabled === true) {
-            this.joystick = nipplejs.create(joystickOptions);
-            this.joystick.on('move', (event, joystick) =>
-              this.onJoystickMovement(event, joystick)
-            );
-          }
+      this.controls.addEventListener(
+        'unlock',
+        () => {
+          blocker.style.display = 'block';
+          instructions.style.display = '';
+        },
+        false
+      );
+
+      document.addEventListener('keydown', this.onKeyDown, false);
+      document.addEventListener('keyup', this.onKeyUp, false);
+
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onMouseMove,
+        false
+      );
+
+      this.scene.add(this.controls.getObject());
+      this.controls.lock();
+    },
+    initTouchControls() {
+      if (this.controls instanceof TouchControls) {
+        this.controls.lock();
+        return;
+      }
+
+      const blocker = this.$refs.blocker;
+      const instructions = this.$refs.instructions;
+      const joystickOptions = {
+        mode: 'static',
+        position: { left: '10%', bottom: '10%' },
+        zone: this.$refs.container,
+      };
+
+      this.controls = new TouchControls(this.camera, this.renderer.domElement);
+      this.controls.getObject().position.set(12, 6, 12);
+
+      this.controls.addEventListener(
+        'lock',
+        () => {
+          blocker.style.display = 'none';
+          instructions.style.display = 'none';
+
+          this.joystick = nipplejs.create(joystickOptions);
+          this.joystick.on('move', (event, joystick) =>
+            this.onJoystickMovement(event, joystick)
+          );
         },
         false
       );
@@ -147,14 +179,13 @@ export default {
           blocker.style.display = 'block';
           instructions.style.display = '';
 
-          if (this.isTouchEnabled === true) {
-            this.joystick.destroy();
-          }
+          this.joystick.destroy();
         },
         false
       );
 
       this.scene.add(this.controls.getObject());
+      this.controls.lock();
     },
     initPostProcessing() {
       const pixelRatio = this.renderer.getPixelRatio();
@@ -269,36 +300,25 @@ export default {
         this.arcades.push(child);
       }
     },
-    isTouchEnabled() {
-      return (
-        'ontouchstart' in window ||
-        navigator.maxTouchPoints > 0 ||
-        navigator.msMaxTouchPoints > 0
-      );
-    },
     loadGltf(gltf) {
-      this.arcade = gltf.scene;
-      this.arcade.traverse(this.initInteractiveObjects);
+      gltf.scene.traverse(this.initInteractiveObjects);
 
-      this.scene.add(this.arcade);
-    },
-    lockControls() {
-      this.controls.lock();
+      this.scene.add(gltf.scene);
     },
     onJoystickMovement(event, joystick) {
       console.log(joystick);
-      if (joystick.direction.x == 'left') {
+      if (joystick.direction.x === 'left') {
         this.moveLeft = true;
         this.moveRight = false;
-      } else if (joystick.direction.x == 'right') {
+      } else if (joystick.direction.x === 'right') {
         this.moveLeft = false;
         this.moveRight = true;
       }
 
-      if (joystick.direction.y == 'up') {
+      if (joystick.direction.y === 'up') {
         this.moveForward = true;
         this.moveBackward = false;
-      } else if (joystick.direction.x == 'down') {
+      } else if (joystick.direction.x === 'down') {
         this.moveForward = false;
         this.moveBackward = true;
       }
