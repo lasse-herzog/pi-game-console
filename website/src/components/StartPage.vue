@@ -151,7 +151,6 @@ export default {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.container.appendChild(this.renderer.domElement);
     },
-
     initPostProcessing() {
       const pixelRatio = this.renderer.getPixelRatio();
       const renderScene = new RenderPass(this.scene, this.camera);
@@ -176,6 +175,7 @@ export default {
     },
     initPointerLockControls() {
       if (this.controls instanceof PointerLockControls) {
+        console.log('lol1');
         this.controls.lock();
         return;
       }
@@ -221,6 +221,8 @@ export default {
       });
 
       this.initCamera();
+      console.log('lol');
+
       this.controls.lock();
     },
     initTouchControls() {
@@ -240,6 +242,9 @@ export default {
       this.controls.addEventListener(
         'lock',
         () => {
+          this.blocker.style.display = 'none';
+          this.instructions.style.display = 'none';
+
           this.joystick = nipplejs.create(joystickOptions);
           this.joystick
             .on('move', (event, joystick) =>
@@ -287,6 +292,7 @@ export default {
 
       this.initCamera();
       this.controls.lock();
+      console.log(this.controls);
     },
     initCamera() {
       this.camera.position.set(12, 6, 12);
