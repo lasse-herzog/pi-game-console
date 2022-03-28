@@ -24,7 +24,7 @@ import { TroisJSVuePlugin } from 'troisjs';
 import 'vue-material-design-icons/styles.css';
 import App from './App.vue';
 import Datenschutz from './components/Datenschutz.vue';
-import FAQ from './components/FAQ.vue';
+import FAQ from './components/FAQNew.vue';
 import GameConsole from './components/GameConsole.vue';
 import Games from './components/Games.vue';
 import Impressum from './components/Impressum.vue';
