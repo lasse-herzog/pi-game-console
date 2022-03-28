@@ -101,113 +101,6 @@ export default {
 
       window.addEventListener('resize', this.onWindowResize);
     },
-    initControls() {
-      const camera = this.controls.getObject();
-      camera.position.set(12, 6, 12);
-      camera.lookAt(0, 6, 0);
-
-      this.scene.add(camera);
-      this.controls.lock();
-    },
-    initPointerControls() {
-      if (this.controls instanceof PointerLockControls) {
-        this.controls.lock();
-        return;
-      }
-
-      this.controls = new PointerLockControls(
-        this.camera,
-        this.renderer.domElement
-      );
-
-      this.controls.addEventListener(
-        'lock',
-        () => {
-          this.blocker.style.display = 'none';
-          this.instructions.style.display = 'none';
-        },
-        false
-      );
-
-      this.controls.addEventListener(
-        'unlock',
-        () => {
-          this.blocker.style.display = 'block';
-          this.instructions.style.display = '';
-        },
-        false
-      );
-
-      document.addEventListener('keydown', this.onKeyDown, false);
-      document.addEventListener('keyup', this.onKeyUp, false);
-
-      this.renderer.domElement.addEventListener(
-        'mousemove',
-        this.onMouseMove,
-        false
-      );
-    },
-    initTouchControls() {
-      if (this.controls instanceof TouchControls) {
-        this.controls.lock();
-        return;
-      }
-
-      const joystickOptions = {
-        mode: 'static',
-        position: { left: '10%', bottom: '10%' },
-        zone: this.$refs.container,
-      };
-
-      this.controls = new TouchControls(this.camera, this.renderer.domElement);
-
-      this.controls.addEventListener(
-        'lock',
-        () => {
-          this.blocker.style.display = 'none';
-          this.instructions.style.display = 'none';
-
-          this.joystick = nipplejs.create(joystickOptions);
-          this.joystick.on('move', (event, joystick) =>
-            this.onJoystickMovement(event, joystick)
-          );
-        },
-        false
-      );
-
-      this.controls.addEventListener(
-        'unlock',
-        () => {
-          this.blocker.style.display = 'block';
-          this.instructions.style.display = '';
-
-          this.joystick.destroy();
-        },
-        false
-      );
-    },
-    initPostProcessing() {
-      const pixelRatio = this.renderer.getPixelRatio();
-      const renderScene = new RenderPass(this.scene, this.camera);
-
-      this.fxaaPass = new ShaderPass(FXAAShader);
-      const bloomPass = new UnrealBloomPass({
-        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
-        strength: 0.7,
-        radius: 0.1,
-        threshhold: 0.1,
-      });
-
-      this.fxaaPass.material.uniforms['resolution'].value.x =
-        1 / (this.container.offsetWidth * pixelRatio);
-      this.fxaaPass.material.uniforms['resolution'].value.y =
-        1 / (this.container.offsetHeight * pixelRatio);
-
-      this.composer = new EffectComposer(this.renderer);
-      this.composer.addPass(renderScene);
-      this.composer.addPass(this.fxaaPass);
-      this.composer.addPass(bloomPass);
-    },
     initScene() {
       // Loading Blender Model
       let loader = new GLTFLoader();
@@ -255,6 +148,118 @@ export default {
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.container.appendChild(this.renderer.domElement);
+    },
+
+    initPostProcessing() {
+      const pixelRatio = this.renderer.getPixelRatio();
+      const renderScene = new RenderPass(this.scene, this.camera);
+
+      this.fxaaPass = new ShaderPass(FXAAShader);
+      const bloomPass = new UnrealBloomPass({
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        strength: 0.7,
+        radius: 0.1,
+        threshhold: 0.1,
+      });
+
+      this.fxaaPass.material.uniforms['resolution'].value.x =
+        1 / (this.container.offsetWidth * pixelRatio);
+      this.fxaaPass.material.uniforms['resolution'].value.y =
+        1 / (this.container.offsetHeight * pixelRatio);
+
+      this.composer = new EffectComposer(this.renderer);
+      this.composer.addPass(renderScene);
+      this.composer.addPass(this.fxaaPass);
+      this.composer.addPass(bloomPass);
+    },
+    initPointerControls() {
+      if (this.controls instanceof PointerLockControls) {
+        this.controls.lock();
+        return;
+      }
+
+      this.controls = new PointerLockControls(
+        this.camera,
+        this.renderer.domElement
+      );
+
+      this.controls.addEventListener(
+        'lock',
+        () => {
+          this.blocker.style.display = 'none';
+          this.instructions.style.display = 'none';
+        },
+        false
+      );
+
+      this.controls.addEventListener(
+        'unlock',
+        () => {
+          this.blocker.style.display = 'block';
+          this.instructions.style.display = '';
+        },
+        false
+      );
+
+      document.addEventListener('keydown', this.onKeyDown, false);
+      document.addEventListener('keyup', this.onKeyUp, false);
+
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onMouseMove,
+        false
+      );
+
+      this.initControls();
+    },
+    initTouchControls() {
+      if (this.controls instanceof TouchControls) {
+        this.controls.lock();
+        return;
+      }
+
+      const joystickOptions = {
+        mode: 'static',
+        position: { left: '10%', bottom: '10%' },
+        zone: this.$refs.container,
+      };
+
+      this.controls = new TouchControls(this.camera, this.renderer.domElement);
+
+      this.controls.addEventListener(
+        'lock',
+        () => {
+          this.blocker.style.display = 'none';
+          this.instructions.style.display = 'none';
+
+          this.joystick = nipplejs.create(joystickOptions);
+          this.joystick.on('move', (event, joystick) =>
+            this.onJoystickMovement(event, joystick)
+          );
+        },
+        false
+      );
+
+      this.controls.addEventListener(
+        'unlock',
+        () => {
+          this.blocker.style.display = 'block';
+          this.instructions.style.display = '';
+
+          this.joystick.destroy();
+        },
+        false
+      );
+
+      this.initControls();
+    },
+    initControls() {
+      const camera = this.controls.getObject();
+      camera.position.set(12, 6, 12);
+      camera.lookAt(0, 6, 0);
+
+      this.scene.add(camera);
+      this.controls.lock();
     },
     addLights() {
       const ambientLigth = new THREE.AmbientLight(16777215, 0.1);
