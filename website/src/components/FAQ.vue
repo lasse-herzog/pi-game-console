@@ -26,10 +26,7 @@
           Da wir uns aktuell noch in der Entwicklung befinden gibt es aktuell
           nur 4 fertiggestellte Games:
           <br />
-          <br />Space Invaders
-          <br />Snake
-          <br />Pong
-          <br />Pac-Man
+          <br />Space Invaders <br />Snake <br />Pong <br />Pac-Man
           <br />
           <br />Also nur erstklassige AAA-Games!
         </p>
@@ -62,8 +59,7 @@
           <br />
           <br />Sobald die Zahlungsbestätigung eingetroffen ist, wird ihre PYCO
           für den Versand vorbereitet und schnellstmöglich an unsere
-          Versanddienstleister übergeben.
-          <br />Je nachdem wo du wohnst, wird
+          Versanddienstleister übergeben. <br />Je nachdem wo du wohnst, wird
           dir deine PYCO in ein bis drei Tagen zugestellt!
         </p>
       </template>
@@ -73,7 +69,9 @@
         <h2>Wie kann ich bei euch bezahlen?</h2>
       </template>
       <template v-slot:content>
-        <p>Wir akzeptieren alle gängigen Zahlungsmethoden und noch viele andere!</p>
+        <p>
+          Wir akzeptieren alle gängigen Zahlungsmethoden und noch viele andere!
+        </p>
         <div class="symbols">
           <a>
             <font-awesome-icon :icon="['fab', 'btc']" />
@@ -105,8 +103,8 @@
       </template>
       <template v-slot:content>
         <p>
-          Wir versenden jede PYCO in einer dicken und sicheren Verpackung,
-          damit deiner PYCO auf dem Weg zu dir nichts passiert.
+          Wir versenden jede PYCO in einer dicken und sicheren Verpackung, damit
+          deiner PYCO auf dem Weg zu dir nichts passiert.
           <br />
           <br />Unsere Versanddienstleister sind:
           <br />
@@ -142,8 +140,8 @@
       </template>
       <template v-slot:content>
         <p>
-          Jeder Besitzer einer PYCO bekommt nachfolgende Games kostenlos
-          über Updates auf seine PYCO.
+          Jeder Besitzer einer PYCO bekommt nachfolgende Games kostenlos über
+          Updates auf seine PYCO.
           <br />
           <br />Ihr könnt euch also immer überraschen lassen, was als Nächstes
           folgt :D
@@ -176,7 +174,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #headline {
   color: #f8f8f2;
 }
