@@ -1,10 +1,11 @@
 <template>
   <div id="container" ref="container">
     <div id="blocker" ref="blocker">
+      <CookiesPopup />
       <div
         id="instructions"
         ref="instructions"
-        @mouseup="initControls()"
+        @mouseup="initPointerControls()"
         @touchend="initTouchControls()"
       >
         <p>
@@ -21,6 +22,8 @@
 // libraries
 import nipplejs from 'nipplejs';
 import * as THREE from 'three';
+
+import CookiesPopup from './CookiesPopup.vue';
 
 // threejs stuff
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -48,6 +51,8 @@ export default {
     init() {
       // UI Elements
       this.container = this.$refs.container;
+      this.blocker = this.$refs.blocker;
+      this.instructions = this.$refs.instructions;
 
       // Regarding Movement
       this.moveForward = false;
@@ -97,26 +102,29 @@ export default {
       window.addEventListener('resize', this.onWindowResize);
     },
     initControls() {
+      const camera = this.controls.getObject();
+      camera.position.set(12, 6, 12);
+      camera.lookAt(0, 6, 0);
+
+      this.scene.add(camera);
+      this.controls.lock();
+    },
+    initPointerControls() {
       if (this.controls instanceof PointerLockControls) {
         this.controls.lock();
         return;
       }
-
-      const blocker = this.$refs.blocker;
-      const instructions = this.$refs.instructions;
 
       this.controls = new PointerLockControls(
         this.camera,
         this.renderer.domElement
       );
 
-      this.controls.getObject().position.set(12, 6, 12);
-
       this.controls.addEventListener(
         'lock',
         () => {
-          blocker.style.display = 'none';
-          instructions.style.display = 'none';
+          this.blocker.style.display = 'none';
+          this.instructions.style.display = 'none';
         },
         false
       );
@@ -124,8 +132,8 @@ export default {
       this.controls.addEventListener(
         'unlock',
         () => {
-          blocker.style.display = 'block';
-          instructions.style.display = '';
+          this.blocker.style.display = 'block';
+          this.instructions.style.display = '';
         },
         false
       );
@@ -138,9 +146,6 @@ export default {
         this.onMouseMove,
         false
       );
-
-      this.scene.add(this.controls.getObject());
-      this.controls.lock();
     },
     initTouchControls() {
       if (this.controls instanceof TouchControls) {
@@ -148,8 +153,6 @@ export default {
         return;
       }
 
-      const blocker = this.$refs.blocker;
-      const instructions = this.$refs.instructions;
       const joystickOptions = {
         mode: 'static',
         position: { left: '10%', bottom: '10%' },
@@ -157,13 +160,12 @@ export default {
       };
 
       this.controls = new TouchControls(this.camera, this.renderer.domElement);
-      this.controls.getObject().position.set(12, 6, 12);
 
       this.controls.addEventListener(
         'lock',
         () => {
-          blocker.style.display = 'none';
-          instructions.style.display = 'none';
+          this.blocker.style.display = 'none';
+          this.instructions.style.display = 'none';
 
           this.joystick = nipplejs.create(joystickOptions);
           this.joystick.on('move', (event, joystick) =>
@@ -176,16 +178,13 @@ export default {
       this.controls.addEventListener(
         'unlock',
         () => {
-          blocker.style.display = 'block';
-          instructions.style.display = '';
+          this.blocker.style.display = 'block';
+          this.instructions.style.display = '';
 
           this.joystick.destroy();
         },
         false
       );
-
-      this.scene.add(this.controls.getObject());
-      this.controls.lock();
     },
     initPostProcessing() {
       const pixelRatio = this.renderer.getPixelRatio();
@@ -268,6 +267,10 @@ export default {
       this.scene.add(ambientLigth, directionalLight);
     },
     animation() {
+      if (this.controls === undefined) {
+        return;
+      }
+
       const direction = new THREE.Vector3();
       const time = performance.now();
 
@@ -391,6 +394,9 @@ export default {
       this.fxaaPass.material.uniforms['resolution'].value.y =
         1 / (this.container.offsetHeight * pixelRatio);
     },
+  },
+  components: {
+    CookiesPopup,
   },
 };
 </script>
