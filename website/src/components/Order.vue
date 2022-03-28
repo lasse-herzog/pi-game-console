@@ -14,10 +14,12 @@ const submitHandler = async () => {
 <template>
   <section>
     <Renderer ref="renderer" antialias :orbit-ctrl="{}" resize>
-      <Camera ref="camera" :position="{ x: -3, y: -2, z: 4 }" />
+      <Camera ref="camera" :position="{ x: -10, y: 2, z: 0 }" />
       <Scene ref="scene" background="#282A36">
         <AmbientLight></AmbientLight>
-        <GltfModel src="src/assets/Pyco.gltf" />
+        <GltfModel src="./Pyco1.glb" ref="model" v-if="versionSelection === 'Standard'"/>
+        <GltfModel src="./Pyco3.glb" ref="model" v-if="versionSelection === 'OLED-Bildschirm'"/>
+        <GltfModel src="./Pyco2.glb" ref="model" v-if="versionSelection === 'Limited Edition \'Traube-Minze\''"/>
       </Scene>
     </Renderer>
     <div class="container">
@@ -25,11 +27,11 @@ const submitHandler = async () => {
         <h1>Bestelle dir sie direkt nach Hause!</h1>
         <FormKit
           type="form"
-          v-model="formData"
           :form-class="submitted ? 'hide' : 'show'"
           submit-label="kostenpflichtig Bestellen"
           @submit="submitHandler"
           id="form"
+          v-model="data"
         >
           <div class="side-by-side">
             <FormKit
@@ -99,6 +101,7 @@ const submitHandler = async () => {
                 'OLED-Bildschirm',
                 'Limited Edition \'Traube-Minze\'',
               ]"
+              v-model="versionSelection"
               id="center0"
             />
             <FormKit
@@ -115,13 +118,13 @@ const submitHandler = async () => {
           </div>
         </FormKit>
       </div>
-      <div v-if="submitted">
-        <h2>Submission successful!</h2>
-      </div>
-      <div v-if="submitted">
-        <h2>Modeled group values</h2>
-        <pre class="form-data">{{ formData }}</pre>
-      </div>
+    </div>
+    <div v-if="submitted">
+      <h2>Submission successful!</h2>
+    </div>
+    <div v-if="submitted">
+      <h2>Modeled group values</h2>
+      <pre class="form-data">{{ data }}</pre>
     </div>
   </section>
 </template>
@@ -138,8 +141,14 @@ export default {
   },
   mounted() {
     var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
-    this.$refs.renderer.three.setSize(width, width);
+    var height = window.innerHeight > 0 ? window.innerHeight * 0.5 : screen.height * 0.5;
+    this.$refs.renderer.three.setSize(width, height);
   },
+  data() {
+    return {
+      versionSelection: "Standard"
+    }
+  }
 };
 </script>
 
@@ -164,10 +173,12 @@ export default {
   margin: auto;
 }
 Renderer {
+  width: 50px;
+  height: 50px;
 }
 
 section {
-  background-color: #282a36;
+  background-color: #282A36;
   color: #f8f8f2;
 }
 
