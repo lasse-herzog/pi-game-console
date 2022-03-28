@@ -1,34 +1,49 @@
 <template>
-  <ul class="accordion">
-    <slot></slot>
-  </ul>
+  <div id="container">
+    <div>
+      <button
+        @click="toggleAccordion()"
+        class="accordion-title"
+        :aria-expanded="isOpen"
+        :aria-controls="`collapse${_uid}`"
+      >
+        <slot name="title" />
+      </button>
+    </div>
+    <div class="accordion-content" v-show="isOpen" :id="`collapse${_uid}`">
+      <slot name="content" />
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
-  props: {},
   data() {
     return {
-      Accordion: {
-        count: 0,
-        active: null
-      }
+      isOpen: false,
     };
   },
-  provide() {
-    return { Accordion: this.Accordion };
-  }
+  methods: {
+    toggleAccordion() {
+      this.isOpen = !this.isOpen;
+    },
+  },
 };
 </script>
 
-<style scoped>
-.accordion {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+<style scope>
+#container {
+  padding: 1% 5%;
 }
 
-.accordion__item:last-child {
-  border-bottom: none;
+.accordion-title {
+  border-radius: 15px;
+  color: #f8f8f2;
+  background-color: #a243c2;
+  width: 100%;
+}
+
+.accordion-content {
+  color: #f8f8f2;
 }
 </style>
