@@ -70,6 +70,10 @@ class TouchControls extends EventDispatcher {
     }
 
     this.connect = function () {
+      scope.domElement.ownerDocument.addEventListener(
+        'touchstart',
+        onTouchStart
+      );
       scope.domElement.ownerDocument.addEventListener('touchmove', onTouchMove);
     };
 
