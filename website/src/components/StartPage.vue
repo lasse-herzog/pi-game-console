@@ -5,7 +5,7 @@
       <div
         id="instructions"
         ref="instructions"
-        @mouseup="initPointerControls()"
+        @mouseup="initPointerLockControls()"
         @touchend="initTouchControls()"
       >
         <p>
@@ -15,6 +15,7 @@
         </p>
       </div>
     </div>
+    <div id="joystick_zone" ref="joystick_zone" />
   </div>
 </template>
 
@@ -65,7 +66,6 @@ export default {
       // Regarding Interactivity
       this.arcades = [];
       this.intersectsArcade = [];
-      this.drag = false;
       this.mouse = new THREE.Vector2();
       this.raycaster = new THREE.Raycaster();
 
@@ -91,14 +91,6 @@ export default {
       this.pmremGenerator.fromScene(this.scene);
 
       // Registering Event Listeners
-      this.renderer.domElement.addEventListener('click', () => {
-        if (this.intersectsArcade.length > 0) {
-          this.$router.push(
-            this.intersectsArcade[0].object.parent.name.replace('Arcade', '')
-          );
-        }
-      });
-
       window.addEventListener('resize', this.onWindowResize);
     },
     initScene() {
@@ -138,7 +130,17 @@ export default {
       );
 
       this.scene.add(floor, this.floorReflector);
-      this.addLights();
+      this.initLighting();
+    },
+    initLighting() {
+      const ambientLigth = new THREE.AmbientLight(16777215, 0.1);
+      ambientLigth.name = 'ambient_light';
+
+      const directionalLight = new THREE.DirectionalLight(16777215, 0.4);
+      directionalLight.position.set(0, 10, 20);
+      directionalLight.name = 'main_light';
+
+      this.scene.add(ambientLigth, directionalLight);
     },
     initRenderer() {
       this.renderer.physicallyCorrectLights = true;
@@ -172,7 +174,7 @@ export default {
       this.composer.addPass(this.fxaaPass);
       this.composer.addPass(bloomPass);
     },
-    initPointerControls() {
+    initPointerLockControls() {
       if (this.controls instanceof PointerLockControls) {
         this.controls.lock();
         return;
@@ -210,7 +212,16 @@ export default {
         false
       );
 
-      this.initControls();
+      this.renderer.domElement.addEventListener('click', (event) => {
+        if (this.doesArcadeIntersect(event)) {
+          this.$router.push(
+            this.intersectsArcade[0].object.parent.name.replace('Arcade', '')
+          );
+        }
+      });
+
+      this.initCamera();
+      this.controls.lock();
     },
     initTouchControls() {
       if (this.controls instanceof TouchControls) {
@@ -220,8 +231,8 @@ export default {
 
       const joystickOptions = {
         mode: 'static',
-        position: { left: '10%', bottom: '10%' },
-        zone: this.$refs.container,
+        position: { left: '50%', bottom: '50%' },
+        zone: this.$refs.joystick_zone,
       };
 
       this.controls = new TouchControls(this.camera, this.renderer.domElement);
@@ -229,13 +240,17 @@ export default {
       this.controls.addEventListener(
         'lock',
         () => {
-          this.blocker.style.display = 'none';
-          this.instructions.style.display = 'none';
-
           this.joystick = nipplejs.create(joystickOptions);
-          this.joystick.on('move', (event, joystick) =>
-            this.onJoystickMovement(event, joystick)
-          );
+          this.joystick
+            .on('move', (event, joystick) =>
+              this.onJoystickMovement(event, joystick)
+            )
+            .on('end', () => {
+              this.moveBackward = false;
+              this.moveForward = false;
+              this.moveLeft = false;
+              this.moveRight = false;
+            });
         },
         false
       );
@@ -251,25 +266,31 @@ export default {
         false
       );
 
-      this.initControls();
-    },
-    initControls() {
-      const camera = this.controls.getObject();
-      camera.position.set(12, 6, 12);
-      camera.lookAt(0, 6, 0);
+      this.renderer.domElement.addEventListener(
+        'touchstart',
+        () => (this.drag = false)
+      );
 
-      this.scene.add(camera);
+      this.renderer.domElement.addEventListener(
+        'touchmove',
+        () => (this.drag = true)
+      );
+
+      this.renderer.domElement.addEventListener('click', (event) => {
+        if (this.drag === false && this.doesArcadeIntersect(event)) {
+          this.controls.unlock();
+          this.$router.push(
+            this.intersectsArcade[0].object.parent.name.replace('Arcade', '')
+          );
+        }
+      });
+
+      this.initCamera();
       this.controls.lock();
     },
-    addLights() {
-      const ambientLigth = new THREE.AmbientLight(16777215, 0.1);
-      ambientLigth.name = 'ambient_light';
-
-      const directionalLight = new THREE.DirectionalLight(16777215, 0.4);
-      directionalLight.position.set(0, 10, 20);
-      directionalLight.name = 'main_light';
-
-      this.scene.add(ambientLigth, directionalLight);
+    initCamera() {
+      this.camera.position.set(12, 6, 12);
+      this.camera.lookAt(0, 6, 0);
     },
     animation() {
       if (this.controls === undefined) {
@@ -303,6 +324,15 @@ export default {
 
       this.prevTime = time;
     },
+    doesArcadeIntersect(event) {
+      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      this.intersectsArcade = this.raycaster.intersectObjects(this.arcades);
+
+      return this.intersectsArcade.length > 0;
+    },
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
         this.arcades.push(child);
@@ -314,21 +344,40 @@ export default {
       this.scene.add(gltf.scene);
     },
     onJoystickMovement(event, joystick) {
-      console.log(joystick);
-      if (joystick.direction.x === 'left') {
-        this.moveLeft = true;
-        this.moveRight = false;
-      } else if (joystick.direction.x === 'right') {
-        this.moveLeft = false;
-        this.moveRight = true;
-      }
+      this.moveForward = false;
+      this.moveBackward = false;
+      this.moveLeft = false;
+      this.moveRight = false;
 
-      if (joystick.direction.y === 'up') {
-        this.moveForward = true;
-        this.moveBackward = false;
-      } else if (joystick.direction.x === 'down') {
-        this.moveForward = false;
-        this.moveBackward = true;
+      switch (Math.floor((joystick.angle.degree + 22.5) / 45)) {
+        case 1:
+          this.moveForward = true;
+          this.moveRight = true;
+          break;
+        case 2:
+          this.moveForward = true;
+          break;
+        case 3:
+          this.moveForward = true;
+          this.moveLeft = true;
+          break;
+        case 4:
+          this.moveLeft = true;
+          break;
+        case 5:
+          this.moveBackward = true;
+          this.moveLeft = true;
+          break;
+        case 6:
+          this.moveBackward = true;
+          break;
+        case 7:
+          this.moveBackward = true;
+          this.moveRight = true;
+          break;
+        default:
+          this.moveRight = true;
+          break;
       }
     },
     onKeyDown(event) {
@@ -372,13 +421,7 @@ export default {
       }
     },
     onMouseMove(event) {
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      this.raycaster.setFromCamera(this.mouse, this.camera);
-      this.intersectsArcade = this.raycaster.intersectObjects(this.arcades);
-
-      if (this.intersectsArcade.length > 0) {
+      if (this.doesArcadeIntersect(event)) {
         this.intersectsArcade[0].object.parent.children[2].material.emissive.set();
       }
     },
@@ -408,23 +451,29 @@ export default {
 
 <style scoped>
 #blocker {
+  background-color: #282a36;
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgb(255, 255, 255);
 }
 
 #instructions {
-  width: 100%;
+  color: #f8f8f2;
+  cursor: pointer;
   height: 100%;
+  width: 100%;
 
+  align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+}
 
-  text-align: center;
-  font-size: 14px;
-  cursor: pointer;
+#joystick_zone {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 25%;
+  width: 50%;
 }
 </style>
