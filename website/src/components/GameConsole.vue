@@ -25,14 +25,14 @@
         <div class="card left font-white back-hardware stretch">
           <h1>Hardware</h1>
           <p>
-            New CPU performance and efficiency cores power through complex tasks
-            and preserve power while doing so.
+            Die neuen CPU-Leistungs- und Effizienzkerne erledigen komplexe Aufgaben
+            und sparen dabei Energie.
           </p>
-          <p>With such advancements come new possibilities:</p>
+          <p>Mit solchen Fortschritten kommen neue Möglichkeiten:</p>
           <ul>
-            <li>16x the details</li>
-            <li>4x the size</li>
-            <li>completely new rendering and lighting</li>
+            <li>16-facher Detailgrad</li>
+            <li>4-fache gr&Ouml;&szlig;e</li>
+            <li>komplett neues Rendering und Beleuchtung</li>
           </ul>
         </div>
         <div class="card right back-cpu stretch"></div>
@@ -43,10 +43,10 @@
         <div class="card left font-white back-games stretch">
           <h1>Games</h1>
           <p>
-            The Console comes with the remakes of four classic arcade titles
-            preinstalled.
+            Auf der Konsole sind die Remakes von vier klassischen Arcade-Titeln
+            vorinstalliert.
           </p>
-          <p>Included titles are:</p>
+          <p>Installierte Spiele:</p>
           <ul>
             <li>
               <router-link to="games#pong-info">Pong</router-link>
@@ -63,22 +63,10 @@
           </ul>
         </div>
         <div class="container card games right stretch">
-          <router-link
-            to="games#pong-info"
-            class="card back-pong stretch"
-          ></router-link>
-          <router-link
-            to="games#snake-info"
-            class="card back-snake stretch"
-          ></router-link>
-          <router-link
-            to="games#pacman-info"
-            class="card back-pac stretch"
-          ></router-link>
-          <router-link
-            to="games#invaders-info"
-            class="card back-space stretch"
-          ></router-link>
+          <router-link to="games#pong-info" class="card back-pong stretch"></router-link>
+          <router-link to="games#snake-info" class="card back-snake stretch"></router-link>
+          <router-link to="games#pacman-info" class="card back-pac stretch"></router-link>
+          <router-link to="games#invaders-info" class="card back-space stretch"></router-link>
         </div>
       </div>
     </section>
@@ -87,9 +75,9 @@
         <div class="card font-white back-black stretch center noshadow">
           <h1>Design</h1>
           <p>
-            To arrive at our final product, we went through many design
-            iterations and material types. In the end, we decided on a handmade
-            wooden case combined with a distinctive retro look.
+            Um zu unserem Endprodukt zu gelangen, haben wir viele Design
+            Iterationen und Materialtypen. Am Ende haben wir uns für ein handgefertigtes
+            Holzgehäuse in Kombination mit einem unverwechselbaren Retro-Look.
           </p>
         </div>
       </div>
@@ -98,19 +86,19 @@
           <div class="card img noshadow">
             <img src="../assets/arcade_0.png" />
           </div>
-          <p class="font-white">An early render with external controls.</p>
+          <p class="font-white">Ein frühes Rendering mit externen Kontrollen.</p>
         </div>
         <div class="container">
           <div class="card img noshadow">
             <img src="../assets/arcade_1.png" />
           </div>
-          <p class="font-white">The first all in one render.</p>
+          <p class="font-white">Das erste all in one Rendering.</p>
         </div>
         <div class="container">
           <div class="card img noshadow">
             <img src="../assets/arcade_2.png" />
           </div>
-          <p class="font-white">The first wooden prototype.</p>
+          <p class="font-white">Der erste Prototyp aus Holz.</p>
         </div>
       </div>
     </section>
@@ -131,12 +119,7 @@ body {
   background-color: #282a36;
 }
 
-section {
-  height: 100vh;
-  scroll-snap-align: start;
-  position: relative;
-  font-family: 'Roboto', sans-serif;
-}
+/* #region container */
 
 .container {
   max-width: 64rem;
@@ -156,12 +139,14 @@ section {
 }
 
 .container.design > .container {
-  flex: 1 1 200px;
+  /* flex: 1 1 200px; */
+  flex-direction: column;
+  height: auto;
   max-width: 33%;
 }
 
 .container.design.top {
-  padding-top: 50vh;
+  padding-top: 10vh;
 }
 
 .container.games {
@@ -190,11 +175,14 @@ section {
   margin: 1rem;
 }
 
+/* #endregion */
+
+/* #region card */
+
 .card {
   max-height: 80vh;
   height: auto;
-  margin: auto;
-  padding: 0 0.5rem;
+  margin: 1rem;
   text-align: left;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   border-radius: 0.5rem;
@@ -213,6 +201,7 @@ section {
 .card.games > * {
   flex-direction: column;
   max-height: 25%;
+  margin: 0;
   width: 100%;
   border-radius: 0;
   background-size: cover;
@@ -236,13 +225,13 @@ section {
 
 .card.left {
   width: 50%;
-  margin: auto;
+  margin-right: 0;
   border-radius: 1rem 0rem 0rem 1rem;
 }
 
 .card.right {
   width: 50%;
-  margin: auto;
+  margin-left: 0;
   border-radius: 0rem 1rem 1rem 0rem;
 }
 
@@ -295,11 +284,23 @@ section {
 }
 
 .card li:before {
-  content: '-';
+  content: "-";
   font-size: 1em;
   position: absolute;
   top: 0rem;
   left: 0rem;
+}
+
+/* #endregion */
+
+/* #region section */
+
+section {
+  height: 100vh;
+  scroll-snap-align: start;
+  position: relative;
+  font-family: "Roboto", sans-serif;
+  background-size: 100% 100%;
 }
 
 .section-title {
@@ -322,18 +323,22 @@ section {
   background-position: center center;
 }
 
+/* #endregion */
+
 .text-neon {
   max-width: 64rem;
   width: auto;
   margin: auto;
   padding-top: 7.2rem;
-  font-family: 'Liberty';
+  font-family: "Liberty";
   font-size: 14em;
   letter-spacing: -0.05em;
   color: #e5a8ff;
   text-shadow: 0 0 2rem #b300ff;
   animation: flicker 5s ease-in-out infinite alternate;
 }
+
+/* #region colors n backgrounds */
 
 .font-white {
   color: #ffffff;
@@ -380,6 +385,86 @@ section {
   background-repeat: no-repeat;
   background-position: center center;
 }
+
+/* #endregion */
+
+/* #region Media Query */
+
+@media only screen and (max-width: 600px) {
+  .container {
+    height: auto;
+  }
+
+  section {
+    height: auto;
+    background-size: auto 100%;
+  }
+
+  .text-neon {
+    font-size: 30vw;
+  }
+
+  .container.index {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .container.hardware {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .container.games {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .container.design {
+    height: auto;
+    margin: 1rem;
+  }
+
+  .container.design.top {
+    padding: 0;
+  }
+
+  .container.design {
+    flex-direction: column;
+  }
+
+  .container.design > .container {
+    max-width: 100%;
+    flex-direction: column-reverse;
+  }
+
+  .card.left {
+    width: auto;
+    margin: 1rem;
+    margin-bottom: 0;
+    border-radius: 1rem 1rem 0rem 0rem;
+  }
+
+  .card.right {
+    width: auto;
+    height: 20vh;
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: 0rem 0rem 1rem 1rem;
+  }
+
+  .card.games {
+    display: none;
+  }
+
+  .container.games > .card {
+    margin: 1rem;
+    border-radius: 1rem;
+  }
+}
+
+/* #endregion */
 
 @keyframes flicker {
   0% {
