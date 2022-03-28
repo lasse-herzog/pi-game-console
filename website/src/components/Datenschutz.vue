@@ -503,11 +503,14 @@
     background-color: #282A36;
     padding: 2rem;
     border-radius: 15px;
-    text-align: justify;
 }
 
 .text a{
     color: #A243C2;
     font-size: 0.5rem;
+}
+
+.text h1{
+    font-size: 3rem;
 }
 </style>
