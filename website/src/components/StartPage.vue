@@ -13,12 +13,22 @@
 </template>
 
 <script>
+// libraries
+import nipplejs from 'nipplejs';
 import * as THREE from 'three';
 
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+// threejs stuff
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { MeshReflectorMaterial } from '../MeshReflectorMaterial';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TouchControls } from '../TouchControls';
+
+// post-processing
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 THREE.Cache.enabled = true;
 
@@ -33,15 +43,12 @@ export default {
     init() {
       // UI Elements
       this.container = this.$refs.container;
-      const blocker = this.$refs.blocker;
-      const instructions = this.$refs.instructions;
 
       // Regarding Movement
       this.moveForward = false;
       this.moveBackward = false;
       this.moveLeft = false;
       this.moveRight = false;
-
       this.prevTime = performance.now();
       this.velocity = new THREE.Vector3();
 
@@ -56,94 +63,26 @@ export default {
       this.scene = new THREE.Scene();
       this.arcade;
 
-      // Cameras
-      // Implement for reflective Floor
-      /*const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, {
-        generateMipmaps: true,
-        minFilter: THREE.LinearMipmapLinearFilter,
-      });*/
-
+      // Camera
       this.camera = new THREE.PerspectiveCamera(
         50,
         window.innerWidth / window.innerHeight,
         1,
         50
       );
-      this.camera.position.set(12, 5, 12);
-      //this.cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
-      this.scene.add(this.cubeCamera);
 
-      // loading Blender Model
-      const loader = new GLTFLoader();
+      // Renderer
+      this.renderer = new THREE.WebGLRenderer();
 
-      loader.load(
-        './Arcade.glb',
-        this.loadGltf,
-        // called while loading is progressing
-        function (xhr) {
-          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-        },
-        // called when loading has errors
-        function (error) {
-          console.log(error.message);
-        }
-      );
-
-      this.addLights();
-
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.physicallyCorrectLights = true;
-      this.renderer.outputEncoding = THREE.sRGBEncoding;
-      this.renderer.setPixelRatio(window.devicePixelRatio);
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.renderer.setAnimationLoop(this.animation);
+      this.initScene();
+      this.initRenderer();
+      this.initPostProcessing();
+      this.initControls();
 
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
       this.pmremGenerator.fromScene(this.scene);
 
-      this.controls = new PointerLockControls(
-        this.camera,
-        this.renderer.domElement
-      );
-
-      /*
-      For Orbitcontrols:
-      this.controls.enableZoom = false;
-      this.controls.enablePan = false;
-      this.controls.enableDamping = true;
-      this.controls.rotateSpeed = -0.25;
-
-      this.controls.target.set(
-        this.camera.position.x,
-        this.camera.position.y,
-        this.camera.position.z - 0.01
-      );
-
-      this.controls.update();*/
-
-      this.controls.getObject().position.set(12, 6, 12);
-
-      this.controls.addEventListener(
-        'lock',
-        () => {
-          blocker.style.display = 'none';
-          instructions.style.display = 'none';
-        },
-        false
-      );
-
-      this.controls.addEventListener(
-        'unlock',
-        () => {
-          blocker.style.display = 'block';
-          instructions.style.display = '';
-        },
-        false
-      );
-
-      this.scene.add(this.controls.getObject());
-      this.container.appendChild(this.renderer.domElement);
-
+      // Registering Event Listeners
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
 
@@ -161,66 +100,181 @@ export default {
         false
       );
 
-      // this.updateEnvironment();
+      window.addEventListener('resize', this.onWindowResize);
+    },
+    initControls() {
+      const blocker = this.$refs.blocker;
+      const instructions = this.$refs.instructions;
+      const joystickOptions = {
+        mode: 'static',
+        position: { left: '10%', bottom: '10%' },
+        zone: this.$refs.container,
+      };
+
+      if (this.isTouchEnabled === true) {
+        this.controls = new TouchControls(
+          this.camera,
+          this.renderer.domElement
+        );
+      } else {
+        this.controls = new PointerLockControls(
+          this.camera,
+          this.renderer.domElement
+        );
+      }
+
+      this.controls.getObject().position.set(12, 6, 12);
+
+      this.controls.addEventListener(
+        'lock',
+        () => {
+          blocker.style.display = 'none';
+          instructions.style.display = 'none';
+
+          if (this.isTouchEnabled === true) {
+            this.joystick = nipplejs.create(joystickOptions);
+            this.joystick.on('move', (event, joystick) =>
+              this.onJoystickMovement(event, joystick)
+            );
+          }
+        },
+        false
+      );
+
+      this.controls.addEventListener(
+        'unlock',
+        () => {
+          blocker.style.display = 'block';
+          instructions.style.display = '';
+
+          if (this.isTouchEnabled === true) {
+            this.joystick.destroy();
+          }
+        },
+        false
+      );
+
+      this.scene.add(this.controls.getObject());
+    },
+    initPostProcessing() {
+      const pixelRatio = this.renderer.getPixelRatio();
+      const renderScene = new RenderPass(this.scene, this.camera);
+
+      this.fxaaPass = new ShaderPass(FXAAShader);
+      const bloomPass = new UnrealBloomPass({
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        strength: 0.7,
+        radius: 0.1,
+        threshhold: 0.1,
+      });
+
+      this.fxaaPass.material.uniforms['resolution'].value.x =
+        1 / (this.container.offsetWidth * pixelRatio);
+      this.fxaaPass.material.uniforms['resolution'].value.y =
+        1 / (this.container.offsetHeight * pixelRatio);
+
+      this.composer = new EffectComposer(this.renderer);
+      this.composer.addPass(renderScene);
+      this.composer.addPass(this.fxaaPass);
+      this.composer.addPass(bloomPass);
+    },
+    initScene() {
+      // Loading Blender Model
+      let loader = new GLTFLoader();
+      loader.load(
+        './Arcade.glb',
+        this.loadGltf,
+        // called while loading is progressing
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        // called when loading has errors
+        (error) => {
+          console.log(error.message);
+        }
+      );
+      const floorGeometry = new THREE.PlaneGeometry(35, 35);
+      const floorMaterial = new THREE.MeshBasicMaterial({
+        color: 0,
+        transparent: true,
+        opacity: 0.95,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+
+      floor.rotateX(-Math.PI / 2);
+      floor.position.y = 0.5;
+
+      this.floorReflector = new THREE.Mesh(floorGeometry, floorMaterial);
+      this.floorReflector.rotateX(-Math.PI / 2);
+      this.floorReflector.position.y = 0.45;
+      this.floorReflector.material = new MeshReflectorMaterial(
+        this.renderer,
+        this.camera,
+        this.scene,
+        this.floorReflector
+      );
+
+      this.scene.add(floor, this.floorReflector);
+      this.addLights();
+    },
+    initRenderer() {
+      this.renderer.physicallyCorrectLights = true;
+      this.renderer.outputEncoding = THREE.sRGBEncoding;
+      //this.renderer.toneMapping = THREE.ReinhardToneMapping;
+      this.renderer.setAnimationLoop(this.animation);
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.container.appendChild(this.renderer.domElement);
     },
     addLights() {
-      const light1 = new THREE.AmbientLight(0xffffff, 0.1);
-      light1.name = 'ambient_light';
-      this.camera.add(light1);
+      const ambientLigth = new THREE.AmbientLight(16777215, 0.1);
+      ambientLigth.name = 'ambient_light';
 
-      const light2 = new THREE.DirectionalLight(0xffffff, 0.1);
-      light2.position.set(0, 7, 0); // ~60º
-      light2.name = 'main_light';
-      this.camera.add(light2);
+      const directionalLight = new THREE.DirectionalLight(16777215, 0.4);
+      directionalLight.position.set(0, 10, 20);
+      directionalLight.name = 'main_light';
+
+      this.scene.add(ambientLigth, directionalLight);
     },
-    animation(prevTime) {
+    animation() {
       const direction = new THREE.Vector3();
       const time = performance.now();
-      // this.controls.update(time);
 
       if (this.controls.isLocked === true) {
         const delta = (time - this.prevTime) / 1000;
 
-        this.velocity.z -= this.velocity.z * 10.0 * delta;
-        this.velocity.x -= this.velocity.x * 10.0 * delta;
+        this.velocity.z -= this.velocity.z * 10 * delta;
+        this.velocity.x -= this.velocity.x * 10 * delta;
 
         direction.z = Number(this.moveForward) - Number(this.moveBackward);
         direction.x = Number(this.moveRight) - Number(this.moveLeft);
-        direction.normalize(); // this ensures consistent movements in all directions
+        direction.normalize();
 
         if (this.moveForward || this.moveBackward)
-          this.velocity.z -= direction.z * 200.0 * delta;
+          this.velocity.z -= direction.z * 200 * delta;
         if (this.moveLeft || this.moveRight)
-          this.velocity.x -= direction.x * 200.0 * delta;
+          this.velocity.x -= direction.x * 200 * delta;
 
         this.controls.moveForward(-this.velocity.z * delta);
         this.controls.moveRight(-this.velocity.x * delta);
+
+        this.floorReflector.material.update();
+        this.composer.render();
       }
 
-      //this.cubeCamera.update(this.renderer, this.scene);
       this.prevTime = time;
-      this.renderer.render(this.scene, this.camera);
-    },
-    getCubeMapTexture(environment) {
-      return new Promise((resolve, reject) => {
-        new RGBELoader().load(
-          environment,
-          (texture) => {
-            const envMap =
-              this.pmremGenerator.fromEquirectangular(texture).texture;
-            this.pmremGenerator.dispose();
-
-            resolve({ envMap });
-          },
-          undefined,
-          reject
-        );
-      });
     },
     initInteractiveObjects(child) {
       if (/^Arcade/.test(child.name)) {
         this.arcades.push(child);
       }
+    },
+    isTouchEnabled() {
+      return (
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0
+      );
     },
     loadGltf(gltf) {
       this.arcade = gltf.scene;
@@ -231,23 +285,38 @@ export default {
     lockControls() {
       this.controls.lock();
     },
+    onJoystickMovement(event, joystick) {
+      console.log(joystick);
+      if (joystick.direction.x == 'left') {
+        this.moveLeft = true;
+        this.moveRight = false;
+      } else if (joystick.direction.x == 'right') {
+        this.moveLeft = false;
+        this.moveRight = true;
+      }
+
+      if (joystick.direction.y == 'up') {
+        this.moveForward = true;
+        this.moveBackward = false;
+      } else if (joystick.direction.x == 'down') {
+        this.moveForward = false;
+        this.moveBackward = true;
+      }
+    },
     onKeyDown(event) {
       switch (event.code) {
         case 'ArrowUp':
         case 'KeyW':
           this.moveForward = true;
           break;
-
         case 'ArrowLeft':
         case 'KeyA':
           this.moveLeft = true;
           break;
-
         case 'ArrowDown':
         case 'KeyS':
           this.moveBackward = true;
           break;
-
         case 'ArrowRight':
         case 'KeyD':
           this.moveRight = true;
@@ -260,17 +329,14 @@ export default {
         case 'KeyW':
           this.moveForward = false;
           break;
-
         case 'ArrowLeft':
         case 'KeyA':
           this.moveLeft = false;
           break;
-
         case 'ArrowDown':
         case 'KeyS':
           this.moveBackward = false;
           break;
-
         case 'ArrowRight':
         case 'KeyD':
           this.moveRight = false;
@@ -282,47 +348,34 @@ export default {
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
-
       this.intersectsArcade = this.raycaster.intersectObjects(this.arcades);
 
       if (this.intersectsArcade.length > 0) {
-        this.intersectsArcade[0].object.parent.children[2].material.emissive.set(
-          0xbf40bf
-        );
+        this.intersectsArcade[0].object.parent.children[2].material.emissive.set();
       }
     },
-    traverseMaterials(object, callback) {
-      object.traverse((node) => {
-        if (!node.isMesh) return;
-        const materials = Array.isArray(node.material)
-          ? node.material
-          : [node.material];
-        materials.forEach(callback);
-      });
-    },
-    updateEnvironment() {
-      const environment = './src/assets/footprint_court_2k.hdr';
+    onWindowResize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-      this.getCubeMapTexture(environment).then(({ envMap }) => {
-        this.scene.environment = envMap;
-      });
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
 
-      this.traverseMaterials(this.arcade, (material) => {
-        if (material.map) material.map.encoding = THREE.sRGBEncoding;
-        if (material.emissiveMap)
-          material.emissiveMap.encoding = THREE.sRGBEncoding;
-        if (material.map || material.emissiveMap) material.needsUpdate = true;
-      });
+      this.renderer.setSize(width, height);
+      this.composer.setSize(width, height);
+
+      const pixelRatio = this.renderer.getPixelRatio();
+
+      this.fxaaPass.material.uniforms['resolution'].value.x =
+        1 / (this.container.offsetWidth * pixelRatio);
+      this.fxaaPass.material.uniforms['resolution'].value.y =
+        1 / (this.container.offsetHeight * pixelRatio);
     },
   },
 };
 </script>
 
 <style scoped>
-#container {
-  width: 50%;
-}
-
 #blocker {
   position: absolute;
   width: 100%;
